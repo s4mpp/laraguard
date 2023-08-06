@@ -1,6 +1,11 @@
 {
     "name": "s4mpp/laraguard",
     "description": "Authentication and Password Management for Laravel",
+    "autoload": {
+        "psr-4": {
+            "S4mpp\\Laraguard\\": "src/"
+        }
+    },
     "authors": [
         {
             "name": "Samuel Pacheco",
