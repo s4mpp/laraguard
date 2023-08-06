@@ -10,9 +10,9 @@ class LaraguardServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../../views', 'laraguard');
 
-        // if($this->app->environment('testing'))
-        // {
+        if($this->app->environment('testing'))
+        {
             $this->loadRoutesFrom(__DIR__.'/../../tests/routes.php');
-        // }
+        }
     }
 }
