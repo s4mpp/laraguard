@@ -1,0 +1,18 @@
+{
+    "name": "s4mpp/laraguard",
+    "description": "Authentication and Password Management for Laravel",
+    "authors": [
+        {
+            "name": "Samuel Pacheco",
+            "email": "S4mpp.dev@gmail.com"
+        }
+    ],
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "S4mpp\\Laraguard\\Providers\\LaraguardServiceProvider"
+            ]
+        }
+    }
+}
