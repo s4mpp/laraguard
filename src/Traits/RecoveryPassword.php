@@ -2,18 +2,13 @@
 
 namespace S4mpp\Laraguard\Traits;
 
-use Illuminate\Support\Str;
 use S4mpp\Laraguard\Routes;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use S4mpp\Laraguard\Traits\HasGuard;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Contracts\Auth\Authenticatable;
 use S4mpp\Laraguard\Mail\PasswordRecoveryMail;
-use S4mpp\Laraguard\Mail\PasswordGenerationMail;
-use S4mpp\Laraguard\Requests\ChangePasswordRequest;
 use S4mpp\Laraguard\Requests\RecoveryPasswordChangeRequest;
 use S4mpp\Laraguard\Requests\RecoveryPasswordSolicitationRequest;
 
@@ -58,7 +53,7 @@ trait RecoveryPassword
 
         if(!$user)
         {
-            return redirect()->route(Routes::forgotPassword())->withErrors('Código de recuperação de senha inválido ou expirado. Tente solicitar o código novamente.');
+            return redirect()->route(Routes::identifier($this->route_identifier ?? null)->forgotPassword())->withErrors('Código de recuperação de senha inválido ou expirado. Tente solicitar o código novamente.');
         }
 
         return view($this->view_change_password ?? 'laraguard::change_password', compact('user', 'token_password_recovery'));
@@ -77,12 +72,12 @@ trait RecoveryPassword
 
         $request->session()->flash('message', 'Senha alterada com sucesso! Você já pode acessar a conta com sua nova senha.');
 
-        return redirect()->route(Routes::login())->withInput(['email' => $user->email]);
+        return redirect()->route(Routes::identifier($this->route_identifier ?? null)->login())->withInput(['email' => $user->email]);
     }
 
     private function _sendEmailRecoveryPasswordLink(Authenticatable $user)
     {
-        $link = route(Routes::changePasswordRecovery(), ['token_password_recovery' => $user->token_password_recovery]);
+        $link = route(Routes::identifier($this->route_identifier ?? null)->changePasswordRecovery(), ['token_password_recovery' => $user->token_password_recovery]);
 
         $email = new PasswordRecoveryMail($user, $link);
         $email->subject('Recuperação de senha');
