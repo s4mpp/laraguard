@@ -36,7 +36,9 @@ trait Authentication
 
             $field = ($this->field_username ?? 'username');
 
-            $user = app(Auth::guard($guard)->getProvider()->getModel())->where([$field => $request->username])->first();
+            $username = method_exists($this, 'formatUsernameLogin') ? $this->formatUsernameLogin($request->username) : $request->username;
+
+            $user = app(Auth::guard($guard)->getProvider()->getModel())->where([$field => $username])->first();
 
             throw_if(!$user, 'Conta não encontrada! Verifique os dados informados.');
             
@@ -48,7 +50,7 @@ trait Authentication
             }
             else
             {
-                $attempt = Auth::guard($this->_getGuard())->attempt([$field => $request->username, 'password' => $request->password]);
+                $attempt = Auth::guard($this->_getGuard())->attempt([$field => $username, 'password' => $request->password]);
     
                 throw_if(!$attempt, 'Credenciais inválidas. Por favor, tente novamente.');
             }
