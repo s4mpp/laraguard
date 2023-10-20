@@ -6,7 +6,7 @@
 
 	<p>E-mail: <strong>{{ $user->email }}</strong></p>
 
-	<form method="post" action="{{ route(S4mpp\Laraguard\Routes::storePasswordRecovery(), ['token_password_recovery' => $token_password_recovery]) }}">
+	<form method="post" action="{{ route(RoutesGuard::storePasswordRecovery(), ['token_password_recovery' => $token_password_recovery]) }}">
 		@csrf
 		@method('put')
 
@@ -22,6 +22,6 @@
 		</div>
 
 
-		<a tabindex="-1" href="{{route(S4mpp\Laraguard\Routes::login()) }}">Voltar</a>
+		<a tabindex="-1" href="{{route(RoutesGuard::login()) }}">Voltar</a>
 	</form>
 @endsection

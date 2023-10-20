@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<form method="post" action="{{ route(S4mpp\Laraguard\Routes::recoveryPassword()) }}">
+	<form method="post" action="{{ route(RoutesGuard::recoveryPassword()) }}">
 		@csrf
 
 		<div>
@@ -15,6 +15,6 @@
 		</div>
 
 
-		<a tabindex="-1" href="{{route(S4mpp\Laraguard\Routes::login()) }}">Voltar</a>
+		<a tabindex="-1" href="{{route(RoutesGuard::login()) }}">Voltar</a>
 	</form>
 @endsection

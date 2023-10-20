@@ -5,7 +5,7 @@ namespace S4mpp\Laraguard\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class PasswordRecoveryMail extends Mailable implements ShouldQueue
@@ -21,7 +21,7 @@ class PasswordRecoveryMail extends Mailable implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Authenticatable $user, string $link)
+    public function __construct(User $user, string $link)
     {
         $this->user = $user;
 

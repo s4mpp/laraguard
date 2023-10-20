@@ -15,6 +15,13 @@ class LaraguardServiceProvider extends ServiceProvider
         {
             $this->loadRoutesFrom(__DIR__.'/../../tests/routes.php');
         }
+
+        if($this->app->runningInConsole())
+		{
+            $this->publishes([
+                __DIR__.'/../../stubs/migration_add_auth_fields.stub' => database_path('migrations/'.date('Y_m_d_His').'_add_2fa_fields_on_users.php'), 
+			], 'laraguard-2fa-migration');
+        }
     }
 
     public function register()

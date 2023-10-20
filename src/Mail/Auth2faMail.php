@@ -8,29 +8,17 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class PasswordGenerationMail extends Mailable implements ShouldQueue
+class Auth2faMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
-
-    public $user;
-
-    public $link;
-
-    public $password;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(User $user, string $link, string $password)
-    {
-        $this->user = $user;
-
-        $this->link = $link;
-        
-        $this->password = $password;
-    }
+    public function __construct(public User $user, public string $code)
+    {}
 
     /**
      * Build the message.
@@ -39,6 +27,6 @@ class PasswordGenerationMail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->view('laraguard::mail.password_generation');
+        return $this->view('laraguard::mail.code_2fa');
     }
 }

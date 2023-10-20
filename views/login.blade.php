@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<form method="post" action="{{ route(S4mpp\Laraguard\Routes::attemptLogin()) }}">
+	<form method="post" action="{{ route(RoutesGuard::attemptLogin()) }}">
 		@csrf
 
 		<div>
@@ -18,6 +18,6 @@
 		</div>
 
 
-		<a tabindex="-1" href="{{route(S4mpp\Laraguard\Routes::forgotPassword()) }}">Esqueceu sua senha?</a>
+		<a tabindex="-1" href="{{route(RoutesGuard::forgotPassword()) }}">Esqueceu sua senha?</a>
 	</form>
 @endsection

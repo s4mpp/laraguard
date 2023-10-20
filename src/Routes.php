@@ -21,8 +21,10 @@ class Routes extends Facade
 		Route::middleware('web')->group(function()
 		{
 			Route::get('/entrar', 'login')->name(self::login());
-			
 			Route::post('/entrar', 'attemptLogin')->name(self::attemptLogin());
+
+			Route::get('/2fa/{code}', 'login2fa')->name(self::login2fa());
+			Route::post('/2fa/{code}', 'attemptLogin2fa')->name(self::attemptLogin2fa());
 			
 			Route::get('/sair', 'logout')->name(self::logout());
 		});
@@ -52,6 +54,11 @@ class Routes extends Facade
 		return 'login'.self::$identifier;
 	}
 
+	public static function login2fa()
+	{
+		return 'login_2fa_'.self::$identifier;
+	}
+
 	public static function logout()
 	{
 		return 'logout'.self::$identifier;
@@ -60,6 +67,11 @@ class Routes extends Facade
 	public static function attemptLogin()
 	{
 		return 'attempt_login'.self::$identifier;
+	}
+
+	public static function attemptLogin2fa()
+	{
+		return 'attempt_login_2fa'.self::$identifier;
 	}
 
 	public static function forgotPassword()
