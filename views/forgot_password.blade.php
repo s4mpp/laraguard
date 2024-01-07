@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<form method="post" action="{{ route(RoutesGuard::recoveryPassword()) }}">
+	<form method="post" action="{{ route(RoutesGuard::identifier($route_identifier)->recoveryPassword()) }}">
 		@csrf
 
 		<div>
@@ -15,6 +15,6 @@
 		</div>
 
 
-		<a tabindex="-1" href="{{route(RoutesGuard::login()) }}">Voltar</a>
+		<a tabindex="-1" href="{{route(RoutesGuard::identifier($route_identifier)->login()) }}">Voltar</a>
 	</form>
 @endsection

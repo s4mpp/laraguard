@@ -11,20 +11,25 @@ class Routes extends Facade
 	
 	public static function identifier(string $identifier = null)
 	{
-		self::$identifier = $identifier ? '_'.$identifier : null;
+		throw_if(!$identifier, 'Identifier is required');
 
+		self::$identifier = $identifier ? '_'.$identifier : null;
+		
 		return new self();
 	}
 
-	public static function authGroup()
+	public static function authGroup(bool $has_2fa = false)
 	{
-		Route::middleware('web')->group(function()
+		Route::middleware('web')->group(function() use ($has_2fa)
 		{
 			Route::get('/entrar', 'login')->name(self::login());
 			Route::post('/entrar', 'attemptLogin')->name(self::attemptLogin());
 
-			Route::get('/2fa/{code}', 'login2fa')->name(self::login2fa());
-			Route::post('/2fa/{code}', 'attemptLogin2fa')->name(self::attemptLogin2fa());
+			if($has_2fa)
+			{
+				Route::get('/2fa/{code}', 'login2fa')->name(self::login2fa());
+				Route::post('/2fa/{code}', 'attemptLogin2fa')->name(self::attemptLogin2fa());
+			}
 			
 			Route::get('/sair', 'logout')->name(self::logout());
 		});

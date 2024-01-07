@@ -25,18 +25,20 @@ trait Authentication
             return redirect()->route($this->route_redirect_after_login);
         }
 
-        return view($this->view_login ?? 'laraguard::login', ['guard' => $this->_getGuard()]);
+        return view($this->view_login ?? 'laraguard::login', ['guard' => $this->_getGuard(), 'route_identifier' => $this->route_identifier ?? null]);
     }
 
     public function attemptLogin(AuthRequest $request)
     {
         try
         {
-            $guard = $this->_getGuard();
+            $guard = $this->_getGuard(); 
 
             $field = ($this->field_username ?? 'username');
 
             $username = method_exists($this, 'formatUsernameLogin') ? $this->formatUsernameLogin($request->username) : $request->username;
+
+            throw_if(!$username, 'Informe o usuário.');
 
             $user = app(Auth::guard($guard)->getProvider()->getModel())->where([$field => $username])->first();
 
@@ -65,6 +67,8 @@ trait Authentication
     
                 throw_if(!$attempt, 'Credenciais inválidas. Por favor, tente novamente.');
 
+                $this->_dispatchHookloginSuccessFull($user);
+
                 return $this->_enter($user);
             }
         }
@@ -85,7 +89,7 @@ trait Authentication
             return redirect()->route(RoutesGuard::login());
         }
 
-        return view($this->view_login_2fa ?? 'laraguard::login_2fa', ['guard' => $guard, 'code' => $code]);
+        return view($this->view_login_2fa ?? 'laraguard::login_2fa', ['guard' => $guard, 'code' => $code, 'route_identifier' => $this->route_identifier ?? null]);
     }
 
     public function attemptLogin2fa(Auth2faRequest $request, string $code)
@@ -103,6 +107,8 @@ trait Authentication
             $user->login_code = null;
             $user->login_step_code = null;
             $user->save();
+
+            $this->_dispatchHookloginSuccessFull($user);
             
             return $this->_enter($user);
          }
@@ -153,5 +159,13 @@ trait Authentication
         }
         
         return redirect()->back()->with('message', 'Login OK, porém sem rota definida para redirecionar.');
+    }
+
+    private function _dispatchHookloginSuccessFull(User $user)
+    {
+        if(method_exists($this, 'loginSuccessfull'))
+        {
+            $this->loginSuccessfull($user);
+        }
     }
 }
