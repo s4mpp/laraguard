@@ -3,13 +3,15 @@
 namespace S4mpp\Laraguard\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use S4mpp\Laraguard\Routes;
+use S4mpp\Laraguard\Middleware\Laraguard;
 
 class LaraguardServiceProvider extends ServiceProvider 
 {
     public function boot()
     {
-        // $this->loadViewsFrom(__DIR__.'/../../views', 'laraguard');
+        $this->loadViewsFrom(__DIR__.'/../../views', 'laraguard');
+
+        app('router')->aliasMiddleware('laraguard', Laraguard::class);
 
         // if($this->app->environment('testing'))
         // {

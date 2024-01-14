@@ -6,9 +6,12 @@
 
 	<p>E-mail: <strong>{{ $user->email }}</strong></p>
 
-	<form method="post" action="{{ route(RoutesGuard::identifier($route_identifier)->storePasswordRecovery(), ['token_password_recovery' => $token_password_recovery]) }}">
+	<form method="post" action="{{ route($guard->getRouteName('storePassword'), ['token' => $token]) }}">
 		@csrf
-		@method('put')
+		@method('PUT')
+
+		<input type="text" name="email" required value="{{ $user->email }}">
+		<input type="text" name="token" required value="{{ $token }}">
 
 		<div>
 			<label>Senha</label>
@@ -22,6 +25,6 @@
 		</div>
 
 
-		<a tabindex="-1" href="{{route(RoutesGuard::identifier($route_identifier)->login()) }}">Voltar</a>
+		<a tabindex="-1" href="{{route($guard->getRouteName('login')) }}">Voltar</a>
 	</form>
 @endsection

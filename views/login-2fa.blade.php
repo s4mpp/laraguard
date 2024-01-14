@@ -4,7 +4,7 @@
 
 @section('content')
 
-	<form method="post" action="{{ route(RoutesGuard::identifier($route_identifier)->attemptLogin2fa(), compact('code')) }}">
+	<form method="post" action="{{ route($guard->getRouteName('attempt_login_2fa'), compact('code')) }}">
 		@csrf
 
 		<div>
