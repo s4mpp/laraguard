@@ -30,6 +30,7 @@ class LoginController extends Controller
             $field => ['required', 'string'],
             'password' => ['required', 'string'],
         ], [], [
+            'password' => __('laraguard::login.password'),
             $field => Str::lower($field_username['title']),
         ])->validate();
 
@@ -37,19 +38,15 @@ class LoginController extends Controller
         {
             $username = $validated_input[$this->guard->getFieldUsername('field')] ?? null;
 
-            $try_login = $this->tryLogin($this->guard, $username, $validated_input['password']);
+            $try_login = $this->guard->tryLogin($username, $validated_input['password']);
 
-            throw_if(!$try_login, 'Invalid credentials. Please try again.');
+            throw_if(!$try_login, __('laraguard::login.invalid_credentials'));
                 
-            $redirect_to_inside = $this->redirectToInside($this->guard);
-
-            throw_if(!$redirect_to_inside, 'Failed to login');
-
-            return $redirect_to_inside;
+            return $this->redirectToInside($this->guard);
         }
         catch(\Exception $e)
         {
-            return to_route($this->guard->getRouteName('signin'))
+            return to_route($this->guard->getRouteName('login'))
                 ->withErrors($e->getMessage())
                 ->withInput([$this->guard->getFieldUsername('field') => $username]);
         }
@@ -59,6 +56,6 @@ class LoginController extends Controller
     {
         Auth::guard($this->guard->getGuardName())->logout();
 
-        return to_route($this->guard->getRouteName('login'))->withMessage('Logout Successful');
+        return to_route($this->guard->getRouteName('login'))->withMessage(__('laraguard::login.logout_successfull'));
     }
 }

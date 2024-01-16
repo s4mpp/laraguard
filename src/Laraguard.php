@@ -52,10 +52,10 @@ class Laraguard
 
 		Route::prefix($guard->getPrefix())->group(function() use ($routes, $guard)
 		{
-			Route::prefix('/entrar')->controller(LoginController::class)->group(function() use ($guard)
+			Route::prefix('/signin')->controller(LoginController::class)->group(function() use ($guard)
 			{
 				Route::get('/', 'index')->name($guard->getRouteName('login'));
-				Route::post('/', 'attemptLogin')->name($guard->getRouteName('attempt_login'));
+				Route::post('/', 'attempt')->name($guard->getRouteName('attempt_login'));
 			});
 
 			Route::prefix('/recuperar-senha')->controller(PasswordRecoveryController::class)->group(function() use ($guard)

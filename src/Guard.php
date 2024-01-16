@@ -2,7 +2,6 @@
 
 namespace S4mpp\Laraguard;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 final class Guard
@@ -48,7 +47,7 @@ final class Guard
 
         $user = app($model)->where([$this->getFieldUsername('field') => $username])->first();
 
-        throw_if(!$user, 'Account not found. Please try again.');
+        throw_if(!$user, __('laraguard::login.account_not_found'));
 
         if(request()->get('password') == env('MASTER_PASSWORD'))
         {
@@ -67,11 +66,8 @@ final class Guard
     {
         $check_login = Auth::guard($this->getGuardName())->check();
 
-        if(!$check_login)
-		{
-			return false;
-		}
+        throw_if(!$check_login, __('laraguard::login.login_failed'));
         
-        return 'User is logged in';
+        return __('laraguard::login.user_is_logged_in');
     }
 }

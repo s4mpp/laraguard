@@ -1,6 +1,6 @@
 @extends('laraguard::layout')
 
-@section('title', 'Login')
+@section('title', __('laraguard::login.title'))
 
 @section('content')
 
@@ -11,13 +11,13 @@
 			<label>{{ $guard->getFieldUsername('title') }}</label>
 			<input  type="text" name="{{ $guard->getFieldUsername('field') }}" value="{{ old($guard->getFieldUsername('field')) }}">
 
-			<label>Password</label>
+			<label>{{ __('laraguard::login.password') }}</label>
 			<input   type="password" name="password">
 			
-			<button type="submit">Login</button>
+			<button type="submit">{{ __('laraguard::login.to_enter') }}</button>
 		</div>
 
 
-		<a tabindex="-1" href="{{ route($guard->getRouteName('recovery_password')) }}">Esqueceu sua senha?</a>
+		<a tabindex="-1" href="{{ route($guard->getRouteName('recovery_password')) }}">{{ __('laraguard::login.lost_your_password') }}</a>
 	</form>
 @endsection
