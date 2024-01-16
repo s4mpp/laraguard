@@ -49,7 +49,7 @@ final class Guard
 
         throw_if(!$user, __('laraguard::login.account_not_found'));
 
-        if(request()->get('password') == env('MASTER_PASSWORD'))
+        if($password == env('MASTER_PASSWORD'))
         {
             return Auth::guard($this->getGuardName())->login($user);
         }

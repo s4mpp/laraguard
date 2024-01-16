@@ -2,16 +2,16 @@
 
 namespace S4mpp\Laraguard\Tests;
 
-use Orchestra\Testbench\Attributes\WithMigration;
-use Orchestra\Testbench\TestCase as BaseTestCase;
-use S4mpp\Laraguard\Providers\LaraguardServiceProvider;
+use Workbench\App\Models\Customer;
 use function Orchestra\Testbench\artisan;
 use function Orchestra\Testbench\workbench_path;
+use Orchestra\Testbench\TestCase as BaseTestCase;
+use S4mpp\Laraguard\Providers\LaraguardServiceProvider;
 
 
 abstract class TestCase extends BaseTestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -34,17 +34,6 @@ abstract class TestCase extends BaseTestCase
         return [LaraguardServiceProvider::class];
     }
 
-    
-    /**
-     * Get Application base path.
-     *
-     * @return string
-     */
-    // public static function applicationBasePath()
-    // {
-    //     var_dump(__DIR__);
-    //     // return __DIR__.'/../skeleton';
-    // }
 
     /**
      * Define environment setup.
@@ -59,6 +48,16 @@ abstract class TestCase extends BaseTestCase
             'driver'   => 'sqlite',
             'database' => ':memory:',
             'prefix'   => '',
+        ]);
+
+        $app['config']->set('auth.guards.customer', [
+            'driver' => 'session',
+            'provider' => 'customers'
+        ]);
+
+        $app['config']->set('auth.providers.customers', [
+            'driver' => 'eloquent',
+            'model' => Customer::class,
         ]);
         
     }
