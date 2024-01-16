@@ -20,11 +20,33 @@
         "phpunit/phpunit": "^10.1",
         "orchestra/testbench": "^8.20"
     },
+    "autoload-dev": {
+        "psr-4": {
+            "S4mpp\\Laraguard\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
                 "S4mpp\\Laraguard\\Providers\\LaraguardServiceProvider"
             ]
         }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve"
+        ]
     }
 }
