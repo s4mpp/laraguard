@@ -11,7 +11,7 @@ class Laraguard
 {
 	private static $guards = [];
 
-	public static function guard(string $title, string $slug, string $guard)
+	public static function guard(string $title, string $slug, string $guard = 'web')
 	{		
 		$laraguard = new Guard($title, $slug, $guard);
 		
@@ -25,17 +25,15 @@ class Laraguard
 		return self::$guards;
 	}
 
-	public static function getCurrentGuard(): Guard
+	public static function getCurrentGuard(string $route): ?Guard
     {
-        $path_steps = explode('.', request()->route()->action['as']);
+        $path_steps = explode('.', $route);
 
 		$guard_name = $path_steps[1] ?? null;
 
-		$current_guard = self::getGuard($guard_name);
-
-		if(!$guard_name || !$current_guard)
+		if(!$guard_name || !$current_guard = self::getGuard($guard_name))
 		{
-			abort(404);
+			return null;
 		}
 
 		return $current_guard;
@@ -46,11 +44,16 @@ class Laraguard
 		return self::$guards[$guard_name] ?? null;
 	}
 
-	public static function routes(Closure $routes, string $guard_name = 'web')
+	public static function routes(string $guard_name = 'web', Closure $routes = null)
 	{
 		$guard = self::getGuard($guard_name);
 
-		Route::prefix($guard->getPrefix())->group(function() use ($routes, $guard)
+		if(!$guard)
+		{
+			return false;
+		}
+
+		Route::middleware('web')->prefix($guard->getPrefix())->group(function() use ($routes, $guard)
 		{
 			Route::prefix('/signin')->controller(LoginController::class)->group(function() use ($guard)
 			{
@@ -66,13 +69,16 @@ class Laraguard
 				Route::get('/alterar/{token}', 'changePassword')->name($guard->getRouteName('change_password'));
 				Route::put('/salvar-nova-senha', 'storePassword')->name($guard->getRouteName('store_password'));
 			});
-			
-			Route::middleware('laraguard:'.$guard->getGuardName())->group(function() use ($routes, $guard)
-			{
-				return call_user_func($routes, $guard);
-			});
 
-			Route::get('/sair', [LoginController::class, 'signout'])->name($guard->getRouteName('signout'));
+			if(is_callable($routes))
+			{
+				Route::middleware('laraguard:'.$guard->getGuardName(), 'auth:'.$guard->getGuardName())->group(function() use ($routes, $guard)
+				{
+					return call_user_func($routes, $guard);
+				});
+			}
+			
+			Route::get('/signout', [LoginController::class, 'signout'])->name($guard->getRouteName('signout'));
 		});
 	}
 }

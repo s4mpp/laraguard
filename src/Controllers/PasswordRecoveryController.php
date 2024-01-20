@@ -3,7 +3,7 @@
 namespace S4mpp\Laraguard\Controllers;
 
 use S4mpp\Laraguard\Laraguard;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -14,10 +14,10 @@ use S4mpp\Laraguard\Requests\RecoveryPasswordSolicitationRequest;
 
 class PasswordRecoveryController extends Controller
 {
-    public function __construct()
-    {
-        $this->guard = Laraguard::getCurrentGuard();
-    }
+    // public function __construct()
+    // {
+    //     $this->guard = Laraguard::getCurrentGuard();
+    // }
 
     public function index()
     {

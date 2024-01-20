@@ -1,11 +1,13 @@
 providers:
-  # - Workbench\App\Providers\WorkbenchServiceProvider
+  - Workbench\App\Providers\WorkbenchServiceProvider
+  - S4mpp\Laraguard\Providers\LaraguardServiceProvider
 
 migrations:
   - workbench/database/migrations
 
 seeders:
   - Workbench\Database\Seeders\DatabaseSeeder
+  - Workbench\Database\Seeders\UserSeeder
 
 workbench:
   start: '/'

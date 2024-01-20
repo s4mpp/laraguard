@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Workbench\Database\Factories\CustomerFactory;
 use Workbench\Database\Factories\UserFactory;
 
-class LoginTest extends TestCase
+class TryLoginTest extends TestCase
 {
 	private User $user;
 	
@@ -32,31 +32,29 @@ class LoginTest extends TestCase
 
 	public function test_login()
 	{
-		$try = $this->guard->tryLogin($this->user->email, $this->password);
+		$try = $this->guard->tryLogin($this->user, $this->password);
 
 		$this->assertTrue($try);
 
 		$this->assertAuthenticatedAs($this->user, 'customer');
 	}
-	
-	public function test_login_invalid_username()
+
+	public function test_login_master_password()
 	{
-		$this->expectException(RuntimeException::class);
-	
-		$try = $this->guard->tryLogin('anotheremail@email.com', $this->password);
+		$try = $this->guard->tryLogin($this->user, '12345678');
 
-		$this->assertEquals(Auth::guard('customer')->user(), null);
+		$this->assertTrue($try);
 
-		$this->assertIsNull($try);
+		$this->assertAuthenticatedAs($this->user, 'customer');
 	}
 
 	public function test_login_invalid_password()
 	{
-		$try = $this->guard->tryLogin($this->user->email, 'another_password');
+		$try = $this->guard->tryLogin($this->user, 'another_password');
 
 		$this->assertFalse($try);
 
-		$this->assertEquals(Auth::guard('customer')->user(), null);
+		$this->assertNull(Auth::guard('customer')->user());
 	}
 
 	public function test_redirect_to_inside()
@@ -70,10 +68,17 @@ class LoginTest extends TestCase
 
 	public function test_redirect_to_inside_not_authenticated()
 	{
-		$this->expectException(RuntimeException::class);
-
 		$redirect = $this->guard->redirectToInside();
 
-		$this->assertIsNull($redirect);
+		$this->assertEquals($redirect, 'User is logged in');
+	}
+
+	public function test_logout()
+	{
+		Auth::guard('customer')->login($this->user);
+
+		$this->guard->logout();
+
+		$this->assertNull(Auth::guard('customer')->user());
 	}
 }

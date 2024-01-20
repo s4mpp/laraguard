@@ -33,7 +33,7 @@ class LoginMultipleGuardsTest extends TestCase
 
 		$guard = new Guard('', '', $guard_name);
 
-		$try = $guard->tryLogin($user->email, $password);
+		$try = $guard->tryLogin($user, $password);
 
 		$this->assertTrue($try);
 
@@ -45,8 +45,6 @@ class LoginMultipleGuardsTest extends TestCase
 	 */
 	public function test_login_in_another_guard($guard_name, $factory, $another_guard)
 	{
-		$this->expectException(RuntimeException::class);
-
 		$password = 'passwd';
 
 		$user = $factory::new()->create([
@@ -55,12 +53,11 @@ class LoginMultipleGuardsTest extends TestCase
 
 		$guard = new Guard('', '', $another_guard);
 
-		$try = $guard->tryLogin($user->email, $password);
+		$try = $guard->tryLogin($user, $password);
 
 		$this->assertFalse($try);
 
-		$this->assertEquals(Auth::guard($another_guard)->user(), null);
-		
-		$this->assertEquals(Auth::guard($guard_name)->user(), null);
+		$this->assertNull(Auth::guard($another_guard)->user());
+		$this->assertNull(Auth::guard($guard_name)->user());
 	}
 }

@@ -2,17 +2,28 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
+use S4mpp\Laraguard\Guard;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
-    public function __construct()
+    private Guard $guard;
+
+    public function __construct(Request $request)
     {
-        $this->guard = Laraguard::getCurrentGuard();
+        $guard = Laraguard::getCurrentGuard($request->route()->getAction('as'));
+        
+        if(!$guard)
+        {
+            abort(404);
+        }
+        
+        $this->guard = $guard;
     }
 
     public function index()
@@ -38,11 +49,17 @@ class LoginController extends Controller
         {
             $username = $validated_input[$this->guard->getFieldUsername('field')] ?? null;
 
-            $try_login = $this->guard->tryLogin($username, $validated_input['password']);
+            $model = Auth::guard($this->guard->getGuardName())->getProvider()->getModel();
 
-            throw_if(!$try_login, __('laraguard::login.invalid_credentials'));
+            $user = app($model)->where([$this->guard->getFieldUsername('field') => $username])->first();
+
+            throw_if(!$user, __('laraguard::login.account_not_found'));
+
+            throw_if(!$this->guard->tryLogin($user, $validated_input['password']), __('laraguard::login.invalid_credentials'));
+
+            throw_if(!$this->guard->checkLogin(), __('laraguard::login.login_failed'));
                 
-            return $this->redirectToInside($this->guard);
+            return $this->guard->redirectToInside();
         }
         catch(\Exception $e)
         {
@@ -54,8 +71,11 @@ class LoginController extends Controller
 
     public function signout()
     {
-        Auth::guard($this->guard->getGuardName())->logout();
-
+        if(!$this->guard->logout())
+        {
+            return redirect()->back();
+        }
+        
         return to_route($this->guard->getRouteName('login'))->withMessage(__('laraguard::login.logout_successfull'));
     }
 }
