@@ -14,25 +14,5 @@ use S4mpp\Laraguard\Providers\LaraguardServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {
-    use WithWorkbench, RefreshDatabase;
-    
-    // protected function getEnvironmentSetup($app)
-    // {
-    //     $app['config']->set('database.default', 'testbench');
-    //     $app['config']->set('database.connections.testbench', [
-    //         'driver'   => 'sqlite',
-    //         'database' => ':memory:',
-    //         'prefix'   => '',
-    //     ]);
-
-    //     $app['config']->set('auth.guards.customer', [
-    //         'driver' => 'session',
-    //         'provider' => 'customers'
-    //     ]);
-
-    //     $app['config']->set('auth.providers.customers', [
-    //         'driver' => 'eloquent',
-    //         'model' => Customer::class,
-    //     ]);        
-    // }
+    use WithWorkbench;
 }

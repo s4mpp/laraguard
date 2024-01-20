@@ -2,6 +2,8 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
+use S4mpp\Laraguard\Guard;
+use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +16,19 @@ use S4mpp\Laraguard\Requests\RecoveryPasswordSolicitationRequest;
 
 class PasswordRecoveryController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->guard = Laraguard::getCurrentGuard();
-    // }
+    private Guard $guard;
+
+    public function __construct(Request $request)
+    {
+        $guard = Laraguard::getCurrentGuard($request->route()->getAction('as'));
+        
+        if(!$guard)
+        {
+            abort(404);
+        }
+        
+        $this->guard = $guard;
+    }
 
     public function index()
     {
@@ -33,7 +44,7 @@ class PasswordRecoveryController extends Controller
             return redirect()->back()->withErrors('Email/account not found.')->withInput();
         }
 
-        ResetPassword::createUrlUsing(function ($user, string $token)
+        $url = ResetPassword::createUrlUsing(function ($user, string $token)
         {
             return route($this->guard->getRouteName('change_password'), ['token' => $token, 'email' => $user->email]);
         });
@@ -44,16 +55,18 @@ class PasswordRecoveryController extends Controller
 
         return $status === Password::RESET_LINK_SENT
             ? redirect()->back()->withMessage(__($status))
-            : back()->withErrors(['email' => [__($status)]]);
+            : back()->withErrors(['email' => [__($status)]])->withInput();
     }
 
     public function changePassword(string $token)
     {
+        $guard = $this->guard;
+        
         $user = Password::broker($this->guard->getGuardName())->getUser(['email' => request()->get('email')]);
 
         if(!$user || !Password::tokenExists($user, $token))
         {
-            return to_route($this->guard->getRouteName('recovery_password'))->withErrors('Invalid token');
+            return to_route($guard->getRouteName('recovery_password'))->withErrors('Invalid token');
         }
 
         return view('laraguard::change-password', compact('guard', 'user', 'token'));

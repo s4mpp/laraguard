@@ -25,7 +25,7 @@ class Laraguard
 		return self::$guards;
 	}
 
-	public static function getCurrentGuard(string $route): ?Guard
+	public static function getCurrentGuard(string $route = null): ?Guard
     {
         $path_steps = explode('.', $route);
 
@@ -61,13 +61,13 @@ class Laraguard
 				Route::post('/', 'attempt')->name($guard->getRouteName('attempt_login'));
 			});
 
-			Route::prefix('/recuperar-senha')->controller(PasswordRecoveryController::class)->group(function() use ($guard)
+			Route::prefix('/password-recovery')->controller(PasswordRecoveryController::class)->group(function() use ($guard)
 			{
 				Route::get('/', 'index')->name($guard->getRouteName('recovery_password'));
 				Route::post('/', 'sendLink')->name($guard->getRouteName('send_link_password'));
 				
-				Route::get('/alterar/{token}', 'changePassword')->name($guard->getRouteName('change_password'));
-				Route::put('/salvar-nova-senha', 'storePassword')->name($guard->getRouteName('store_password'));
+				Route::get('/change/{token}', 'changePassword')->name($guard->getRouteName('change_password'));
+				Route::put('/change', 'storePassword')->name($guard->getRouteName('store_password'));
 			});
 
 			if(is_callable($routes))

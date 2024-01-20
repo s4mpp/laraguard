@@ -6,7 +6,7 @@
 
 	<p>E-mail: <strong>{{ $user->email }}</strong></p>
 
-	<form method="post" action="{{ route($guard->getRouteName('storePassword'), ['token' => $token]) }}">
+	<form method="post" action="{{ route($guard->getRouteName('store_password'), ['token' => $token]) }}">
 		@csrf
 		@method('PUT')
 
