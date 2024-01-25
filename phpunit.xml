@@ -4,8 +4,11 @@
          bootstrap="vendor/autoload.php"
          colors="true">
     <testsuites>
-        <testsuite name="default">
-            <directory>tests</directory>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">tests/Unit</directory>
         </testsuite>
     </testsuites>
     <source restrictDeprecations="true" restrictNotices="true" restrictWarnings="true">
@@ -14,6 +17,8 @@
         </include>
     </source>
     <php>
+        <env name="DB_CONNECTION" value="testing"/>
         <env name="MASTER_PASSWORD" value="12345678" force="true" />
+        <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
     </php>
 </phpunit>

@@ -17,15 +17,8 @@ class LoginTest extends TestCase
 		return [
 			'web' => ['/restricted-area/signin', 200],
 			'customer' => ['/customer-area/signin', 200],
-			'non_existent' => ['/customer-area/xxx', 404]
-		];
-	}
-
-	public static function guardProvider()
-	{
-		return [
-			'Web' => ['web', 'restricted-area', UserFactory::class, 'customer', 'customer-area'],
-			'Customer' => ['customer',  'customer-area', CustomerFactory::class, 'web', 'restricted-area'],
+			'non_existent_auth_page' => ['/customer-area/xxx', 404],
+			'non_existent_panel' => ['/xxx/signin', 404]
 		];
 	}
 
@@ -57,8 +50,8 @@ class LoginTest extends TestCase
 
 		$response->assertSessionHasNoErrors();
 
-		$response->assertStatus(200);
-		$response->assertSee('User is logged in');
+		$response->assertStatus(302);
+		$response->assertRedirectContains('my-account');
 
 		$this->assertAuthenticatedAs($user, $guard_name);
 		$this->assertNull(Auth::guard($another_guard)->user());
@@ -177,7 +170,7 @@ class LoginTest extends TestCase
 	{
 		$user = $factory::new()->create();
 
-		$response = $this->actingAs($user, $guard_name)->get('/'.$uri.'/home');
+		$response = $this->actingAs($user, $guard_name)->get('/'.$uri.'/my-account');
 
 		$response->assertStatus(200);
 	}
@@ -188,7 +181,7 @@ class LoginTest extends TestCase
 	 */
 	public function test_access_restricted_area_not_logged($guard_name, $uri)
 	{
-		$response = $this->get('/'.$uri.'/home');
+		$response = $this->get('/'.$uri.'/my-account');
 
 		$response->assertStatus(302);
 		$response->assertSessionHasErrorsIn('default');
@@ -204,7 +197,7 @@ class LoginTest extends TestCase
 	{
 		$user = $factory::new()->create();
 
-		$response = $this->actingAs($user, $guard_name)->get('/'.$another_guard_url.'/home');
+		$response = $this->actingAs($user, $guard_name)->get('/'.$another_guard_url.'/my-account');
 
 		$response->assertStatus(302);
 		$response->assertSessionHasErrorsIn('default');

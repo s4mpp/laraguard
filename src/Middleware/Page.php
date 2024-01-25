@@ -5,24 +5,29 @@ namespace S4mpp\Laraguard\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard as LaraguardBase;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class Laraguard
+class Page
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $guard_name): Response
+    public function handle(Request $request, Closure $next): Response
     {
-        $guard = LaraguardBase::getGuard($guard_name);
+		$guard = LaraguardBase::getGuard($request->get('laraguard_panel'));
 
-        if(!Auth::guard($guard->getGuardName())->check())
-        {
-            return to_route($guard->getRouteName('login'))->withErrors('You are not logged in');
-        }
+		$page = $guard->getCurrentPageByRoute($request->route()->getAction('as'));
+
+		if(!$page)
+		{
+			abort(404);
+		}
+
+		$request->merge([
+			'laraguard_page' => $page->getSlug()
+		]);
 
         return $next($request);
     }

@@ -11,16 +11,8 @@ use Illuminate\Support\Facades\Notification;
 use Workbench\Database\Factories\UserFactory;
 use Workbench\Database\Factories\CustomerFactory;
 
-class PasswordRecoveryTest extends TestCase
+class RecoveryPasswordTest extends TestCase
 {
-	public static function guardProvider()
-	{
-		return [
-			'Web' => ['web', 'restricted-area', UserFactory::class, 'customer', 'customer-area'],
-			'Customer' => ['customer',  'customer-area', CustomerFactory::class, 'web', 'restricted-area'],
-		];
-	}
-
 	/**
 	 *
 	 * @dataProvider guardProvider

@@ -3,21 +3,33 @@
 namespace S4mpp\Laraguard;
 
 use Closure;
+use S4mpp\Laraguard\Middleware\Page;
 use Illuminate\Support\Facades\Route;
-use S4mpp\Laraguard\Controllers\LoginController;
+use S4mpp\Laraguard\Middleware\Panel;
+use S4mpp\Laraguard\Middleware\RestrictedArea;
+use S4mpp\Laraguard\Controllers\SignInController;
+use S4mpp\Laraguard\Controllers\SignUpController;
+use S4mpp\Laraguard\Controllers\SignOutController;
+use S4mpp\Laraguard\Controllers\MyAccountController;
+use S4mpp\Laraguard\Controllers\ChangePasswordController;
 use S4mpp\Laraguard\Controllers\PasswordRecoveryController;
+use S4mpp\Laraguard\Controllers\RecoveryPasswordController;
+use S4mpp\Laraguard\Controllers\RecoverPasswordChangeController;
+use S4mpp\Laraguard\Controllers\RecoveryPasswordSolicitationController;
 
 class Laraguard
 {
 	private static $guards = [];
 
-	public static function guard(string $title, string $slug, string $guard = 'web')
+	public static function guard(string $title, string $slug, string $guard = 'web'): Guard
 	{		
-		$laraguard = new Guard($title, $slug, $guard);
-		
-		self::$guards[$guard] = $laraguard;
+		$panel = new Guard($title, $slug, $guard);
 
-		return $guard;
+		$panel->addPage('My account', 'laraguard::my-account', 'my-account')->hideInMenu();
+		
+		self::$guards[$guard] = $panel;
+
+		return $panel;
 	}
 
 	public static function getGuards(): array
@@ -25,24 +37,41 @@ class Laraguard
 		return self::$guards;
 	}
 
-	public static function getCurrentGuard(string $route = null): ?Guard
+	public static function getCurrentGuardByRoute(string $route = null): ?Guard
     {
         $path_steps = explode('.', $route);
 
 		$guard_name = $path_steps[1] ?? null;
 
-		if(!$guard_name || !$current_guard = self::getGuard($guard_name))
-		{
-			return null;
-		}
-
-		return $current_guard;
+		return self::getGuard($guard_name ?? '');
     }
 
 	public static function getGuard(string $guard_name): ?Guard
 	{
 		return self::$guards[$guard_name] ?? null;
 	}
+
+	public static function currentPanel()
+	{
+		return self::getGuard(request()->get('laraguard_panel'));
+	}
+
+	public static function layout(string $file = null, array $data = [])
+	{
+		return self::currentPanel()->getLayout($file, $data);
+	}
+
+	
+
+
+
+
+
+
+
+
+
+
 
 	public static function routes(string $guard_name = 'web', Closure $routes = null)
 	{
@@ -52,33 +81,60 @@ class Laraguard
 		{
 			return false;
 		}
-
-		Route::middleware('web')->prefix($guard->getPrefix())->group(function() use ($routes, $guard)
+	
+		Route::prefix($guard->getPrefix())->middleware(Panel::class)->group(function() use ($routes, $guard)
 		{
-			Route::prefix('/signin')->controller(LoginController::class)->group(function() use ($guard)
+			Route::redirect('/', $guard->getPrefix().'/signin');
+			
+			Route::prefix('/signin')->controller(SignInController::class)->group(function() use ($guard)
 			{
 				Route::get('/', 'index')->name($guard->getRouteName('login'));
 				Route::post('/', 'attempt')->name($guard->getRouteName('attempt_login'));
 			});
 
-			Route::prefix('/password-recovery')->controller(PasswordRecoveryController::class)->group(function() use ($guard)
+			if($guard->hasAutoRegister())
 			{
-				Route::get('/', 'index')->name($guard->getRouteName('recovery_password'));
-				Route::post('/', 'sendLink')->name($guard->getRouteName('send_link_password'));
-				
-				Route::get('/change/{token}', 'changePassword')->name($guard->getRouteName('change_password'));
-				Route::put('/change', 'storePassword')->name($guard->getRouteName('store_password'));
-			});
-
-			if(is_callable($routes))
-			{
-				Route::middleware('laraguard:'.$guard->getGuardName(), 'auth:'.$guard->getGuardName())->group(function() use ($routes, $guard)
+				Route::prefix('signup')->controller(SignUpController::class)->group(function() use ($guard)
 				{
-					return call_user_func($routes, $guard);
+					Route::get('/', 'index')->name($guard->getRouteName('signup'));
+					Route::post('/createAccount', 'save')->name($guard->getRouteName('create_account'));
 				});
 			}
-			
-			Route::get('/signout', [LoginController::class, 'signout'])->name($guard->getRouteName('signout'));
+
+			Route::prefix('/password-recovery')->group(function() use ($guard)
+			{
+				Route::controller(RecoveryPasswordController::class)->group(function() use ($guard)
+				{
+					Route::get('/', 'index')->name($guard->getRouteName('recovery_password'));
+					Route::post('/', 'sendLink')->name($guard->getRouteName('send_link_password'));
+				});
+
+				Route::controller(ChangePasswordController::class)->group(function() use ($guard)
+				{
+					Route::get('/change/{token}', 'index')->name($guard->getRouteName('change_password'));
+					Route::put('/change', 'storePassword')->name($guard->getRouteName('store_password'));
+				});
+			});
+
+			Route::middleware(RestrictedArea::class)->group(function() use ($routes, $guard)
+			{
+				Route::middleware('web')->group(function() use ($routes, $guard)
+				{
+					return (is_callable($routes)) ? call_user_func($routes, $guard) : null;
+				});
+
+				Route::middleware(Page::class)->group(function() use ($guard)
+				{
+					foreach($guard->getPages() as $page)
+					{
+						Route::get($page->getSlug(), $page->getAction())->name($guard->getRouteName($page->getSlug()));
+					}
+				});
+	
+				// Route::get('/my-account', MyAccountController::class)->name($guard->getRouteName('my_account'));
+				
+				Route::get('/signout', SignOutController::class)->name($guard->getRouteName('signout'));
+			});
 		});
 	}
 }

@@ -2,17 +2,21 @@
 
 namespace S4mpp\Laraguard\Tests;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Workbench\App\Models\Customer;
-use Illuminate\Support\Facades\Route;
+use Workbench\Database\Factories\UserFactory;
 use Orchestra\Testbench\Concerns\WithWorkbench;
-
-use function Orchestra\Testbench\artisan;
-use function Orchestra\Testbench\workbench_path;
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use S4mpp\Laraguard\Providers\LaraguardServiceProvider;
+use Workbench\Database\Factories\CustomerFactory;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use WithWorkbench;
+    use WithWorkbench, RefreshDatabase;
+
+    public static function guardProvider()
+	{
+		return [
+			'Web' => ['web', 'restricted-area', UserFactory::class, 'customer', 'customer-area'],
+			'Customer' => ['customer',  'customer-area', CustomerFactory::class, 'web', 'restricted-area'],
+		];
+	}
 }

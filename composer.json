@@ -1,6 +1,6 @@
 {
     "name": "s4mpp/laraguard",
-    "description": "Authentication and Password Management for Laravel",
+    "description": "Account Management for Laravel",
     "autoload": {
         "psr-4": {
             "S4mpp\\Laraguard\\": "src/"
@@ -9,7 +9,7 @@
     "authors": [
         {
             "name": "Samuel P.",
-            "email": "S4mpp.dev@gmail.com"
+            "email": "s4mpp.dev@gmail.com"
         }
     ],
     "require": {
@@ -26,6 +26,7 @@
             "S4mpp\\Laraguard\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Database\\Seeders\\": "workbench/database/seeders/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
         }
     },

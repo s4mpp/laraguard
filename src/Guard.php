@@ -4,12 +4,19 @@ namespace S4mpp\Laraguard;
 
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use S4mpp\Laraguard\Navigation\Page;
+use S4mpp\Laraguard\Navigation\MenuItem;
 
 final class Guard
 {
 	private $field_username = ['field' => 'email', 'title' => 'E-mail'];
 
-	public function __construct(private string $title, private string $prefix = '', private string $guard_name)
+	private bool $allow_auto_register = false;
+
+	private $pages = [];
+
+	public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
 	{}
 
 	public function getTitle(): string
@@ -27,9 +34,21 @@ final class Guard
 		return $this->prefix;
 	}
 
-	public function getRouteName(string $action): string
+	public function getRouteName(string $page): string
 	{
-		return 'lg.'.$this->getGuardName().'.'.$action;
+		return 'lg.'.$this->getGuardName().'.'.$page;
+	}
+
+	public function allowAutoRegister()
+	{
+		$this->allow_auto_register = true;
+
+		return $this;
+	}
+
+	public function hasAutoRegister()
+	{
+		return $this->allow_auto_register;
 	}
 
 	public function getFieldUsername(string $index = null)
@@ -65,16 +84,86 @@ final class Guard
 	{
 		return Auth::guard($this->getGuardName())->check();
 	}
-
+	
 	public function logout(): bool
 	{
 		Auth::guard($this->getGuardName())->logout();
-		
+
+		Session::invalidate();
+
+		Session::regenerateToken();
+ 		
 		return !$this->checkLogin();
 	}
 
-    public function redirectToInside()
-    {
-        return __('laraguard::login.user_is_logged_in');
-    }
+	public function currentPage()
+	{
+		return $this->getPage(request()->get('laraguard_page'));
+	}
+
+	public function addPage(string $title_or_page, string $view = null, string $slug = null)
+	{
+		$page = new Page($title_or_page, $view, $slug);
+		
+		$this->pages[$page->getSlug()] = $page;
+
+		return $page;
+	}
+
+	public function getPages(): array
+	{
+		return $this->pages;
+	}
+
+	public function getCurrentPageByRoute(string $route = null): ?Page
+	{
+		$path_steps = explode('.', $route);
+		
+		$page_name = $path_steps[2] ?? null;
+
+		return $this->getPage($page_name);
+	}
+
+	public function getPage(string $page_name): ?Page
+	{
+		return $this->pages[$page_name] ?? null;
+	}
+
+	public function getLayout(string $file = null, array $data = [])
+	{
+		return $this->currentPage()->render($file, array_merge($data, [
+			'panel_title' => $this->getTitle(),
+			'menu' => $this->getMenu(),
+			'my_account_url' => route($this->getRouteName('my-account')),
+			'logout_url' => route($this->getRouteName('signout')),
+		]));
+	}
+
+	public function getMenu(): array
+	{
+		$current_route = request()->route()->getAction('as');
+
+		foreach($this->pages as $page)
+		{
+			if(!$page->canShowInMenu())
+			{
+				continue;
+			}
+
+			$menu_item = (new MenuItem($page->getTitle(), $page->getSlug()));
+
+			$page_route = $this->getRouteName($page->getSlug());
+			
+			$menu_item->setAction(route($page_route));
+
+			if($current_route == $page_route)
+			{
+				$menu_item->activate();
+			}
+			
+			$menu[] = $menu_item;
+		}
+
+		return $menu ?? [];
+	}
 }
