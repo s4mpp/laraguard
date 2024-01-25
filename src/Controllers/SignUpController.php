@@ -3,8 +3,10 @@
 namespace S4mpp\Laraguard\Controllers;
 
 use Illuminate\Http\Request;
+use S4mpp\Laraguard\Laraguard;
 use S4mpp\MyAccount\MyAccount;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use S4mpp\Laraguard\Facades\RoutesGuard;
 use S4mpp\Laraguard\Controllers\LaraguardController;
@@ -13,27 +15,21 @@ final class SignUpController extends Controller
 {
 	public function index()
 	{
-		$panel = MyAccount::getCurrentPanel();
+		$panel = Laraguard::currentPanel();
 
-		$title = 'Cadastro';
-
-		$login_url = route(RoutesGuard::identifier('auth.'.$panel->getSlug())->logout());
-
-		$register_post_url = route('my-account.'.$panel->getSlug().'.register.save');
-
-		return view('my-account::auth.register', compact('panel', 'title', 'login_url', 'register_post_url'));
+        return view('laraguard::auth.register', ['panel' => $panel, 'panel_title' => $panel->getTitle(), 'page_title' => 'Cadastro']);
 	}
 
 	public function save(Request $request)
 	{
-		$panel = MyAccount::getCurrentPanel();
+		$panel = Laraguard::currentPanel();
 		
-		$model = app($panel->getModel());
+		$model = app(Auth::guard($panel->getGuardName())->getProvider()->getModel());
 		
 		$validated_input = $request->validate([
 			'name' => ['required', 'string'],
 			'email' => ['required', 'string', 'email', 'unique:'.$model->getTable()],
-			'password' => ['required', 'string', 'min:6'],
+			'password' => ['required', 'string', 'min:5'],
 		]);
 
 		$new_account = new $model();
@@ -44,6 +40,13 @@ final class SignUpController extends Controller
 
 		$new_account->save();
 
-		return redirect()->back()->withMessage('Cadastro realizado com sucesso!');
+		return to_route($panel->getRouteName('user_registered'));
+	}
+
+	public function finish()
+	{
+		$panel = Laraguard::currentPanel();
+
+        return view('laraguard::auth.register-finished', ['panel' => $panel, 'panel_title' => $panel->getTitle(), 'page_title' => 'Cadastro']);
 	}
 }

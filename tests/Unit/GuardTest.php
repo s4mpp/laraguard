@@ -24,6 +24,8 @@ class GuardTest extends TestCase
 		$this->assertSame('Panel title', $this->panel->getTitle());
 		$this->assertSame('administrator', $this->panel->getGuardName());
 		$this->assertSame('panel-prefix', $this->panel->getPrefix());
+
+		$this->assertFalse($this->panel->hasAutoRegister());
 	}
 
 	public function test_get_name_fields()
@@ -38,5 +40,14 @@ class GuardTest extends TestCase
 	public function test_get_route_name()
 	{
 		$this->assertSame('lg.administrator.login', $this->panel->getRouteName('login'));
+	}
+
+	public function test_set_auto_register()
+	{
+		$current_panel = $this->panel->allowAutoRegister();
+
+		$this->assertInstanceOf(Guard::class, $current_panel);
+
+		$this->assertTrue($this->panel->hasAutoRegister());
 	}
 }

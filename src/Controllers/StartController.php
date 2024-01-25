@@ -6,14 +6,17 @@ use S4mpp\Laraguard\Laraguard;
 use Illuminate\Routing\Controller;
 use S4mpp\Laraguard\Controllers\LaraguardController;
 
-class SignOutController extends Controller
+class StartController extends Controller
 {
     public function __invoke()
     {
         $panel = Laraguard::currentPanel();
 
-        $panel->logout();
-    
-        return to_route($panel->getRouteName('login'))->withMessage(__('laraguard::login.logout_successfull'));
+        if(!$panel->checkIfIsUserIsLogged())
+        {
+            return to_route($panel->getRouteName('login'));
+        }
+        
+        return to_route($panel->getRouteName('my-account'));
     }
 }

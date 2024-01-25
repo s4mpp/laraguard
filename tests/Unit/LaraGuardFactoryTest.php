@@ -33,23 +33,27 @@ class LaraGuardFactoryTest extends TestCase
 		$this->assertInstanceOf(Guard::class, $guard_customer);
 
 		$this->assertCount(1, $guard_customer->getPages());
-
+		
 		$this->assertSame('My account', $guard_customer->getTitle());
 		$this->assertSame('customer', $guard_customer->getGuardName());
 		$this->assertSame('customer-area', $guard_customer->getPrefix());
+		
+		$this->assertTrue($guard_customer->hasAutoRegister());
 	}
 
 	public function test_get_current_guard_by_route()
 	{
-		$current_guard = Laraguard::getCurrentGuardByRoute('lg.customer.index');
+		$current_guard = Laraguard::getCurrentGuardByRoute('lg.web.index');
 
 		$this->assertInstanceOf(Guard::class, $current_guard);
 
-		$this->assertCount(1, $current_guard->getPages());
+		$this->assertCount(6, $current_guard->getPages());
 
-		$this->assertSame('My account', $current_guard->getTitle());
-		$this->assertSame('customer', $current_guard->getGuardName());
-		$this->assertSame('customer-area', $current_guard->getPrefix());
+		$this->assertSame('Restricted area', $current_guard->getTitle());
+		$this->assertSame('web', $current_guard->getGuardName());
+		$this->assertSame('restricted-area', $current_guard->getPrefix());
+
+		$this->assertFalse($current_guard->hasAutoRegister());
 	}
 
 	/** 

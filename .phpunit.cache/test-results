@@ -1,1 +1,0 @@
-{"version":1,"defects":{"S4mpp\\Laraguard\\Tests\\Unit\\LoginTest::test_login":5,"S4mpp\\Laraguard\\Tests\\Unit\\GuardTest::test_create_instance_factory":5},"times":{"S4mpp\\Laraguard\\Tests\\Unit\\LoginTest::test_login":0.065,"S4mpp\\Laraguard\\Tests\\Unit\\GuardTest::test_create_instance_factory":0.022}}

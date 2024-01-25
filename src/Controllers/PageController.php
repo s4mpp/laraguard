@@ -2,8 +2,9 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-use Illuminate\Routing\Controller;
 use S4mpp\Laraguard\Laraguard;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 
 class PageController extends Controller

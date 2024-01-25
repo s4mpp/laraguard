@@ -47,7 +47,7 @@ class SignInController extends Controller
 
             throw_if(!$guard->tryLogin($user, $validated_input['password']), __('laraguard::login.invalid_credentials'));
 
-            throw_if(!$guard->checkLogin(), __('laraguard::login.login_failed'));
+            throw_if(!$guard->checkIfIsUserIsLogged(), __('laraguard::login.login_failed'));
                 
             return to_route($guard->getRouteName('my-account'));
         }

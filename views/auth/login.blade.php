@@ -39,6 +39,10 @@
 			</div>
 		</div>
 
+		<div>
+			<button type="submit" class="ease-linear transition  flex w-full justify-center rounded-md bg-gray-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">{{ __('laraguard::login.to_enter') }}</button>
+		</div>
+		
 		<div class="flex items-center justify-center">
 			{{-- <div class="flex items-center">
 				<input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-gray-600 focus:ring-gray-600">
@@ -50,9 +54,16 @@
 			</div>
 		</div>
 
-		<div>
-			<button type="submit" class="ease-linear transition  flex w-full justify-center rounded-md bg-gray-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">{{ __('laraguard::login.to_enter') }}</button>
-		</div>
-		
+		@if($panel->hasAutoRegister())
+
+			<div class="pt-4">
+				<div class="bg-gray-100 rounded-lg text-center p-4">
+					<span class="text-base text-gray-700 ">Não tem uma conta?</span>
+					<div class="clear-both mb-5"></div>
+					
+					<a href="{{ route($panel->getRouteName('signup')) }}" class="ease-linear transition  flex w-full justify-center rounded-md bg-gray-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">Cadastre-se</a>
+				</div>
+			</div>
+		@endif
 	</form>
 @endsection

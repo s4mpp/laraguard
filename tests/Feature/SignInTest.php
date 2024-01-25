@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Workbench\Database\Factories\UserFactory;
 use Workbench\Database\Factories\CustomerFactory;
 
-class LoginTest extends TestCase
+class SignInTest extends TestCase
 {
 	private $password = 'passwd918';
 

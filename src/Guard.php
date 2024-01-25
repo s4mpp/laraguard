@@ -80,7 +80,7 @@ final class Guard
         return $attempt;     
     }
 
-	public function checkLogin(): bool
+	public function checkIfIsUserIsLogged(): bool
 	{
 		return Auth::guard($this->getGuardName())->check();
 	}
@@ -93,7 +93,7 @@ final class Guard
 
 		Session::regenerateToken();
  		
-		return !$this->checkLogin();
+		return !$this->checkIfIsUserIsLogged();
 	}
 
 	public function currentPage()
@@ -132,6 +132,7 @@ final class Guard
 	public function getLayout(string $file = null, array $data = [])
 	{
 		return $this->currentPage()->render($file, array_merge($data, [
+			'guard_name' => $this->getGuardName(),
 			'panel_title' => $this->getTitle(),
 			'menu' => $this->getMenu(),
 			'my_account_url' => route($this->getRouteName('my-account')),

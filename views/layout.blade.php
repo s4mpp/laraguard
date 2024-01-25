@@ -65,8 +65,8 @@
 						class="absolute divide-y divide-slate-100 right-0 z-10 mt-2.5   origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-slate-900/5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
 					  
 						<div class="px-4 py-3" role="none">
-							<p class="text-sm" role="none">{{ auth()->user()->name }}</p>
-							<p class="truncate text-sm font-medium text-slate-900" role="none">{{ auth()->user()->email }}</p>
+							<p class="text-sm" role="none">{{ auth()->guard($guard_name)->user()->name }}</p>
+							<p class="truncate text-sm font-medium text-slate-900" role="none">{{ auth()->guard($guard_name)->user()->email }}</p>
 						</div>
 						<div class="py-1" role="none">
 							<a href="{{ $my_account_url }}" class="text-gray-700 flex justify-between items-center  font-semibold transition-colors px-4 py-2 text-sm bg-gray-50 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-1">

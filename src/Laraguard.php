@@ -7,6 +7,7 @@ use S4mpp\Laraguard\Middleware\Page;
 use Illuminate\Support\Facades\Route;
 use S4mpp\Laraguard\Middleware\Panel;
 use S4mpp\Laraguard\Middleware\RestrictedArea;
+use S4mpp\Laraguard\Controllers\StartController;
 use S4mpp\Laraguard\Controllers\SignInController;
 use S4mpp\Laraguard\Controllers\SignUpController;
 use S4mpp\Laraguard\Controllers\SignOutController;
@@ -21,9 +22,9 @@ class Laraguard
 {
 	private static $guards = [];
 
-	public static function guard(string $title, string $slug, string $guard = 'web'): Guard
-	{		
-		$panel = new Guard($title, $slug, $guard);
+	public static function guard(string $title, string $prefix = '', string $guard = 'web'): Guard
+	{
+		$panel = new Guard($title, $prefix, $guard);
 
 		$panel->addPage('My account', 'laraguard::my-account', 'my-account')->hideInMenu();
 		
@@ -84,7 +85,7 @@ class Laraguard
 	
 		Route::prefix($guard->getPrefix())->middleware(Panel::class)->group(function() use ($routes, $guard)
 		{
-			Route::redirect('/', $guard->getPrefix().'/signin');
+			Route::get('/', StartController::class)->name($guard->getRouteName('start'));
 			
 			Route::prefix('/signin')->controller(SignInController::class)->group(function() use ($guard)
 			{
@@ -97,7 +98,9 @@ class Laraguard
 				Route::prefix('signup')->controller(SignUpController::class)->group(function() use ($guard)
 				{
 					Route::get('/', 'index')->name($guard->getRouteName('signup'));
-					Route::post('/createAccount', 'save')->name($guard->getRouteName('create_account'));
+					Route::post('/', 'save')->name($guard->getRouteName('create_account'));
+					
+					Route::get('/user-registered', 'finish')->name($guard->getRouteName('user_registered'));
 				});
 			}
 

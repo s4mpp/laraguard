@@ -17,11 +17,11 @@ class RestrictedArea
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $guard = Laraguard::getGuard($request->get('laraguard_panel'));
+        $panel = Laraguard::getGuard($request->get('laraguard_panel'));
 
-        if(!Auth::guard($guard->getGuardName())->check())
+        if(!Auth::guard($panel->getGuardName())->check())
         {
-            return to_route($guard->getRouteName('login'))->withErrors('You are not logged in');
+            return to_route($panel->getRouteName('login'))->withErrors('You are not logged in');
         }
 
         return $next($request);

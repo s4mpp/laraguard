@@ -28,7 +28,9 @@ class WorkbenchServiceProvider extends ServiceProvider
         $restricted_area->addPage('Withdrawal')->controller(WithdrawalController::class);
         
         
-        Laraguard::guard('My account', 'customer-area', 'customer');
+        $customer_area = Laraguard::guard('My account', 'customer-area', 'customer');
+
+        $customer_area->allowAutoRegister();
     }
 
     /**
