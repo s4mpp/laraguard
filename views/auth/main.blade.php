@@ -17,7 +17,7 @@
 						<p class="text-sm font-medium text-green-800">{{ $value }}</p>
 					</div>
 				@endsession
-			
+
 				@if($errors->any())
 					<div class="rounded-md bg-red-50 p-4">
 						@foreach ($errors->all() as $error)

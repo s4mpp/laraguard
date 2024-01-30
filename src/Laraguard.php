@@ -21,7 +21,7 @@ use S4mpp\Laraguard\Controllers\RecoveryPasswordSolicitationController;
 
 class Laraguard
 {
-	private static $guards = [];
+	private static $panels = [];
 
 	public static function panel(string $title, string $prefix = '', string $guard = 'web'): Panel
 	{
@@ -29,14 +29,14 @@ class Laraguard
 
 		$panel->addPage('My account', 'laraguard::my-account', 'my-account')->hideInMenu();
 		
-		self::$guards[$guard] = $panel;
+		self::$panels[$guard] = $panel;
 
 		return $panel;
 	}
 
 	public static function getGuards(): array
 	{
-		return self::$guards;
+		return self::$panels;
 	}
 
 	public static function getCurrentPanelByRoute(string $route = null): ?Panel
@@ -50,7 +50,7 @@ class Laraguard
 
 	public static function getPanel(string $guard_name): ?Panel
 	{
-		return self::$guards[$guard_name] ?? null;
+		return self::$panels[$guard_name] ?? null;
 	}
 
 	public static function currentPanel()
@@ -84,7 +84,13 @@ class Laraguard
 			return false;
 		}
 	
-		Route::prefix($panel->getPrefix())->middleware(PanelMiddleware::class)->group(function() use ($routes, $panel)
+		Route::prefix($panel->getPrefix())->middleware([
+			PanelMiddleware::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+		])->group(function() use ($routes, $panel)
 		{
 			Route::get('/', StartController::class)->name($panel->getRouteName('start'));
 			
