@@ -2,13 +2,13 @@
 
 namespace S4mpp\Laraguard\Tests\Feature;
 
-use Illuminate\Auth\Notifications\ResetPassword;
 use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Workbench\Database\Factories\UserFactory;
+use S4mpp\Laraguard\Notifications\ResetPassword;
 use Workbench\Database\Factories\CustomerFactory;
 
 class RecoveryPasswordTest extends TestCase
@@ -45,6 +45,10 @@ class RecoveryPasswordTest extends TestCase
 		$response->assertRedirect('/'.$uri.'/password-recovery');
 
 		Notification::assertSentTo([$user], ResetPassword::class);
+
+		$this->assertDatabaseHas('password_reset_tokens', [
+			'email' => $user->email,
+		]);
 	}
 
 	/**
@@ -54,10 +58,12 @@ class RecoveryPasswordTest extends TestCase
 	public function test_request_email_non_existing($guard_name, $uri, $factory)
 	{
 		Notification::fake();
+
+		$email = 'random.'.rand().'.email.com';
 	
 		$this->get('/'.$uri.'/password-recovery');
 		$response = $this->post('/'.$uri.'/password-recovery', [
-			'email' => 'random.'.rand().'.email.com',
+			'email' => $email,
 		]);
 
 		$response->assertSessionHasErrorsIn('default');
@@ -66,6 +72,10 @@ class RecoveryPasswordTest extends TestCase
 		$response->assertRedirect('/'.$uri.'/password-recovery');
 
 		Notification::assertNothingSent();
+
+		$this->assertDatabaseMissing('password_reset_tokens', [
+			'email' => $email,
+		]);
 	}
 
 	/**
@@ -89,6 +99,10 @@ class RecoveryPasswordTest extends TestCase
 		$response->assertRedirect('/'.$another_guard_url.'/password-recovery');
 
 		Notification::assertNothingSent();
+
+		$this->assertDatabaseMissing('password_reset_tokens', [
+			'email' => $user->email,
+		]);
 	}
 
 }

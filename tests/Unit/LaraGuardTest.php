@@ -2,11 +2,11 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
-use S4mpp\Laraguard\Guard;
+use S4mpp\Laraguard\Panel;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Tests\TestCase;
 
-class LaraGuardFactoryTest extends TestCase
+class LaraGuardTest extends TestCase
 {
 	public static function invalidRouteProvider()
 	{
@@ -15,8 +15,6 @@ class LaraGuardFactoryTest extends TestCase
 			'null' => [null]
 		];
 	}
-
-	private $panel;
 
 	public function test_created_instance_factory()
 	{
@@ -28,9 +26,9 @@ class LaraGuardFactoryTest extends TestCase
 
 	public function test_get_panel_by_guard()
 	{
-		$guard_customer = Laraguard::getGuard('customer'); 
+		$guard_customer = Laraguard::getPanel('customer'); 
 		
-		$this->assertInstanceOf(Guard::class, $guard_customer);
+		$this->assertInstanceOf(Panel::class, $guard_customer);
 
 		$this->assertCount(1, $guard_customer->getPages());
 		
@@ -43,9 +41,9 @@ class LaraGuardFactoryTest extends TestCase
 
 	public function test_get_current_guard_by_route()
 	{
-		$current_guard = Laraguard::getCurrentGuardByRoute('lg.web.index');
+		$current_guard = Laraguard::getCurrentPanelByRoute('lg.web.index');
 
-		$this->assertInstanceOf(Guard::class, $current_guard);
+		$this->assertInstanceOf(Panel::class, $current_guard);
 
 		$this->assertCount(6, $current_guard->getPages());
 
@@ -61,9 +59,9 @@ class LaraGuardFactoryTest extends TestCase
 	 */
 	public function test_get_current_guard_invalid_route(string $invalid_route = null)
 	{
-		Laraguard::guard('', '', 'customers');
+		Laraguard::panel('', '', 'customers');
 
-		$current_guard = Laraguard::getCurrentGuardByRoute($invalid_route);
+		$current_guard = Laraguard::getCurrentPanelByRoute($invalid_route);
 
 		$this->assertNull($current_guard);
 	}

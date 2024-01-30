@@ -4,7 +4,7 @@ namespace S4mpp\Laraguard\Tests\Unit;
 
 use Illuminate\Foundation\Auth\User;
 use RuntimeException;
-use S4mpp\Laraguard\Guard;
+use S4mpp\Laraguard\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +24,7 @@ class LoginTest extends TestCase
 			'password' => Hash::make($this->password)
 		]);
 
-		$guard = new Guard('', '', $guard_name);
+		$guard = new Panel('', '', $guard_name);
 
 		$try = $guard->tryLogin($user, $this->password);
 
@@ -40,7 +40,7 @@ class LoginTest extends TestCase
 	{
 		$user = $factory::new()->create();
 
-		$guard = new Guard('', '', $guard_name);
+		$guard = new Panel('', '', $guard_name);
 
 		$try = $guard->tryLogin($user, '12345678');
 
@@ -56,7 +56,7 @@ class LoginTest extends TestCase
 	{
 		$user = $factory::new()->create();
 
-		$guard = new Guard('', '', $guard_name);
+		$guard = new Panel('', '', $guard_name);
 
 		$try = $guard->tryLogin($user, 'another_password');
 
@@ -76,7 +76,7 @@ class LoginTest extends TestCase
 			'password' => Hash::make($password)
 		]);
 
-		$guard = new Guard('', '', $another_guard);
+		$guard = new Panel('', '', $another_guard);
 
 		$try = $guard->tryLogin($user, $password);
 

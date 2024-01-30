@@ -4,7 +4,7 @@ namespace S4mpp\Laraguard\Tests\Unit;
 
 use Illuminate\Foundation\Auth\User;
 use RuntimeException;
-use S4mpp\Laraguard\Guard;
+use S4mpp\Laraguard\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +20,7 @@ class LogoutTest extends TestCase
 	{
 		$user = $factory::new()->create();
 
-		$guard = new Guard('', '', $guard_name);
+		$guard = new Panel('', '', $guard_name);
 		
 		Auth::guard($guard_name)->login($user);
 
@@ -34,7 +34,7 @@ class LogoutTest extends TestCase
 	 */
 	public function test_logout_when_not_logged($guard_name, $uri, $factory)
 	{
-		$guard = new Guard('', '', $guard_name);
+		$guard = new Panel('', '', $guard_name);
 		
 		$guard->logout();
 

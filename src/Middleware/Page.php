@@ -16,9 +16,9 @@ class Page
      */
     public function handle(Request $request, Closure $next): Response
     {
-		$guard = LaraguardBase::getGuard($request->get('laraguard_panel'));
+		$panel = LaraguardBase::getPanel($request->get('laraguard_panel'));
 
-		$page = $guard->getCurrentPageByRoute($request->route()->getAction('as'));
+		$page = $panel->getCurrentPageByRoute($request->route()->getAction('as'));
 
 		if(!$page)
 		{

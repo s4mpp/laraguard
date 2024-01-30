@@ -3,6 +3,7 @@
 use S4mpp\Laraguard\Guard;
 use S4mpp\Laraguard\Laraguard;
 use Illuminate\Support\Facades\Route;
+use S4mpp\Laraguard\Panel;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,9 +25,9 @@ Route::get('/test', function () {
     return 'welcome';
 });
 
-Laraguard::routes('customer', function(Guard $guard)
+Laraguard::routes('customer', function(Panel $panel)
 {
-    Route::get('home', function() use ($guard)
+    Route::get('home', function() use ($panel)
     {
         return 'Logged';
     });

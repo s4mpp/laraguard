@@ -6,9 +6,11 @@ use S4mpp\Laraguard\Laraguard;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Passwords\PasswordBroker;
+use S4mpp\Laraguard\Notifications\ResetPassword;
 use S4mpp\Laraguard\Controllers\LaraguardController;
 use S4mpp\Laraguard\Requests\RecoveryPasswordSolicitationRequest;
+use S4mpp\Laraguard\Notifications\ResetPassword as NotificationsResetPassword;
 
 class RecoveryPasswordController extends Controller
 {
@@ -34,16 +36,9 @@ class RecoveryPasswordController extends Controller
             return redirect()->back()->withErrors('Email/account not found.')->withInput();
         }
 
-        $url = ResetPassword::createUrlUsing(function ($user, string $token) use ($panel)
-        {
-            return route($panel->getRouteName('change_password'), ['token' => $token, 'email' => $user->email]);
-        });
+        $status = $panel->sendLinkRecoveryPassword($user);
 
-        $status = Password::broker($panel->getGuardName())->sendResetLink(
-            $request->only('email')
-        );
-
-        return $status === Password::RESET_LINK_SENT
+        return $status === PasswordBroker::RESET_LINK_SENT
             ? redirect()->back()->withMessage(__($status))
             : back()->withErrors(['email' => [__($status)]])->withInput();
     }

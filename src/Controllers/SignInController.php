@@ -2,7 +2,7 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-use S4mpp\Laraguard\Guard;
+use S4mpp\Laraguard\Panel;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
@@ -21,9 +21,9 @@ class SignInController extends Controller
     
     public function attempt()
     {
-        $guard = Laraguard::currentPanel();
+        $panel = Laraguard::currentPanel();
 
-        $field_username = $guard->getFieldUsername();
+        $field_username = $panel->getFieldUsername();
 
         $field = $field_username['field'];
 
@@ -37,25 +37,25 @@ class SignInController extends Controller
 
         try
         {
-            $username = $validated_input[$guard->getFieldUsername('field')] ?? null;
+            $username = $validated_input[$panel->getFieldUsername('field')] ?? null;
 
-            $model = Auth::guard($guard->getGuardName())->getProvider()->getModel();
+            $model = Auth::guard($panel->getGuardName())->getProvider()->getModel();
 
-            $user = app($model)->where([$guard->getFieldUsername('field') => $username])->first();
+            $user = app($model)->where([$panel->getFieldUsername('field') => $username])->first();
 
             throw_if(!$user, __('laraguard::login.account_not_found'));
 
-            throw_if(!$guard->tryLogin($user, $validated_input['password']), __('laraguard::login.invalid_credentials'));
+            throw_if(!$panel->tryLogin($user, $validated_input['password']), __('laraguard::login.invalid_credentials'));
 
-            throw_if(!$guard->checkIfIsUserIsLogged(), __('laraguard::login.login_failed'));
+            throw_if(!$panel->checkIfIsUserIsLogged(), __('laraguard::login.login_failed'));
                 
-            return to_route($guard->getRouteName('my-account'));
+            return to_route($panel->getRouteName('my-account'));
         }
         catch(\Exception $e)
         {
-            return to_route($guard->getRouteName('login'))
+            return to_route($panel->getRouteName('login'))
                 ->withErrors($e->getMessage())
-                ->withInput([$guard->getFieldUsername('field') => $username]);
+                ->withInput([$panel->getFieldUsername('field') => $username]);
         }
     }
 }

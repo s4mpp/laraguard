@@ -19,7 +19,7 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $restricted_area = Laraguard::guard('Restricted area', 'restricted-area'); // web
+        $restricted_area = Laraguard::panel('Restricted area', 'restricted-area'); // web
         
         $restricted_area->addPage('Dashboard', null, 'home');
         $restricted_area->addPage('Orders', 'orders');
@@ -28,7 +28,7 @@ class WorkbenchServiceProvider extends ServiceProvider
         $restricted_area->addPage('Withdrawal')->controller(WithdrawalController::class);
         
         
-        $customer_area = Laraguard::guard('My account', 'customer-area', 'customer');
+        $customer_area = Laraguard::panel('My account', 'customer-area', 'customer');
 
         $customer_area->allowAutoRegister();
     }

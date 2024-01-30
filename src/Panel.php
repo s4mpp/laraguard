@@ -4,11 +4,16 @@ namespace S4mpp\Laraguard;
 
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Hash;
 use S4mpp\Laraguard\Navigation\Page;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Password;
 use S4mpp\Laraguard\Navigation\MenuItem;
+use Illuminate\Auth\Passwords\PasswordBroker;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use S4mpp\Laraguard\Notifications\ResetPassword;
 
-final class Guard
+final class Panel
 {
 	private $field_username = ['field' => 'email', 'title' => 'E-mail'];
 
@@ -166,5 +171,31 @@ final class Guard
 		}
 
 		return $menu ?? [];
+	}
+
+	public function sendLinkRecoveryPassword(User $user)
+	{
+		return Password::broker($this->getGuardName())->sendResetLink(['email' => $user->email], function($user, $token)
+        {
+            $url = route($this->getRouteName('change_password'), ['token' => $token, 'email' => $user->email]);
+
+            $user->notify(new ResetPassword($url));
+
+            return PasswordBroker::RESET_LINK_SENT;
+        });
+	}
+
+	public function resetPassword(User $user, string $token, string $new_password)
+	{
+		return Password::broker($this->getGuardName())->reset([
+			'email' => $user->email,
+			'token' => $token,
+			'password' => $new_password,
+		], function (User $user, string $password)
+        {
+            $user->forceFill([
+                'password' => Hash::make($password)
+            ])->save();
+        });
 	}
 }

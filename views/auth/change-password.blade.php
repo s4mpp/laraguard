@@ -8,7 +8,7 @@
 	</div>
 
 
-	<form  method="POST" action="{{ route($guard->getRouteName('store_password'), ['token' => $token]) }}">
+	<form  method="POST" action="{{ route($panel->getRouteName('store_password'), ['token' => $token]) }}">
 		@csrf
 		@method('PUT')
 		
@@ -56,7 +56,7 @@
 		</div>
 
 		<p class="mt-10 text-center text-sm text-gray-500">
-			<a tabindex="-1" href="{{route($guard->getRouteName('login')) }}" class="font-semibold leading-6 text-gray-600 hover:text-gray-500">Go back</a>
+			<a tabindex="-1" href="{{route($panel->getRouteName('login')) }}" class="font-semibold leading-6 text-gray-600 hover:text-gray-500">Go back</a>
 		</p>
 
 	</form>

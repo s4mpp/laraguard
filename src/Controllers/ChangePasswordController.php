@@ -2,7 +2,7 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-
+use Illuminate\Auth\Passwords\PasswordBroker;
 use S4mpp\Laraguard\Laraguard;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -26,9 +26,9 @@ class ChangePasswordController extends Controller
 
         $page_title = 'Alterar senha';
 
-        $guard_title = $panel->getTitle();
+        $panel_title = $panel->getTitle();
 
-        return view('laraguard::change-password', compact('guard', 'user', 'token', 'guard_title', 'page_title'));
+        return view('laraguard::auth.change-password', compact('panel', 'user', 'token', 'panel_title', 'page_title'));
     }
 
     public function storePassword(RecoveryPasswordChangeRequest $request)
@@ -41,15 +41,10 @@ class ChangePasswordController extends Controller
         {
             return to_route($panel->getRouteName('recovery_password'))->withErrors('Invalid token');
         }
+
+        $status = $panel->resetPassword($user, $request->get('token'), $request->get('password'));
         
-        $status = Password::broker($panel->getGuardName())->reset($request->only('email', 'password', 'password_confirmation', 'token'), function (CanResetPassword $user, string $password)
-        {
-            $user->forceFill([
-                'password' => Hash::make($password)
-            ])->save();
-        });        
-        
-        return $status === Password::PASSWORD_RESET
+        return $status === PasswordBroker::PASSWORD_RESET
             ? redirect()->route($panel->getRouteName('login'))->withMessage(__($status))->withInput(['email' => $user->email])
             : back()->withErrors(__('passwords.user'));
     }

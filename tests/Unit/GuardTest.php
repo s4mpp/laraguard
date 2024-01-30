@@ -2,7 +2,7 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
-use S4mpp\Laraguard\Guard;
+use S4mpp\Laraguard\Panel;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Tests\TestCase;
 
@@ -14,7 +14,7 @@ class GuardTest extends TestCase
 	{
 		parent::setUp();
 
-		$this->panel = new Guard('Panel title', 'panel-prefix', 'administrator');
+		$this->panel = new Panel('Panel title', 'panel-prefix', 'administrator');
 	}
 
 	public function test_create_instance()
@@ -46,7 +46,7 @@ class GuardTest extends TestCase
 	{
 		$current_panel = $this->panel->allowAutoRegister();
 
-		$this->assertInstanceOf(Guard::class, $current_panel);
+		$this->assertInstanceOf(Panel::class, $current_panel);
 
 		$this->assertTrue($this->panel->hasAutoRegister());
 	}

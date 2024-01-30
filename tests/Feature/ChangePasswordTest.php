@@ -2,13 +2,15 @@
 
 namespace S4mpp\Laraguard\Tests\Feature;
 
-use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\DB;
 use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Notification;
 use Workbench\Database\Factories\UserFactory;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Workbench\Database\Factories\CustomerFactory;
 
 class ChangePasswordTest extends TestCase
@@ -28,6 +30,57 @@ class ChangePasswordTest extends TestCase
 			'Password confirmation empty' => ['password_confirmation', ''],
 			'Password confirmation small' => ['password_confirmation', '123'],
 		];
+	}
+
+	/**
+	 *
+	 * @dataProvider guardProvider
+	 */
+	public function test_index_page($guard_name, $uri, $factory)
+	{
+		$user = $factory::new()->create();
+
+		$token = Password::broker($guard_name)->createToken($user);
+
+		$response = $this->get('/'.$uri.'/password-recovery/change/'.$token.'?email='.$user->email);
+
+		$response->assertStatus(200);
+	}
+
+
+	/**
+	 *
+	 * @dataProvider guardProvider
+	 */
+	public function test_change_password($guard_name, $uri, $factory)
+	{
+		$old_password = 'p4ssword';
+		$new_password = '789456123';
+
+		$user = $factory::new(['password' => Hash::make($old_password)])->create();
+
+		$token = Password::broker($guard_name)->createToken($user);
+
+		$response = $this->put('/'.$uri.'/password-recovery/change', [
+			'email' => $user->email,
+			'token' => $token,
+			'password' => $new_password,
+			'password_confirmation' => $new_password,
+		]);
+
+		$response->assertStatus(302);
+		$response->assertSessionHasNoErrors();
+		$response->assertRedirect('/'.$uri.'/signin');
+
+		$user->refresh();
+
+		$this->assertFalse(Hash::check($old_password, $user->password));
+		
+		$this->assertTrue(Hash::check($new_password, $user->password));
+
+		$this->assertDatabaseMissing('password_reset_tokens', [
+			'email' => $user->email,
+		]);
 	}
 
 	/**

@@ -16,15 +16,15 @@ class Panel
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $guard = Laraguard::getCurrentGuardByRoute($request->route()->getAction('as'));
+        $panel = Laraguard::getCurrentPanelByRoute($request->route()->getAction('as'));
 
-		if(!$guard)
+		if(!$panel)
 		{
 			abort(404);
 		}
 
 		$request->merge([
-			'laraguard_panel' => $guard->getGuardName()
+			'laraguard_panel' => $panel->getGuardName()
 		]);
 
         return $next($request);
