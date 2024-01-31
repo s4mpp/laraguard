@@ -1,6 +1,6 @@
 <?php
 
-namespace S4mpp\Laraguard\Navigation;
+namespace S4mpp\Laraguard\Base;
 
 use S4mpp\Laraguard\Traits\TitleSluggable;
 use S4mpp\Laraguard\Controllers\PageController;
@@ -9,43 +9,46 @@ final class Page
 {	
 	use TitleSluggable;
 
-	private string $controller = PageController::class;
+	// private string $controller = PageController::class;
 
 	private ?string $method = null;
+	
+	private ?string $view = null;
 
-	private bool $show_in_menu = true;
+	// private bool $show_in_menu = true;
 
-	public function __construct(private string $title, private ?string $view = null, string $slug = null)
+	public function __construct(private string $title, private string $uri, string $slug)
 	{
-		$this->slug = $slug;
+		$this->setSlug($slug);
 
 		return $this;
 	}
+	
 
-	public function controller(string $controller, string $method = null)
+	// public function controller(string $controller, string $method = null)
+	// {
+	// 	$this->controller = $controller;
+
+	// 	$this->method = $method;
+
+	// 	return $this;
+	// }
+
+	// public function hideInMenu()
+	// {
+	// 	$this->show_in_menu = false;
+
+	// 	return $this;
+	// }
+
+	// public function canShowInMenu(): bool
+	// {
+	// 	return $this->show_in_menu;
+	// }
+
+	public function getMethod(): ?string
 	{
-		$this->controller = $controller;
-
-		$this->method = $method;
-
-		return $this;
-	}
-
-	public function hideInMenu()
-	{
-		$this->show_in_menu = false;
-
-		return $this;
-	}
-
-	public function canShowInMenu(): bool
-	{
-		return $this->show_in_menu;
-	}
-
-	public function getAction()
-	{
-		return $this->method ? [$this->controller, $this->method] : $this->controller;
+		return $this->method;
 	}
 
 	public function getView(): ?string
@@ -57,9 +60,11 @@ final class Page
 	{
 		$file = $file ?? $this->getView() ?? 'laraguard::blank';
 
+		$title = $this->getTitle();
+
 		$data['home_url'] = $data['my_account_url'];
 
-		$data['page_title'] = $this->getTitle();
+		$data['page_title'] = !empty($title) ? $title : $data['module_title'];
 
 		return view($file, $data);
 	}

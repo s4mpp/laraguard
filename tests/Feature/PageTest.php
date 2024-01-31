@@ -13,7 +13,7 @@ class PageTest extends TestCase
 	public static function routeIndexProvider()
 	{
 		return [
-			'my-account' => ['/restricted-area/my-account', 200],
+			'my-account' => ['/restricted-area/my-account/index', 200],
 			'non_existent_page' => ['/restricted-area/xxx', 404],
 		];
 	}

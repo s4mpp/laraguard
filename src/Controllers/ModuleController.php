@@ -7,7 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
 
-class PageController extends Controller
+class ModuleController extends Controller
 {
     public function __invoke()
     {

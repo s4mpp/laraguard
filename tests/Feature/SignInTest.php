@@ -51,7 +51,7 @@ class SignInTest extends TestCase
 		$response->assertSessionHasNoErrors();
 
 		$response->assertStatus(302);
-		$response->assertRedirectContains('my-account');
+		$response->assertRedirectContains('my-account/index');
 
 		$this->assertAuthenticatedAs($user, $guard_name);
 		$this->assertNull(Auth::guard($another_guard)->user());
@@ -170,7 +170,7 @@ class SignInTest extends TestCase
 	{
 		$user = $factory::new()->create();
 
-		$response = $this->actingAs($user, $guard_name)->get('/'.$uri.'/my-account');
+		$response = $this->actingAs($user, $guard_name)->get('/'.$uri.'/my-account/index');
 
 		$response->assertStatus(200);
 	}
@@ -181,7 +181,7 @@ class SignInTest extends TestCase
 	 */
 	public function test_access_restricted_area_not_logged($guard_name, $uri)
 	{
-		$response = $this->get('/'.$uri.'/my-account');
+		$response = $this->get('/'.$uri.'/my-account/index');
 
 		$response->assertStatus(302);
 		$response->assertSessionHasErrorsIn('default');
@@ -197,7 +197,7 @@ class SignInTest extends TestCase
 	{
 		$user = $factory::new()->create();
 
-		$response = $this->actingAs($user, $guard_name)->get('/'.$another_guard_url.'/my-account');
+		$response = $this->actingAs($user, $guard_name)->get('/'.$another_guard_url.'/my-account/index');
 
 		$response->assertStatus(302);
 		$response->assertSessionHasErrorsIn('default');

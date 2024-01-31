@@ -2,14 +2,14 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
-use Illuminate\Foundation\Auth\User;
 use RuntimeException;
-use S4mpp\Laraguard\Panel;
+use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Workbench\Database\Factories\CustomerFactory;
 use Workbench\Database\Factories\UserFactory;
+use Workbench\Database\Factories\CustomerFactory;
 
 class LogoutTest extends TestCase
 {	

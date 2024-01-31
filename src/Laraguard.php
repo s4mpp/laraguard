@@ -3,9 +3,10 @@
 namespace S4mpp\Laraguard;
 
 use Closure;
-use S4mpp\Laraguard\Panel;
+use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Middleware\Page;
 use Illuminate\Support\Facades\Route;
+use S4mpp\Laraguard\Middleware\Module;
 use S4mpp\Laraguard\Middleware\RestrictedArea;
 use S4mpp\Laraguard\Controllers\StartController;
 use S4mpp\Laraguard\Controllers\SignInController;
@@ -27,7 +28,7 @@ class Laraguard
 	{
 		$panel = new Panel($title, $prefix, $guard);
 
-		$panel->addPage('My account', 'laraguard::my-account', 'my-account')->hideInMenu();
+		$panel->addModule('My account', 'my-account')->hideInMenu();
 		
 		self::$panels[$guard] = $panel;
 
@@ -39,13 +40,16 @@ class Laraguard
 		return self::$panels;
 	}
 
+	/**
+	 * @todo move to Utils
+	 */
 	public static function getCurrentPanelByRoute(string $route = null): ?Panel
     {
         $path_steps = explode('.', $route);
 
 		$guard_name = $path_steps[1] ?? null;
 
-		return self::getPanel($guard_name ?? '');
+		return self::$panels[$guard_name] ?? null;
     }
 
 	public static function getPanel(string $guard_name): ?Panel
@@ -128,18 +132,25 @@ class Laraguard
 
 			Route::middleware(RestrictedArea::class)->group(function() use ($routes, $panel)
 			{
-				Route::middleware('web')->group(function() use ($routes, $panel)
-				{
-					return (is_callable($routes)) ? call_user_func($routes, $panel) : null;
-				});
+				// Route::middleware('web')->group(function() use ($routes, $panel)
+				// {
+				// 	return (is_callable($routes)) ? call_user_func($routes, $panel) : null;
+				// });
 
-				Route::middleware(Page::class)->group(function() use ($panel)
+				foreach($panel->getModules() as $module)
 				{
-					foreach($panel->getPages() as $page)
+					Route::prefix($module->getSlug())->group(function() use ($module, $panel)
 					{
-						Route::get($page->getSlug(), $page->getAction())->name($panel->getRouteName($page->getSlug()));
-					}
-				});
+						$controller = $module->getController();
+						
+						foreach($module->getPages() as $page)
+						{
+							$action = ($method = $page->getMethod()) ? [$controller, $method] : $controller;
+
+							Route::middleware(Page::class)->get($page->getSlug(), $action)->name($panel->getRouteName($module->getSlug(), $page->getSlug()));
+						}
+					});
+				}
 					
 				Route::get('/signout', SignOutController::class)->name($panel->getRouteName('signout'));
 			});

@@ -2,6 +2,7 @@
 
 namespace Workbench\App\Providers;
 
+use FinanceController;
 use S4mpp\Laraguard\Laraguard;
 use Workbench\App\Models\User;
 use Workbench\App\Models\Customer;
@@ -20,12 +21,18 @@ class WorkbenchServiceProvider extends ServiceProvider
     public function register(): void
     {
         $restricted_area = Laraguard::panel('Restricted area', 'restricted-area'); // web
+
+        $restricted_area->addModule('Dashboard', 'home');
         
-        $restricted_area->addPage('Dashboard', null, 'home');
-        $restricted_area->addPage('Orders', 'orders');
-        $restricted_area->addPage('Team')->controller(TeamController::class);
-        $restricted_area->addPage('Extract', 'extract')->controller(ExtractController::class);
-        $restricted_area->addPage('Withdrawal')->controller(WithdrawalController::class);
+        $finances_module = $restricted_area->addModule('Finances', 'finances');
+        $finances_module->addPage('Incomes');
+        $finances_module->addPage('Expenses');
+        
+        $restricted_area->addModule('Orders', 'orders');
+        $restricted_area->addModule('Team')->controller(TeamController::class);
+        $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class);
+        $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class);
+        
         
         
         $customer_area = Laraguard::panel('My account', 'customer-area', 'customer');

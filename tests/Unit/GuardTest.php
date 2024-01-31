@@ -2,8 +2,8 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
-use S4mpp\Laraguard\Panel;
 use S4mpp\Laraguard\Laraguard;
+use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 
 class GuardTest extends TestCase
@@ -19,7 +19,7 @@ class GuardTest extends TestCase
 
 	public function test_create_instance()
 	{
-		$this->assertCount(0, $this->panel->getPages());
+		$this->assertCount(0, $this->panel->getModules());
 
 		$this->assertSame('Panel title', $this->panel->getTitle());
 		$this->assertSame('administrator', $this->panel->getGuardName());

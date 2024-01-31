@@ -1,7 +1,8 @@
 <?php
 
-namespace S4mpp\Laraguard;
+namespace S4mpp\Laraguard\Base;
 
+use S4mpp\Laraguard\Base\Module;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,7 @@ final class Panel
 
 	private bool $allow_auto_register = false;
 
-	private $pages = [];
+	private array $modules = [];
 
 	public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
 	{}
@@ -39,9 +40,9 @@ final class Panel
 		return $this->prefix;
 	}
 
-	public function getRouteName(string $page): string
+	public function getRouteName(string ...$path): string
 	{
-		return 'lg.'.$this->getGuardName().'.'.$page;
+		return 'lg.'.$this->getGuardName().'.'.join('.', $path);
 	}
 
 	public function allowAutoRegister()
@@ -101,47 +102,53 @@ final class Panel
 		return !$this->checkIfIsUserIsLogged();
 	}
 
-	public function currentPage()
+	public function addModule(string $title, string $slug = null)
 	{
-		return $this->getPage(request()->get('laraguard_page'));
-	}
-
-	public function addPage(string $title_or_page, string $view = null, string $slug = null)
-	{
-		$page = new Page($title_or_page, $view, $slug);
+		$module = new Module($title, $slug);
 		
-		$this->pages[$page->getSlug()] = $page;
+		$this->modules[$module->getSlug()] = $module;
 
-		return $page;
+		return $module;
 	}
 
-	public function getPages(): array
+	public function getModules(): array
 	{
-		return $this->pages;
+		return $this->modules;
 	}
 
-	public function getCurrentPageByRoute(string $route = null): ?Page
+	public function currentModule()
+	{
+		return $this->getModule(request()->get('laraguard_module'));
+	}
+
+	public function getModule(string $module_name = null): ?Module
+	{
+		return $this->modules[$module_name] ?? null;
+	}
+
+	/**
+	 * @todo move to Utils
+	 */
+	public function getCurrentModuleByRoute(string $route = null): ?Module
 	{
 		$path_steps = explode('.', $route);
 		
-		$page_name = $path_steps[2] ?? null;
-
-		return $this->getPage($page_name);
-	}
-
-	public function getPage(string $page_name): ?Page
-	{
-		return $this->pages[$page_name] ?? null;
+		$module_name = $path_steps[2] ?? null;
+		
+		return $this->modules[$module_name] ?? null;
 	}
 
 	public function getLayout(string $file = null, array $data = [])
-	{
-		return $this->currentPage()->render($file, array_merge($data, [
+	{	
+		$module = $this->currentModule();
+
+		return $module->currentPage()->render($file, array_merge([
 			'guard_name' => $this->getGuardName(),
 			'panel_title' => $this->getTitle(),
 			'menu' => $this->getMenu(),
-			'my_account_url' => route($this->getRouteName('my-account')),
+			'my_account_url' => route($this->getRouteName('my-account', 'index')),
 			'logout_url' => route($this->getRouteName('signout')),
+			'module_title' => $module->getTitle(),
 		]));
 	}
 
@@ -149,25 +156,26 @@ final class Panel
 	{
 		$current_route = request()->route()->getAction('as');
 
-		foreach($this->pages as $page)
+		foreach($this->getModules() as $module)
 		{
-			if(!$page->canShowInMenu())
+			if(!$module->canShowInMenu())
 			{
 				continue;
 			}
 
-			$menu_item = (new MenuItem($page->getTitle(), $page->getSlug()));
+			$menu_item = (new MenuItem($module->getTitle(), $module->getSlug()));
 
-			$page_route = $this->getRouteName($page->getSlug());
+			$module_route = $this->getRouteName($module->getSlug(), 'index');
 			
-			$menu_item->setAction(route($page_route));
+			$menu_item->setAction(route($module_route));
 
-			if($current_route == $page_route)
+			if($current_route == $module_route)
 			{
 				$menu_item->activate();
 			}
 			
 			$menu[] = $menu_item;
+			
 		}
 
 		return $menu ?? [];

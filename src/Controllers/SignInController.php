@@ -49,7 +49,7 @@ class SignInController extends Controller
 
             throw_if(!$panel->checkIfIsUserIsLogged(), __('laraguard::login.login_failed'));
                 
-            return to_route($panel->getRouteName('my-account'));
+            return to_route($panel->getRouteName('my-account', 'index'));
         }
         catch(\Exception $e)
         {

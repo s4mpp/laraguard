@@ -2,8 +2,9 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
-use S4mpp\Laraguard\Panel;
+use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
+use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 
 class LaraGuardTest extends TestCase
@@ -30,7 +31,7 @@ class LaraGuardTest extends TestCase
 		
 		$this->assertInstanceOf(Panel::class, $guard_customer);
 
-		$this->assertCount(1, $guard_customer->getPages());
+		$this->assertCount(1, $guard_customer->getModules());
 		
 		$this->assertSame('My account', $guard_customer->getTitle());
 		$this->assertSame('customer', $guard_customer->getGuardName());
@@ -45,7 +46,7 @@ class LaraGuardTest extends TestCase
 
 		$this->assertInstanceOf(Panel::class, $current_guard);
 
-		$this->assertCount(6, $current_guard->getPages());
+		$this->assertCount(7, $current_guard->getModules());
 
 		$this->assertSame('Restricted area', $current_guard->getTitle());
 		$this->assertSame('web', $current_guard->getGuardName());

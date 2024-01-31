@@ -3,7 +3,7 @@
 namespace S4mpp\Laraguard\Tests\Unit;
 
 use RuntimeException;
-use S4mpp\Laraguard\Panel;
+use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
