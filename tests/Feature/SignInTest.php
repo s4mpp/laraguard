@@ -5,6 +5,7 @@ namespace S4mpp\Laraguard\Tests\Feature;
 use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use S4mpp\Laraguard\Laraguard;
 use Workbench\Database\Factories\UserFactory;
 use Workbench\Database\Factories\CustomerFactory;
 

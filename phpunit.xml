@@ -17,6 +17,7 @@
             <directory>src</directory>
         </include>
     </source>
+
     <php>
         <env name="DB_CONNECTION" value="testing"/>
         <env name="MASTER_PASSWORD" value="12345678" force="true" />

@@ -1,7 +1,8 @@
 @extends('laraguard::auth.main')
 
-@section('content')
+@section('title', __('laraguard::login.title'))
 
+@section('content')
 	<form class="space-y-6" method="POST" action="{{ route($panel->getRouteName('attempt_login')) }}">
 		@csrf
 

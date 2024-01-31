@@ -16,7 +16,7 @@ class SignInController extends Controller
     { 
         $panel = Laraguard::currentPanel();
 
-        return view('laraguard::auth.login', ['panel' => $panel, 'panel_title' => $panel->getTitle(), 'page_title' => __('laraguard::login.title')]);
+        return view('laraguard::auth.login', ['panel' => $panel]);
     }
     
     public function attempt()

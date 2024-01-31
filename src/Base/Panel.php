@@ -143,8 +143,8 @@ final class Panel
 		$module = $this->currentModule();
 
 		return $module->currentPage()->render($file, array_merge([
+			'panel' => $this,
 			'guard_name' => $this->getGuardName(),
-			'panel_title' => $this->getTitle(),
 			'menu' => $this->getMenu(),
 			'my_account_url' => route($this->getRouteName('my-account', 'index')),
 			'logout_url' => route($this->getRouteName('signout')),

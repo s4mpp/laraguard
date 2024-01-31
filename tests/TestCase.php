@@ -7,10 +7,12 @@ use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Workbench\Database\Factories\CustomerFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 
 abstract class TestCase extends BaseTestCase
 {
-    use WithWorkbench, RefreshDatabase;
+    use WithWorkbench, InteractsWithViews;
+	use RefreshDatabase;
 
     public static function guardProvider()
 	{
