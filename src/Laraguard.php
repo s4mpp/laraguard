@@ -27,8 +27,6 @@ class Laraguard
 	public static function panel(string $title, string $prefix = '', string $guard = 'web'): Panel
 	{
 		$panel = new Panel($title, $prefix, $guard);
-
-		$panel->addModule('My account', 'my-account')->hideInMenu();
 		
 		self::$panels[$guard] = $panel;
 
@@ -79,7 +77,7 @@ class Laraguard
 
 
 
-	public static function routes(string $guard_name = 'web', Closure $routes = null)
+	public static function routes(string $guard_name = 'web')
 	{
 		$panel = self::getPanel($guard_name);
 
@@ -94,7 +92,7 @@ class Laraguard
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-		])->group(function() use ($routes, $panel)
+		])->group(function() use ($panel)
 		{
 			Route::get('/', StartController::class)->name($panel->getRouteName('start'));
 			
@@ -130,13 +128,8 @@ class Laraguard
 				});
 			});
 
-			Route::middleware(RestrictedArea::class)->group(function() use ($routes, $panel)
+			Route::middleware(RestrictedArea::class)->group(function() use ($panel)
 			{
-				// Route::middleware('web')->group(function() use ($routes, $panel)
-				// {
-				// 	return (is_callable($routes)) ? call_user_func($routes, $panel) : null;
-				// });
-
 				foreach($panel->getModules() as $module)
 				{
 					Route::prefix($module->getSlug())->group(function() use ($module, $panel)
@@ -147,7 +140,7 @@ class Laraguard
 						{
 							$action = ($method = $page->getMethod()) ? [$controller, $method] : $controller;
 
-							Route::middleware(Page::class)->get($page->getSlug(), $action)->name($panel->getRouteName($module->getSlug(), $page->getSlug()));
+							Route::middleware(Page::class)->get($page->getUri(), $action)->name($panel->getRouteName($module->getSlug(), $page->getSlug()));
 						}
 					});
 				}

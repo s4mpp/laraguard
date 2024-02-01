@@ -19,7 +19,7 @@ class GuardTest extends TestCase
 
 	public function test_create_instance()
 	{
-		$this->assertCount(0, $this->panel->getModules());
+		$this->assertCount(1, $this->panel->getModules());
 
 		$this->assertSame('Panel title', $this->panel->getTitle());
 		$this->assertSame('administrator', $this->panel->getGuardName());

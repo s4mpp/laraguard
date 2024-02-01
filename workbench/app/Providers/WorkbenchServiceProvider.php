@@ -22,22 +22,18 @@ class WorkbenchServiceProvider extends ServiceProvider
     {
         $restricted_area = Laraguard::panel('Restricted area', 'restricted-area'); // web
 
-        $restricted_area->addModule('Dashboard', 'home');
+        $restricted_area->addModule('Dashboard', 'home')->withIndex();
         
-        $finances_module = $restricted_area->addModule('Finances', 'finances');
-        $finances_module->addPage('Incomes');
-        $finances_module->addPage('Expenses');
+        $finances_module = $restricted_area->addModule('Finances', 'finances')->withIndex();
+        $finances_module->addPage('Report');
         
-        $restricted_area->addModule('Orders', 'orders');
-        $restricted_area->addModule('Team')->controller(TeamController::class);
-        $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class);
-        $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class);
+        $restricted_area->addModule('Orders', 'orders')->withIndex();
+        $restricted_area->addModule('Team')->controller(TeamController::class)->withIndex();
+        $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class)->withIndex();
+        $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class)->withIndex();
+            
         
-        
-        
-        $customer_area = Laraguard::panel('My account', 'customer-area', 'customer');
-
-        $customer_area->allowAutoRegister();
+        Laraguard::panel('My account', 'customer-area', 'customer')->allowAutoRegister();
     }
 
     /**

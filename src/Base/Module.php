@@ -20,8 +20,16 @@ final class Module
 	public function __construct(private string $title, string $slug = null)
 	{
 		$this->setSlug($slug);
-
-		$this->addPage('', '', 'index');
+	}
+	
+	public function withIndex(string $view = null): Module
+	{
+		$index = $this->addPage('', '/', 'index');
+		
+		if($view)
+		{
+			$index->view($view);
+		}
 
 		return $this;
 	}
@@ -42,9 +50,9 @@ final class Module
 	{
 		$uri = ($uri ?? Str::slug($title));
 
-		$slug = ($slug ?? $uri);
+		$slug = ($slug ?? Str::slug($title));
 
-		$page = new Page($title, $uri, $slug);
+		$page = (new Page($title, $slug))->uri($uri);
 		
 		$this->pages[$page->getSlug()] = $page;
 

@@ -23,7 +23,9 @@ final class Panel
 	private array $modules = [];
 
 	public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
-	{}
+	{
+		$this->addModule('My account', 'my-account')->hideInMenu()->withIndex('laraguard::my-account');
+	}
 
 	public function getTitle(): string
 	{
@@ -167,15 +169,16 @@ final class Panel
 
 			$module_route = $this->getRouteName($module->getSlug(), 'index');
 			
+			$module_route_prefix = $this->getRouteName($module->getSlug());
+			
 			$menu_item->setAction(route($module_route));
 
-			if($current_route == $module_route)
+			if(strpos($current_route, $module_route_prefix) !== false)
 			{
 				$menu_item->activate();
 			}
 			
 			$menu[] = $menu_item;
-			
 		}
 
 		return $menu ?? [];

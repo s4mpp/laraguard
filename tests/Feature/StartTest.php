@@ -21,7 +21,7 @@ class StartTest extends TestCase
 		$response = $this->actingAs($user, $guard_name)->get($uri);
 
 		$response->assertStatus(302);
-		$response->assertRedirect($uri.'/my-account/index');
+		$response->assertRedirect($uri.'/my-account');
 	}
 
 	/**

@@ -14,15 +14,37 @@ final class Page
 	private ?string $method = null;
 	
 	private ?string $view = null;
+	
+	private ?string $uri = null;
 
 	// private bool $show_in_menu = true;
 
-	public function __construct(private string $title, private string $uri, string $slug)
+	public function __construct(private string $title, string $slug = null)
 	{
 		$this->setSlug($slug);
+	}
+
+	public function uri(string $uri)
+	{
+		$this->uri = $uri;
 
 		return $this;
 	}
+
+	public function view(string $view)
+	{
+		$this->view = $view;
+
+		return $this;
+	}
+
+	public function method(string $method = null)
+	{
+		$this->method = $method;
+
+		return $this;
+	}
+
 	
 
 	// public function controller(string $controller, string $method = null)
@@ -54,6 +76,11 @@ final class Page
 	public function getView(): ?string
 	{
 		return $this->view;
+	}
+
+	public function getUri(): ?string
+	{
+		return $this->uri;
 	}
 
 	public function render(string $file = null, array $data = [])
