@@ -8,10 +8,12 @@ use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use S4mpp\Laraguard\Navigation\MenuItem;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Auth\Passwords\PasswordBroker;
+use Illuminate\Notifications\Messages\MailMessage;
 use Workbench\Database\Factories\UserFactory;
 use S4mpp\Laraguard\Notifications\ResetPassword;
 use Workbench\Database\Factories\CustomerFactory;
@@ -33,11 +35,11 @@ class PasswordRecoveryTest extends TestCase
 
 		$this->assertSame($status, PasswordBroker::RESET_LINK_SENT);
 
-		Notification::assertSentTo([$user], ResetPassword::class);
-
 		$this->assertDatabaseHas('password_reset_tokens', [
 			'email' => $user->email,
 		]);
+		
+		Notification::assertSentTo([$user], ResetPassword::class);
 	}
 
 

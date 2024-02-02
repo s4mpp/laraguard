@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use S4mpp\Laraguard\Middleware\Module;
 use S4mpp\Laraguard\Middleware\RestrictedArea;
 use S4mpp\Laraguard\Controllers\StartController;
+use S4mpp\Laraguard\Controllers\ModuleController;
 use S4mpp\Laraguard\Controllers\SignInController;
 use S4mpp\Laraguard\Controllers\SignUpController;
 use S4mpp\Laraguard\Controllers\SignOutController;
@@ -33,22 +34,10 @@ class Laraguard
 		return $panel;
 	}
 
-	public static function getGuards(): array
+	public static function getPanels(): array
 	{
 		return self::$panels;
 	}
-
-	/**
-	 * @todo move to Utils
-	 */
-	public static function getCurrentPanelByRoute(string $route = null): ?Panel
-    {
-        $path_steps = explode('.', $route);
-
-		$guard_name = $path_steps[1] ?? null;
-
-		return self::$panels[$guard_name] ?? null;
-    }
 
 	public static function getPanel(string $guard_name): ?Panel
 	{
@@ -57,13 +46,16 @@ class Laraguard
 
 	public static function currentPanel()
 	{
-		return self::getPanel(request()->get('laraguard_panel'));
+		$route_segment = Utils::getSegmentRouteName(1, request()->route()->getAction('as'));
+
+		return self::getPanel($route_segment);
 	}
 
-	public static function layout(string $file = null, array $data = [])
+	public static function layout(string $view = null, array $data = [])
 	{
-		return self::currentPanel()->getLayout($file, $data);
+		return self::currentPanel()->getLayout($view, $data);
 	}
+
 
 	
 
@@ -87,7 +79,6 @@ class Laraguard
 		}
 	
 		Route::prefix($panel->getPrefix())->middleware([
-			PanelMiddleware::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
@@ -138,9 +129,18 @@ class Laraguard
 						
 						foreach($module->getPages() as $page)
 						{
-							$action = ($method = $page->getMethod()) ? [$controller, $method] : $controller;
+							if($page->isIndex())
+							{
+								$action = $controller ?? ModuleController::class;;
+							}
+							else
+							{
+								$method = $page->getMethod();
 
-							Route::middleware(Page::class)->get($page->getUri(), $action)->name($panel->getRouteName($module->getSlug(), $page->getSlug()));
+								$action = ($controller && $method) ? [$controller, $method] : ModuleController::class;
+							}
+
+							Route::get($page->getUri(), $action)->name($panel->getRouteName($module->getSlug(), $page->getSlug()));
 						}
 					});
 				}

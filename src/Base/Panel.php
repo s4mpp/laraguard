@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Base;
 
+use S4mpp\Laraguard\Utils;
 use S4mpp\Laraguard\Base\Module;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,7 @@ final class Panel
 
 	public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
 	{
-		$this->addModule('My account', 'my-account')->hideInMenu()->withIndex('laraguard::my-account');
+		$this->addModule('My account', 'my-account')->hideInMenu()->addIndex('laraguard::my-account');
 	}
 
 	public function getTitle(): string
@@ -120,7 +121,9 @@ final class Panel
 
 	public function currentModule()
 	{
-		return $this->getModule(request()->get('laraguard_module'));
+		$route_segment = Utils::getSegmentRouteName(2,  request()->route()->getAction('as'));
+
+		return $this->getModule($route_segment);
 	}
 
 	public function getModule(string $module_name = null): ?Module
@@ -128,23 +131,12 @@ final class Panel
 		return $this->modules[$module_name] ?? null;
 	}
 
-	/**
-	 * @todo move to Utils
-	 */
-	public function getCurrentModuleByRoute(string $route = null): ?Module
-	{
-		$path_steps = explode('.', $route);
-		
-		$module_name = $path_steps[2] ?? null;
-		
-		return $this->modules[$module_name] ?? null;
-	}
 
-	public function getLayout(string $file = null, array $data = [])
+	public function getLayout(string $view = null, array $data = [])
 	{	
 		$module = $this->currentModule();
 
-		return $module->currentPage()->render($file, array_merge([
+		return $module->currentPage()->render($view, array_merge($data, [
 			'panel' => $this,
 			'guard_name' => $this->getGuardName(),
 			'menu' => $this->getMenu(),
@@ -156,7 +148,7 @@ final class Panel
 
 	public function getMenu(): array
 	{
-		$current_route = request()->route()->getAction('as');
+		$current_route = request()?->route()?->getAction('as');
 
 		foreach($this->getModules() as $module)
 		{

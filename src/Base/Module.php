@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Base;
 
+use S4mpp\Laraguard\Utils;
 use Illuminate\Support\Str;
 use S4mpp\Laraguard\Base\Page;
 use S4mpp\Laraguard\Traits\TitleSluggable;
@@ -11,7 +12,7 @@ final class Module
 {	
 	use TitleSluggable;
 
-	private string $controller = ModuleController::class;
+	private ?string $controller = null;
 
 	private bool $show_in_menu = true;
 	
@@ -22,14 +23,16 @@ final class Module
 		$this->setSlug($slug);
 	}
 	
-	public function withIndex(string $view = null): Module
+	public function addIndex(string $view = null)
 	{
-		$index = $this->addPage('', '/', 'index');
-		
+		$page = $this->addPage('', '/', 'index');
+
 		if($view)
 		{
-			$index->view($view);
+			$page->view($view);
 		}
+
+		$page->index();
 
 		return $this;
 	}
@@ -41,17 +44,19 @@ final class Module
 		return $this;
 	}
 
-	public function getController(): string
+	public function getController(): ?string
 	{
 		return $this->controller;
 	}
 
 	public function addPage(string $title, string $uri = null, string $slug = null)
 	{
-		$uri = ($uri ?? Str::slug($title));
+		$slug_title = Str::slug($title);
 
-		$slug = ($slug ?? Str::slug($title));
+		$uri = ($uri ?? $slug_title);
 
+		$slug = ($slug ?? $slug_title);
+		
 		$page = (new Page($title, $slug))->uri($uri);
 		
 		$this->pages[$page->getSlug()] = $page;
@@ -66,23 +71,13 @@ final class Module
 
 	public function currentPage()
 	{
-		return $this->getPage(request()->get('laraguard_page'));
+		$route_segment = Utils::getSegmentRouteName(3,  request()->route()->getAction('as'));
+
+		return $this->getPage($route_segment);
 	}
 
 	public function getPage(string $page_name = null): ?Page
 	{
-		return $this->pages[$page_name] ?? null;
-	}
-
-	/**
-	 * @todo move to Utils
-	 */
-	public function getCurrentPageByRoute(string $route = null): ?Page
-	{
-		$path_steps = explode('.', $route);
-		
-		$page_name = $path_steps[3] ?? null;
-		
 		return $this->pages[$page_name] ?? null;
 	}
 

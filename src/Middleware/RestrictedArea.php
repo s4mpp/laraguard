@@ -17,7 +17,7 @@ class RestrictedArea
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $panel = Laraguard::getPanel($request->get('laraguard_panel'));
+        $panel = Laraguard::currentPanel();
 
         if(!Auth::guard($panel->getGuardName())->check())
         {

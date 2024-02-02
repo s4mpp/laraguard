@@ -17,6 +17,10 @@ final class Page
 	
 	private ?string $uri = null;
 
+	private bool $is_index = false;
+
+	private array $middlewares = [];
+
 	// private bool $show_in_menu = true;
 
 	public function __construct(private string $title, string $slug = null)
@@ -45,6 +49,24 @@ final class Page
 		return $this;
 	}
 
+	public function index()
+	{
+		$this->is_index = true;
+
+		return $this;
+	}
+	
+	public function isIndex(): bool
+	{
+		return $this->is_index;
+	}
+
+	public function middleware(...$middlewares)
+	{
+		$this->middleware = $middlewares;
+
+		return $this;
+	}
 	
 
 	// public function controller(string $controller, string $method = null)
@@ -73,9 +95,9 @@ final class Page
 		return $this->method;
 	}
 
-	public function getView(): ?string
+	public function getView(): string
 	{
-		return $this->view;
+		return $this->view ?? 'laraguard::blank';
 	}
 
 	public function getUri(): ?string
@@ -85,7 +107,7 @@ final class Page
 
 	public function render(string $file = null, array $data = [])
 	{
-		$file = $file ?? $this->getView() ?? 'laraguard::blank';
+		$file = $file ?? $this->getView();
 
 		$title = $this->getTitle();
 

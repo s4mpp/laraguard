@@ -6,7 +6,7 @@ use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 
-class GuardTest extends TestCase
+class PanelTest extends TestCase
 {
 	private $panel;
 
@@ -50,4 +50,21 @@ class GuardTest extends TestCase
 
 		$this->assertTrue($this->panel->hasAutoRegister());
 	}
+
+	public function test_get_menu()
+	{
+		$panel = new Panel('', '', '');
+
+		$menu = $panel->getMenu();
+
+		$this->assertIsArray($menu);
+	}
+
+	public function test_get_module()
+	{
+		$panel = new Panel('', '', '');
+
+		$this->assertNull($panel->getModule(null));
+	}
+
 }

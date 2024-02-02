@@ -22,15 +22,15 @@ class WorkbenchServiceProvider extends ServiceProvider
     {
         $restricted_area = Laraguard::panel('Restricted area', 'restricted-area'); // web
 
-        $restricted_area->addModule('Dashboard', 'home')->withIndex();
+        $restricted_area->addModule('Dashboard', 'home')->addIndex();
         
-        $finances_module = $restricted_area->addModule('Finances', 'finances')->withIndex();
+        $finances_module = $restricted_area->addModule('Finances', 'finances')->addIndex();
         $finances_module->addPage('Report');
         
-        $restricted_area->addModule('Orders', 'orders')->withIndex();
-        $restricted_area->addModule('Team')->controller(TeamController::class)->withIndex();
-        $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class)->withIndex();
-        $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class)->withIndex();
+        $restricted_area->addModule('Orders', 'orders')->addIndex();
+        $restricted_area->addModule('Team')->controller(TeamController::class)->addIndex();
+        $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class)->addIndex();
+        $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class)->addIndex();
             
         
         Laraguard::panel('My account', 'customer-area', 'customer')->allowAutoRegister();
