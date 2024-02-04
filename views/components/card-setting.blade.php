@@ -6,7 +6,7 @@
     
     <div class="grid grid-cols-12 col-span-2">
         <div class="col-span-full">
-            <x-alert />
+            
         </div>
         <div class="col-span-12 sm:col-span-9 md:col-span-11 lg:col-span-8 xl:col-span-6">
 

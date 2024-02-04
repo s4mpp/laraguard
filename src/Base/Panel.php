@@ -11,9 +11,11 @@ use S4mpp\Laraguard\Navigation\Page;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Password;
 use S4mpp\Laraguard\Navigation\MenuItem;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use S4mpp\Laraguard\Notifications\ResetPassword;
+use S4mpp\Laraguard\Controllers\PersonalDataController;
 
 final class Panel
 {
@@ -25,7 +27,10 @@ final class Panel
 
 	public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
 	{
-		$this->addModule('My account', 'my-account')->hideInMenu()->addIndex('laraguard::my-account');
+		$my_account = $this->addModule('My account', 'my-account')->controller(PersonalDataController::class)->addIndex()->hideInMenu();
+
+		$my_account->addPage('Save personal data', 'save-personal-data')->method('put')->action('savePersonalData');
+		$my_account->addPage('Save new password', 'change-password')->method('put')->action('changePassword');
 	}
 
 	public function getTitle(): string
@@ -93,6 +98,15 @@ final class Panel
 	{
 		return Auth::guard($this->getGuardName())->check();
 	}
+
+	public function checkPassword(User $user, string $password): void
+	{
+		throw_if(RateLimiter::tooManyAttempts('password:'.$user->id, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
+
+		RateLimiter::hit('password:'.$user->id);
+        
+		throw_if(!Hash::check($password, $user->password), 'Senha inválida. Tente novamente');
+	}
 	
 	public function logout(): bool
 	{
@@ -119,6 +133,14 @@ final class Panel
 		return $this->modules;
 	}
 
+	public static function current()
+	{
+		return Utils::getSegmentRouteName(1, request()->route()->getAction('as'));
+	}
+
+	/**
+	 * 	@deprecated
+	 */
 	public function currentModule()
 	{
 		$route_segment = Utils::getSegmentRouteName(2,  request()->route()->getAction('as'));

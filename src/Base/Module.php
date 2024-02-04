@@ -69,6 +69,9 @@ final class Module
 		return $this->pages;
 	}
 
+	/**
+	 * 	@deprecated
+	 */
 	public function currentPage()
 	{
 		$route_segment = Utils::getSegmentRouteName(3,  request()->route()->getAction('as'));

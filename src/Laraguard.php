@@ -44,6 +44,9 @@ class Laraguard
 		return self::$panels[$guard_name] ?? null;
 	}
 
+	/**
+	 * 	@deprecated
+	 */
 	public static function currentPanel()
 	{
 		$route_segment = Utils::getSegmentRouteName(1, request()->route()->getAction('as'));
@@ -135,12 +138,14 @@ class Laraguard
 							}
 							else
 							{
-								$method = $page->getMethod();
+								$action_controller = $page->getAction();
 
-								$action = ($controller && $method) ? [$controller, $method] : ModuleController::class;
+								$action = ($controller && $action_controller) ? [$controller, $action_controller] : ModuleController::class;
 							}
 
-							Route::get($page->getUri(), $action)->name($panel->getRouteName($module->getSlug(), $page->getSlug()));
+							$method = $page->getMethod();
+
+							Route::{$method}($page->getUri(), $action)->name($panel->getRouteName($module->getSlug(), $page->getSlug()));
 						}
 					});
 				}

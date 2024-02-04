@@ -13,8 +13,5 @@ class LaraguardServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../../views', 'laraguard');
 
         $this->loadTranslationsFrom(__DIR__.'/../../lang', 'laraguard');
-
-        // app('router')->aliasMiddleware('laraguard', Laraguard::class);
-        // app('router')->aliasMiddleware('restricted-area', RestrictedArea::class);
     }
 }

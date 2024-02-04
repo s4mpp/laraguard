@@ -11,7 +11,9 @@ final class Page
 
 	// private string $controller = PageController::class;
 
-	private ?string $method = null;
+	private ?string $method = 'GET';
+	
+	private ?string $action = null;
 	
 	private ?string $view = null;
 	
@@ -42,7 +44,14 @@ final class Page
 		return $this;
 	}
 
-	public function method(string $method = null)
+	public function action(string $action)
+	{
+		$this->action = $action;
+
+		return $this;
+	}
+
+	public function method(string $method)
 	{
 		$this->method = $method;
 
@@ -69,11 +78,11 @@ final class Page
 	}
 	
 
-	// public function controller(string $controller, string $method = null)
+	// public function controller(string $controller, string $action = null)
 	// {
 	// 	$this->controller = $controller;
 
-	// 	$this->method = $method;
+	// 	$this->method = $action;
 
 	// 	return $this;
 	// }
@@ -89,6 +98,11 @@ final class Page
 	// {
 	// 	return $this->show_in_menu;
 	// }
+
+	public function getAction(): ?string
+	{
+		return $this->action;
+	}
 
 	public function getMethod(): ?string
 	{

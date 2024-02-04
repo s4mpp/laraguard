@@ -11,12 +11,39 @@ use S4mpp\Laraguard\Tests\TestCase;
 
 class PageTest extends TestCase
 {
+	public static function pageIndexProvider()
+	{
+		return [
+			'Blank' => [null, 'laraguard::blank'],
+			'View file' => ['view-file', 'view-file'],
+		];
+	}
+
 	public function test_create_instance()
 	{
 		$page = new Page('Page title', 'page-prefix');
 
 		$this->assertEquals('Page title', $page->getTitle());
 		$this->assertEquals('page-prefix', $page->getSlug());
+	}
+
+	/**
+	 *
+	 * @dataProvider pageIndexProvider
+	 */
+	public function test_get_page_index(string $view = null, string $view_to_render)
+	{
+		$module = (new Module('', ''))->addIndex($view);
+
+		$index = $module->getPage('index');
+
+		$this->assertCount(1, $module->getPages());
+
+		$this->assertInstanceOf(Page::class, $index);
+		$this->assertEmpty($index->getTitle());
+		$this->assertNull($index->getAction());
+		$this->assertEquals($view_to_render, $index->getView());
+		$this->assertEquals('index', $index->getSlug());
 	}
 
 	public function test_method()
