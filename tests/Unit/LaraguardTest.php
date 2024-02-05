@@ -7,7 +7,7 @@ use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 
-class LaraGuardTest extends TestCase
+class LaraguardTest extends TestCase
 {
 	public function test_created_instance_factory()
 	{

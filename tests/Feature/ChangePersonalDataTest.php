@@ -15,8 +15,8 @@ class ChangePersonalDataTest extends TestCase
 	{
 		$current_password = 'passw0rd';
 		
-		$old_data = ['name' => fake()->name(), 'email' => fake()->safeEmail(),];
-		$new_data = ['name' => fake()->name(), 'email' => fake()->safeEmail(),];
+		$old_data = ['name' => fake()->name(), 'email' => fake()->safeEmail()];
+		$new_data = ['name' => fake()->name(), 'email' => fake()->safeEmail()];
 
 		$user = $factory::new([
 			'name' => $old_data['name'],
@@ -44,6 +44,42 @@ class ChangePersonalDataTest extends TestCase
 		]);
 
 		$this->assertDatabaseMissing($table, [
+			'name' => $old_data['name'],
+			'email' => $old_data['email'],
+		]);
+	}
+
+	/**
+	 *
+	 * @dataProvider guardProvider
+	 */
+	public function test_change_personal_data_with_invalid_password($guard_name, $uri, $factory)
+	{		
+		$old_data = ['name' => fake()->name(), 'email' => fake()->safeEmail()];
+		$new_data = ['name' => fake()->name(), 'email' => fake()->safeEmail()];
+
+		$user = $factory::new([
+			'name' => $old_data['name'],
+			'email' => $old_data['email'],
+		])->create();
+
+		$this->get('/'.$uri.'/my-account');
+		$response = $this->actingAs($user, $guard_name)->put('/'.$uri.'/my-account/save-personal-data', [
+			'current_password' => 'another-pass123',
+			'name' => $new_data['name'],
+			'email' => $new_data['email'],
+		]);
+
+		$response->assertSessionHasErrors();
+
+		$table = app($factory::new()->modelName())->getTable();
+
+		$this->assertDatabaseMissing($table, [
+			'name' => $new_data['name'],
+			'email' => $new_data['email'],
+		]);
+
+		$this->assertDatabaseHas($table, [
 			'name' => $old_data['name'],
 			'email' => $old_data['email'],
 		]);

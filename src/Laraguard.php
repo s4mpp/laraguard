@@ -134,7 +134,7 @@ class Laraguard
 						{
 							if($page->isIndex())
 							{
-								$action = $controller ?? ModuleController::class;;
+								$action = $controller ?? ModuleController::class;
 							}
 							else
 							{

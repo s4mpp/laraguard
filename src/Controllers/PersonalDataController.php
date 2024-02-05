@@ -71,6 +71,8 @@ class PersonalDataController extends Controller
 			$account = Auth::user();
 				
 			$panel->checkPassword($account, $validated_data['current_password']);
+
+			$account->password = Hash::make($validated_data['password']);
 	
 			$account->save();
 	

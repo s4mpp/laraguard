@@ -101,9 +101,11 @@ final class Panel
 
 	public function checkPassword(User $user, string $password): void
 	{
-		throw_if(RateLimiter::tooManyAttempts('password:'.$user->id, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
+		$key = 'password:'.$this->guard_name.'.'.$user->id;
 
-		RateLimiter::hit('password:'.$user->id);
+		// throw_if(RateLimiter::tooManyAttempts($key, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
+
+		RateLimiter::hit($key);
         
 		throw_if(!Hash::check($password, $user->password), 'Senha inválida. Tente novamente');
 	}

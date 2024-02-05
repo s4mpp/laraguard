@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
+use Illuminate\Auth\Notifications\ResetPassword as NotificationsResetPassword;
 use RuntimeException;
 use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
@@ -16,6 +17,7 @@ use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Notifications\Messages\MailMessage;
 use Workbench\Database\Factories\UserFactory;
 use S4mpp\Laraguard\Notifications\ResetPassword;
+use stdClass;
 use Workbench\Database\Factories\CustomerFactory;
 
 class PasswordRecoveryTest extends TestCase
@@ -63,5 +65,16 @@ class PasswordRecoveryTest extends TestCase
 		$this->assertDatabaseMissing('password_reset_tokens', [
 			'email' => $user->email,
 		]);
+	}
+
+	public function test_render_notification()
+	{
+		$notification = new ResetPassword('https://example.com');
+
+		$mail = $notification->toMail(new stdClass);
+
+		$this->assertEquals('Reset Password Notification', $mail->subject);
+		$this->assertStringContainsString('https://example.com', $mail->actionUrl);
+		$this->assertStringContainsString('Reset Password', $mail->actionText);
 	}
 }

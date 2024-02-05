@@ -6,7 +6,6 @@ use S4mpp\Laraguard\Utils;
 use Illuminate\Support\Str;
 use S4mpp\Laraguard\Base\Page;
 use S4mpp\Laraguard\Traits\TitleSluggable;
-use S4mpp\Laraguard\Controllers\ModuleController;
 
 final class Module
 {	
