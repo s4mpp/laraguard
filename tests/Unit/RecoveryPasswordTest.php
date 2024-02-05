@@ -20,7 +20,7 @@ use S4mpp\Laraguard\Notifications\ResetPassword;
 use stdClass;
 use Workbench\Database\Factories\CustomerFactory;
 
-class PasswordRecoveryTest extends TestCase
+class RecoveryPasswordTest extends TestCase
 {	
 	/**
 	 * @dataProvider guardProvider

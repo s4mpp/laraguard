@@ -20,6 +20,7 @@ class PersonalDataController extends Controller
 		$route_save_new_password = $panel->getRouteName('my-account', 'save-new-password');
 
 		return Laraguard::layout('laraguard::my-account', [
+			'guard' => $panel->getGuardName(),
 			'url_save_personal_data' => route($route_save_personal_data),
 			'url_save_new_password' => route($route_save_new_password)
 		]);

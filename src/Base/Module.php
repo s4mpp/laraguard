@@ -68,14 +68,9 @@ final class Module
 		return $this->pages;
 	}
 
-	/**
-	 * 	@deprecated
-	 */
-	public function currentPage()
+	public static function current()
 	{
-		$route_segment = Utils::getSegmentRouteName(3,  request()->route()->getAction('as'));
-
-		return $this->getPage($route_segment);
+		return Utils::getSegmentRouteName(2,  request()->route()->getAction('as'));
 	}
 
 	public function getPage(string $page_name = null): ?Page
@@ -93,6 +88,13 @@ final class Module
 	public function canShowInMenu(): bool
 	{
 		return $this->show_in_menu;
+	}
+
+	public function getLayout(string $view = null, array $data = [])
+	{
+		return $this->getPage(Page::current())->render($view, array_merge($data, [
+			'module_title' => $this->getTitle()
+		]));
 	}
 
 	// public function getAction()

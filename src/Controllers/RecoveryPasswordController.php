@@ -3,6 +3,7 @@
 namespace S4mpp\Laraguard\Controllers;
 
 use S4mpp\Laraguard\Laraguard;
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
@@ -16,7 +17,7 @@ class RecoveryPasswordController extends Controller
 {
     public function index()
     {
-        $panel = Laraguard::currentPanel();
+        $panel = Laraguard::getPanel(Panel::current());
 
         $page_title = 'Alterar senha';
 
@@ -27,7 +28,7 @@ class RecoveryPasswordController extends Controller
 
     public function sendLink(RecoveryPasswordSolicitationRequest $request)
     {
-        $panel = Laraguard::currentPanel();
+        $panel = Laraguard::getPanel(Panel::current());
 
         $user = Auth::guard($panel->getGuardName())->getProvider()->retrieveByCredentials(['email' => $request->email]);
         

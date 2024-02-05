@@ -42,4 +42,11 @@ class ModuleTest extends TestCase
 
 		$this->assertFalse($module->canShowInMenu());
 	}
+
+	public function test_show_in_menu()
+	{
+		$module = new Module('', '');
+
+		$this->assertTrue($module->canShowInMenu());
+	}
 }

@@ -99,15 +99,17 @@ final class Panel
 		return Auth::guard($this->getGuardName())->check();
 	}
 
-	public function checkPassword(User $user, string $password): void
+	public function checkPassword(User $user, string $password): bool
 	{
 		$key = 'password:'.$this->guard_name.'.'.$user->id;
 
-		// throw_if(RateLimiter::tooManyAttempts($key, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
+		throw_if(RateLimiter::tooManyAttempts($key, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
 
 		RateLimiter::hit($key);
         
 		throw_if(!Hash::check($password, $user->password), 'Senha inválida. Tente novamente');
+
+		return true;
 	}
 	
 	public function logout(): bool
@@ -140,33 +142,19 @@ final class Panel
 		return Utils::getSegmentRouteName(1, request()->route()->getAction('as'));
 	}
 
-	/**
-	 * 	@deprecated
-	 */
-	public function currentModule()
-	{
-		$route_segment = Utils::getSegmentRouteName(2,  request()->route()->getAction('as'));
-
-		return $this->getModule($route_segment);
-	}
-
 	public function getModule(string $module_name = null): ?Module
 	{
 		return $this->modules[$module_name] ?? null;
 	}
 
-
 	public function getLayout(string $view = null, array $data = [])
 	{	
-		$module = $this->currentModule();
-
-		return $module->currentPage()->render($view, array_merge($data, [
+		return $this->getModule(Module::current())->getLayout($view, array_merge($data, [
 			'panel' => $this,
 			'guard_name' => $this->getGuardName(),
 			'menu' => $this->getMenu(),
 			'my_account_url' => route($this->getRouteName('my-account', 'index')),
 			'logout_url' => route($this->getRouteName('signout')),
-			'module_title' => $module->getTitle(),
 		]));
 	}
 

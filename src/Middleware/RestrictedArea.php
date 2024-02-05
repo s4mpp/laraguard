@@ -5,6 +5,7 @@ namespace S4mpp\Laraguard\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,7 +18,7 @@ class RestrictedArea
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $panel = Laraguard::currentPanel();
+        $panel = Laraguard::getPanel(Panel::current());
 
         if(!Auth::guard($panel->getGuardName())->check())
         {

@@ -5,6 +5,7 @@ namespace S4mpp\Laraguard\Controllers;
 use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\MyAccount\MyAccount;
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,14 +16,14 @@ final class SignUpController extends Controller
 {
 	public function index()
 	{
-		$panel = Laraguard::currentPanel();
+		$panel = Laraguard::getPanel(Panel::current());
 
         return view('laraguard::auth.register', ['panel' => $panel, 'panel_title' => $panel->getTitle(), 'page_title' => 'Cadastro']);
 	}
 
 	public function save(Request $request)
 	{
-		$panel = Laraguard::currentPanel();
+		$panel = Laraguard::getPanel(Panel::current());
 		
 		$model = app(Auth::guard($panel->getGuardName())->getProvider()->getModel());
 		
@@ -45,7 +46,7 @@ final class SignUpController extends Controller
 
 	public function finish()
 	{
-		$panel = Laraguard::currentPanel();
+		$panel = Laraguard::getPanel(Panel::current());
 
         return view('laraguard::auth.register-finished', ['panel' => $panel, 'panel_title' => $panel->getTitle(), 'page_title' => 'Cadastro']);
 	}

@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Base;
 
+use S4mpp\Laraguard\Utils;
 use S4mpp\Laraguard\Traits\TitleSluggable;
 use S4mpp\Laraguard\Controllers\PageController;
 
@@ -75,6 +76,11 @@ final class Page
 		$this->middleware = $middlewares;
 
 		return $this;
+	}
+
+	public static function current()
+	{
+		return Utils::getSegmentRouteName(3,  request()->route()->getAction('as'));
 	}
 	
 

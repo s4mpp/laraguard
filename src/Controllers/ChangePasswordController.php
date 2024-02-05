@@ -2,11 +2,12 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-use Illuminate\Auth\Passwords\PasswordBroker;
 use S4mpp\Laraguard\Laraguard;
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use S4mpp\Laraguard\Controllers\LaraguardController;
 use S4mpp\Laraguard\Requests\RecoveryPasswordChangeRequest;
@@ -15,7 +16,7 @@ class ChangePasswordController extends Controller
 {
     public function index(string $token)
     {
-        $panel = Laraguard::currentPanel();
+        $panel = Laraguard::getPanel(Panel::current());
         
         $user = Password::broker($panel->getGuardName())->getUser(['email' => request()->get('email')]);
 
@@ -33,7 +34,7 @@ class ChangePasswordController extends Controller
 
     public function storePassword(RecoveryPasswordChangeRequest $request)
     {
-        $panel = Laraguard::currentPanel();
+        $panel = Laraguard::getPanel(Panel::current());
         
         $user = Password::broker($panel->getGuardName())->getUser(['email' => $request->get('email')]);
         

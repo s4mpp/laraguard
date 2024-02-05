@@ -4,6 +4,7 @@ namespace S4mpp\Laraguard\Tests\Unit;
 
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
+use S4mpp\Laraguard\Navigation\MenuItem;
 use S4mpp\Laraguard\Tests\TestCase;
 
 class PanelTest extends TestCase
@@ -53,11 +54,13 @@ class PanelTest extends TestCase
 
 	public function test_get_menu()
 	{
-		$panel = new Panel('', '', '');
+		$panel = Laraguard::getPanel('web');
 
 		$menu = $panel->getMenu();
 
 		$this->assertIsArray($menu);
+
+		$this->assertContainsOnlyInstancesOf(MenuItem::class, $menu);
 	}
 
 	public function test_get_module()
@@ -66,5 +69,4 @@ class PanelTest extends TestCase
 
 		$this->assertNull($panel->getModule(null));
 	}
-
 }

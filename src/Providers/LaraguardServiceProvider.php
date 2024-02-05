@@ -11,6 +11,8 @@ class LaraguardServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__.'/../../views', 'laraguard');
+        
+        $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
 
         $this->loadTranslationsFrom(__DIR__.'/../../lang', 'laraguard');
     }
