@@ -19,7 +19,8 @@
     "require-dev": {
         "phpunit/phpunit": "^10.1",
         "orchestra/testbench": "^8.20",
-        "nunomaduro/collision": "^7.8"
+        "nunomaduro/collision": "^7.8",
+        "larastan/larastan": "^2.0"
     },
     "autoload-dev": {
         "psr-4": {

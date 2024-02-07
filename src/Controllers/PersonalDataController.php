@@ -6,12 +6,14 @@ use S4mpp\Laraguard\Laraguard;
 use Illuminate\Validation\Rule;
 use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
 
 class PersonalDataController extends Controller
 {
-    public function __invoke()
+    public function __invoke(): View
 	{
 		$panel = Laraguard::getPanel(Panel::current()); 
 
@@ -26,7 +28,7 @@ class PersonalDataController extends Controller
 		]);
 	}
 
-	public function savePersonalData()
+	public function savePersonalData(): RedirectResponse
 	{
 		$panel = Laraguard::getPanel(Panel::current()); 
 
@@ -49,7 +51,7 @@ class PersonalDataController extends Controller
 	
 			$account->save();
 	
-			return redirect()->back()->withMessage('Personal data saved');
+			return redirect()->back()->with('message', 'Personal data saved');
 		}
 		catch(\Exception $e)
 		{
@@ -57,7 +59,7 @@ class PersonalDataController extends Controller
 		}
 	}
 
-	public function changePassword()
+	public function changePassword(): RedirectResponse
 	{
 		$validated_data = request()->validate([
 			'current_password' => ['required', 'string'],
@@ -77,7 +79,7 @@ class PersonalDataController extends Controller
 	
 			$account->save();
 	
-			return redirect()->back()->withMessage('Password has been changed');
+			return redirect()->back()->with('message', 'Password has been changed');
 		}
 		catch(\Exception $e)
 		{

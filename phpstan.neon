@@ -1,0 +1,9 @@
+parameters:
+	level: 6
+	paths:
+		- src
+	ignoreErrors:
+		- '#Access to an undefined property Illuminate\\[\a-zA-z\]\\Auth\\[\a-zA-z\]::\$[a-z]#'
+		- '#Access to an undefined property S4mpp\\Laraguard\\Requests\\RecoveryPasswordSolicitationRequest::\$[a-z]#'
+		- '#Call to an undefined method Illuminate\\Contracts\\Auth\\[\a-zA-z\]::[a-zA-z]#'
+		

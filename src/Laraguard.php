@@ -2,12 +2,13 @@
 
 namespace S4mpp\Laraguard;
 
+use Illuminate\Contracts\View\View;
 use S4mpp\Laraguard\Base\Panel;
 
 
 class Laraguard
 {
-	private static $panels = [];
+	private static array $panels = [];
 
 	public static function panel(string $title, string $prefix = '', string $guard = 'web'): Panel
 	{
@@ -18,6 +19,10 @@ class Laraguard
 		return $panel;
 	}
 
+	/**
+	 *
+	 * @return array<Panel>
+	 */
 	public static function getPanels(): array
 	{
 		return self::$panels;
@@ -28,7 +33,7 @@ class Laraguard
 		return self::$panels[$guard_name] ?? null;
 	}
 
-	public static function layout(string $view = null, array $data = [])
+	public static function layout(string $view = null, array $data = []): View
 	{
 		return self::getPanel(Panel::current())->getLayout($view, $data);
 	}

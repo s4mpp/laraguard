@@ -7,12 +7,12 @@ trait TitleSluggable
 {
 	private string $slug;
 
-	public function getTitle()
+	public function getTitle(): ?string
 	{
 		return $this->title;
 	}
 
-	public function setSlug(string $slug = null)
+	public function setSlug(string $slug = null): void
 	{
 		$this->slug = $slug ? $slug : Str::slug($this->title);
 	}

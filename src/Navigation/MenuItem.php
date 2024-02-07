@@ -16,11 +16,9 @@ final class MenuItem
 	public function __construct(private string $title, string $slug = null)
 	{
 		$this->slug = $slug;
-
-		return $this;
 	}
 
-	public function setAction(string $action)
+	public function setAction(string $action): self
 	{
 		$this->action = $action;
 
@@ -62,7 +60,7 @@ final class MenuItem
 	// 	return $this;
 	// }
 
-	public function activate()
+	public function activate(): void
 	{
 		$this->is_active = true;
 	}

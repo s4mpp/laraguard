@@ -7,19 +7,21 @@ use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 
 class SignInController extends Controller
 {
-    public function index()
+    public function index(): View
     { 
         $panel = Laraguard::getPanel(Panel::current());
 
         return view('laraguard::auth.login', ['panel' => $panel]);
     }
     
-    public function attempt()
+    public function attempt(): RedirectResponse
     {
         $panel = Laraguard::getPanel(Panel::current());
 
@@ -39,7 +41,7 @@ class SignInController extends Controller
         {
             $username = $validated_input[$panel->getFieldUsername('field')] ?? null;
 
-            $model = Auth::guard($panel->getGuardName())->getProvider()->getModel();
+            $model = Auth::guard($panel->getGuardName())->getProvider()->getModel(); 
 
             $user = app($model)->where([$panel->getFieldUsername('field') => $username])->first();
 

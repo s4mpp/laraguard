@@ -5,7 +5,9 @@ namespace S4mpp\Laraguard\Controllers;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use S4mpp\Laraguard\Notifications\ResetPassword;
@@ -15,7 +17,7 @@ use S4mpp\Laraguard\Notifications\ResetPassword as NotificationsResetPassword;
 
 class RecoveryPasswordController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $panel = Laraguard::getPanel(Panel::current());
 
@@ -26,7 +28,7 @@ class RecoveryPasswordController extends Controller
         return view('laraguard::auth.password-recovery', compact('panel', 'page_title', 'panel_title'));
     }
 
-    public function sendLink(RecoveryPasswordSolicitationRequest $request)
+    public function sendLink(RecoveryPasswordSolicitationRequest $request): RedirectResponse
     {
         $panel = Laraguard::getPanel(Panel::current());
 
@@ -40,7 +42,7 @@ class RecoveryPasswordController extends Controller
         $status = $panel->sendLinkRecoveryPassword($user);
 
         return $status === PasswordBroker::RESET_LINK_SENT
-            ? redirect()->back()->withMessage(__($status))
+            ? redirect()->back()->with('message', __($status))
             : back()->withErrors(['email' => [__($status)]])->withInput();
     }
 }

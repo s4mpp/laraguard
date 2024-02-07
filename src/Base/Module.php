@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Base;
 
+use Illuminate\Contracts\View\View;
 use S4mpp\Laraguard\Utils;
 use Illuminate\Support\Str;
 use S4mpp\Laraguard\Base\Page;
@@ -22,7 +23,7 @@ final class Module
 		$this->setSlug($slug);
 	}
 	
-	public function addIndex(string $view = null)
+	public function addIndex(string $view = null): self
 	{
 		$page = $this->addPage('', '/', 'index');
 
@@ -36,7 +37,7 @@ final class Module
 		return $this;
 	}
 
-	public function controller(string $controller)
+	public function controller(string $controller): self
 	{
 		$this->controller = $controller;
 
@@ -68,7 +69,7 @@ final class Module
 		return $this->pages;
 	}
 
-	public static function current()
+	public static function current(): ?string
 	{
 		return Utils::getSegmentRouteName(2,  request()->route()->getAction('as'));
 	}
@@ -78,7 +79,7 @@ final class Module
 		return $this->pages[$page_name] ?? null;
 	}
 
-	public function hideInMenu()
+	public function hideInMenu(): self
 	{
 		$this->show_in_menu = false;
 
@@ -90,7 +91,7 @@ final class Module
 		return $this->show_in_menu;
 	}
 
-	public function getLayout(string $view = null, array $data = [])
+	public function getLayout(string $view = null, array $data = []): View
 	{
 		return $this->getPage(Page::current())->render($view, array_merge($data, [
 			'module_title' => $this->getTitle()

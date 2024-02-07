@@ -14,12 +14,14 @@ use S4mpp\Laraguard\Navigation\MenuItem;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\View\View;
 use S4mpp\Laraguard\Notifications\ResetPassword;
 use S4mpp\Laraguard\Controllers\PersonalDataController;
 
 final class Panel
 {
-	private $field_username = ['field' => 'email', 'title' => 'E-mail'];
+	private array $field_username = ['field' => 'email', 'title' => 'E-mail'];
 
 	private bool $allow_auto_register = false;
 
@@ -53,19 +55,19 @@ final class Panel
 		return 'lg.'.$this->getGuardName().'.'.join('.', $path);
 	}
 
-	public function allowAutoRegister()
+	public function allowAutoRegister(): self
 	{
 		$this->allow_auto_register = true;
 
 		return $this;
 	}
 
-	public function hasAutoRegister()
+	public function hasAutoRegister(): bool
 	{
 		return $this->allow_auto_register;
 	}
 
-	public function getFieldUsername(string $index = null)
+	public function getFieldUsername(string $index = null): string | array
 	{
 		if($index && isset($this->field_username[$index]))
 		{
@@ -99,8 +101,10 @@ final class Panel
 		return Auth::guard($this->getGuardName())->check();
 	}
 
-	public function checkPassword(User $user, string $password): bool
+	public function checkPassword(Authenticatable $user = null, string $password = null): bool
 	{
+		throw_if(!$user, 'Account not found');
+
 		$key = 'password:'.$this->guard_name.'.'.$user->id;
 
 		throw_if(RateLimiter::tooManyAttempts($key, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
@@ -123,7 +127,7 @@ final class Panel
 		return !$this->checkIfIsUserIsLogged();
 	}
 
-	public function addModule(string $title, string $slug = null)
+	public function addModule(string $title, string $slug = null): Module
 	{
 		$module = new Module($title, $slug);
 		
@@ -137,7 +141,7 @@ final class Panel
 		return $this->modules;
 	}
 
-	public static function current()
+	public static function current(): ?string
 	{
 		return Utils::getSegmentRouteName(1, request()->route()->getAction('as'));
 	}
@@ -147,7 +151,7 @@ final class Panel
 		return $this->modules[$module_name] ?? null;
 	}
 
-	public function getLayout(string $view = null, array $data = [])
+	public function getLayout(string $view = null, array $data = []): View
 	{	
 		return $this->getModule(Module::current())->getLayout($view, array_merge($data, [
 			'panel' => $this,

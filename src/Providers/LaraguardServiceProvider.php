@@ -8,7 +8,7 @@ use S4mpp\Laraguard\Middleware\RestrictedArea;
 
 class LaraguardServiceProvider extends ServiceProvider 
 {
-    public function boot()
+    public function boot(): void
     {
         $this->loadViewsFrom(__DIR__.'/../../views', 'laraguard');
         

@@ -3,6 +3,7 @@
 namespace S4mpp\Laraguard\Base;
 
 use S4mpp\Laraguard\Utils;
+use Illuminate\Contracts\View\View;
 use S4mpp\Laraguard\Traits\TitleSluggable;
 use S4mpp\Laraguard\Controllers\PageController;
 
@@ -31,35 +32,35 @@ final class Page
 		$this->setSlug($slug);
 	}
 
-	public function uri(string $uri)
+	public function uri(string $uri): self
 	{
 		$this->uri = $uri;
 
 		return $this;
 	}
 
-	public function view(string $view)
+	public function view(string $view): self
 	{
 		$this->view = $view;
 
 		return $this;
 	}
 
-	public function action(string $action)
+	public function action(string $action): self
 	{
 		$this->action = $action;
 
 		return $this;
 	}
 
-	public function method(string $method)
+	public function method(string $method): self
 	{
 		$this->method = $method;
 
 		return $this;
 	}
 
-	public function index()
+	public function index(): self
 	{
 		$this->is_index = true;
 
@@ -71,14 +72,14 @@ final class Page
 		return $this->is_index;
 	}
 
-	public function middleware(...$middlewares)
+	public function middleware(...$middlewares): self
 	{
-		$this->middleware = $middlewares;
+		array_push($this->middlewares, $middlewares);
 
 		return $this;
 	}
 
-	public static function current()
+	public static function current(): ?string
 	{
 		return Utils::getSegmentRouteName(3,  request()->route()->getAction('as'));
 	}
@@ -125,7 +126,7 @@ final class Page
 		return $this->uri;
 	}
 
-	public function render(string $file = null, array $data = [])
+	public function render(string $file = null, array $data = []): View
 	{
 		$file = $file ?? $this->getView();
 
