@@ -10,6 +10,7 @@ use S4mpp\Laraguard\Navigation\Page;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Workbench\App\Controllers\TeamController;
+use Workbench\App\MIddleware\ExampleMiddleware;
 use Workbench\App\Controllers\ExtractController;
 use Workbench\App\Controllers\WithdrawalController;
 
@@ -25,9 +26,9 @@ class WorkbenchServiceProvider extends ServiceProvider
         $restricted_area->addModule('Dashboard', 'home')->addIndex();
         
         $finances_module = $restricted_area->addModule('Finances', 'finances')->addIndex();
-        $finances_module->addPage('Report');
+        $finances_module->addPage('Report')->middleware(ExampleMiddleware::class);
         
-        $restricted_area->addModule('Orders', 'orders')->addIndex();
+        $restricted_area->addModule('Orders', 'orders')->addIndex('index-example');
         $restricted_area->addModule('Team')->controller(TeamController::class)->addIndex();
         $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class)->addIndex();
         $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class)->addIndex();
