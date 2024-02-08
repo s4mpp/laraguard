@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
+use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
 use Illuminate\Validation\Rule;
 use S4mpp\Laraguard\Base\Panel;
@@ -10,12 +11,13 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
+use S4mpp\Laraguard\Controllers\BaseController;
 
-class PersonalDataController extends Controller
+class PersonalDataController extends BaseController
 {
-    public function __invoke(): View
+    public function __invoke(Request $request): null | \Illuminate\Contracts\View\View | \Illuminate\Contracts\View\Factory
 	{
-		$panel = Laraguard::getPanel(Panel::current()); 
+		$panel = $request->get('laraguard_panel');
 
 		$route_save_personal_data = $panel->getRouteName('my-account', 'save-personal-data');
 		
@@ -28,21 +30,33 @@ class PersonalDataController extends Controller
 		]);
 	}
 
-	public function savePersonalData(): RedirectResponse
+
+	public function savePersonalData(Request $request): RedirectResponse
 	{
-		$panel = Laraguard::getPanel(Panel::current()); 
+		$panel = $request->get('laraguard_panel');
 
-		$model = app(Auth::guard($panel->getGuardName())->getProvider()->getModel());
+		$model = $panel->getModel();
 
-		$validated_data = request()->validate([
+		if(!$model)
+		{
+			throw new \Exception('Invalid model');
+		}
+
+		$validated_data = $request->validate([
 			'current_password' => ['required', 'string'],
 			'name' => ['required', 'string'],
-            'email' => ['required', 'string', 'email', Rule::unique($model->getTable())->ignore(Auth::id())],
+			'email' => ['required', 'string', 'email', Rule::unique($model->getTable())->ignore(Auth::id())],
 		]);
-
+		
 		try
 		{
+			
 			$account = Auth::user();
+
+			if(!$account)
+			{
+				throw new \Exception('Account not found');
+			}
 			
 			$panel->checkPassword($account, $validated_data['current_password']);
 	
@@ -51,17 +65,19 @@ class PersonalDataController extends Controller
 	
 			$account->save();
 	
-			return redirect()->back()->with('message', 'Personal data saved');
+			return back()->with('message', 'Personal data saved');
 		}
 		catch(\Exception $e)
 		{
-			return redirect()->back()->withErrors($e->getMessage());
+			return back()->withErrors($e->getMessage());
 		}
 	}
 
-	public function changePassword(): RedirectResponse
+	public function changePassword(Request $request): RedirectResponse
 	{
-		$validated_data = request()->validate([
+		$panel = $request->get('laraguard_panel');
+
+		$validated_data = $request->validate([
 			'current_password' => ['required', 'string'],
             'password' => ['required', 'min:6', 'string', 'confirmed'],
             'password_confirmation' => ['required', 'min:6', 'string'],
@@ -69,9 +85,12 @@ class PersonalDataController extends Controller
 
 		try
 		{
-			$panel = Laraguard::getPanel(Panel::current()); 
-	
 			$account = Auth::user();
+
+			if(!$account)
+			{
+				throw new \Exception('Account not found');
+			}
 				
 			$panel->checkPassword($account, $validated_data['current_password']);
 
@@ -79,11 +98,11 @@ class PersonalDataController extends Controller
 	
 			$account->save();
 	
-			return redirect()->back()->with('message', 'Password has been changed');
+			return back()->with('message', 'Password has been changed');
 		}
 		catch(\Exception $e)
 		{
-			return redirect()->back()->withErrors($e->getMessage());
+			return back()->withErrors($e->getMessage());
 		}
 	}
 }

@@ -11,7 +11,7 @@ class MyAccountTest extends TestCase
 	 *
 	 * @dataProvider guardProvider
 	 */
-	public function test_Index_page($guard_name, $uri, $factory)
+	public function test_index_page($guard_name, $uri, $factory)
 	{
 		$user = $factory::new()->create();
 

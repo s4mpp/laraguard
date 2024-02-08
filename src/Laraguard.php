@@ -8,6 +8,10 @@ use S4mpp\Laraguard\Base\Panel;
 
 class Laraguard
 {
+	/**
+	 *
+	 * @var array<Panel>
+	 */
 	private static array $panels = [];
 
 	public static function panel(string $title, string $prefix = '', string $guard = 'web'): Panel
@@ -28,13 +32,17 @@ class Laraguard
 		return self::$panels;
 	}
 
-	public static function getPanel(string $guard_name): ?Panel
+	public static function getPanel(string $guard_name = null): ?Panel
 	{
 		return self::$panels[$guard_name] ?? null;
 	}
 
-	public static function layout(string $view = null, array $data = []): View
+	/**
+	 *
+	 * @param array<mixed> $data
+	 */
+	public static function layout(string $view = null, array $data = []): null | \Illuminate\Contracts\View\View | \Illuminate\Contracts\View\Factory
 	{
-		return self::getPanel(Panel::current())->getLayout($view, $data);
+		return self::getPanel(Panel::current())?->getLayout($view, $data);
 	}
 }

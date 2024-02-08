@@ -23,6 +23,10 @@ final class Page
 
 	private bool $is_index = false;
 
+	/**
+	 *
+	 * @var array<string>
+	 */
 	private array $middlewares = [];
 
 	// private bool $show_in_menu = true;
@@ -72,6 +76,10 @@ final class Page
 		return $this->is_index;
 	}
 
+	/**
+	 *
+	 * @param array<mixed> $middlewares
+	 */
 	public function middleware(...$middlewares): self
 	{
 		array_push($this->middlewares, $middlewares);
@@ -81,7 +89,7 @@ final class Page
 
 	public static function current(): ?string
 	{
-		return Utils::getSegmentRouteName(3,  request()->route()->getAction('as'));
+		return Utils::getSegmentRouteName(3);
 	}
 	
 
@@ -126,7 +134,11 @@ final class Page
 		return $this->uri;
 	}
 
-	public function render(string $file = null, array $data = []): View
+	/**
+	 *
+	 * @param array<mixed> $data
+	 */
+	public function render(string $file = null, array $data = []): \Illuminate\Contracts\View\View | \Illuminate\Contracts\View\Factory
 	{
 		$file = $file ?? $this->getView();
 

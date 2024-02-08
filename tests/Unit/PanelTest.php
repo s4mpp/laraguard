@@ -4,6 +4,7 @@ namespace S4mpp\Laraguard\Tests\Unit;
 
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
+use S4mpp\Laraguard\Helpers\FieldUsername;
 use S4mpp\Laraguard\Navigation\MenuItem;
 use S4mpp\Laraguard\Tests\TestCase;
 
@@ -31,11 +32,13 @@ class PanelTest extends TestCase
 
 	public function test_get_name_fields()
 	{
-		$this->assertSame(['field' => 'email', 'title' => 'E-mail'], $this->panel->getFieldUsername());
+		$field_username = $this->panel->getFieldUsername();
+
+		$this->assertInstanceOf(FieldUsername::class, $field_username);
 		
-		$this->assertSame('email', $this->panel->getFieldUsername('field'));
+		$this->assertSame('E-mail', $field_username->getTitle());
 		
-		$this->assertSame('E-mail', $this->panel->getFieldUsername('title'));
+		$this->assertSame('email', $field_username->getField());
 	}
 
 	public function test_get_route_name()

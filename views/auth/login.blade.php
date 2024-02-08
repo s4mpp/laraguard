@@ -7,9 +7,9 @@
 		@csrf
 
 		<div>
-			<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{ $panel->getFieldUsername('title') }}</label>
+			<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{ $panel->getFieldUsername()->getTitle() }}</label>
 			<div class="mt-2">
-			  <input name="{{ $panel->getFieldUsername('field') }}" type="text" required value="{{ old($panel->getFieldUsername('field')) }}" class="
+			  <input name="{{ $panel->getFieldUsername()->getField() }}" type="text" required value="{{ old($panel->getFieldUsername()->getField()) }}" class="
 				block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm 
 				px-3
 				ring-none

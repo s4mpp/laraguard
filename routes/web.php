@@ -10,12 +10,14 @@ use S4mpp\Laraguard\Controllers\SignUpController;
 use S4mpp\Laraguard\Controllers\SignOutController;
 use S4mpp\Laraguard\Controllers\ChangePasswordController;
 use S4mpp\Laraguard\Controllers\RecoveryPasswordController;
+use S4mpp\Laraguard\Middleware\Panel;
 
 $panels = Laraguard::getPanels();
 
 foreach($panels as $panel)
 {
 	Route::prefix($panel->getPrefix())->middleware([
+		Panel::class,
 		\Illuminate\Session\Middleware\StartSession::class,
 		\Illuminate\View\Middleware\ShareErrorsFromSession::class
 	])->group(function() use ($panel)

@@ -24,6 +24,8 @@ class WorkbenchServiceProvider extends ServiceProvider
         $restricted_area = Laraguard::panel('Restricted area', 'restricted-area'); // web
 
         $restricted_area->addModule('Dashboard', 'home')->addIndex();
+
+        $restricted_area->addModule('No Index', 'no-index');
         
         $finances_module = $restricted_area->addModule('Finances', 'finances')->addIndex();
         $finances_module->addPage('Report')->middleware(ExampleMiddleware::class);

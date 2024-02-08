@@ -2,6 +2,8 @@
 
 namespace S4mpp\Laraguard\Tests;
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Contracts\Config\Repository;
 use Workbench\Database\Factories\UserFactory;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
@@ -21,4 +23,9 @@ abstract class TestCase extends BaseTestCase
 			'Customer' => ['customer',  'customer-area', CustomerFactory::class, 'web', 'restricted-area'],
 		];
 	}
+
+	protected function defineEnvironment($app)
+    {
+        Config::set('database.default', 'testing');
+    }
 }

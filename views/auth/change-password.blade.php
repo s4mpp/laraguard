@@ -1,5 +1,6 @@
 @extends('laraguard::auth.main')
 
+@section('title', 'Reset password')
 
 @section('content')
 

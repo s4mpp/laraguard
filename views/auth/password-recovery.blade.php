@@ -1,5 +1,7 @@
 @extends('laraguard::auth.main')
 
+@section('title', 'Recovery password')
+
 @section('content')
 
 	<form class="space-y-6"  method="POST" action="{{ route($panel->getRouteName('send_link_password')) }}">

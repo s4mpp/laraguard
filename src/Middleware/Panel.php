@@ -5,11 +5,11 @@ namespace S4mpp\Laraguard\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
-use S4mpp\Laraguard\Base\Panel;
+use S4mpp\Laraguard\Base\Panel as BasePanel;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class RestrictedArea
+class Panel
 {
     /**
      * Handle an incoming request.
@@ -18,12 +18,16 @@ class RestrictedArea
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $panel = Laraguard::getPanel(Panel::current());
-
-        if($panel && !Auth::guard($panel->getGuardName())->check())
+        $panel = Laraguard::getPanel(BasePanel::current());
+        
+        if(!$panel)
         {
-            return to_route($panel->getRouteName('login'))->withErrors('You are not logged in');
+            abort(404);
         }
+
+		$request->attributes->add([
+            'laraguard_panel' => $panel,
+        ]);
 
         return $next($request);
     }

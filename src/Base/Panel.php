@@ -4,27 +4,34 @@ namespace S4mpp\Laraguard\Base;
 
 use S4mpp\Laraguard\Utils;
 use S4mpp\Laraguard\Base\Module;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\App;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use PhpParser\Node\Expr\Instanceof_;
 use S4mpp\Laraguard\Navigation\Page;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Password;
 use S4mpp\Laraguard\Navigation\MenuItem;
+use S4mpp\Laraguard\Helpers\FieldUsername;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Auth\Passwords\PasswordBroker;
-use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\View\View;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use S4mpp\Laraguard\Notifications\ResetPassword;
 use S4mpp\Laraguard\Controllers\PersonalDataController;
 
 final class Panel
 {
-	private array $field_username = ['field' => 'email', 'title' => 'E-mail'];
+	private FieldUsername $field_username;
 
 	private bool $allow_auto_register = false;
 
+	/**
+	 * @var array<Module>
+	 */
 	private array $modules = [];
 
 	public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
@@ -33,6 +40,8 @@ final class Panel
 
 		$my_account->addPage('Save personal data', 'save-personal-data')->method('put')->action('savePersonalData');
 		$my_account->addPage('Save new password', 'change-password')->method('put')->action('changePassword');
+
+		$this->field_username = new FieldUsername('E-mail', 'email');
 	}
 
 	public function getTitle(): string
@@ -67,14 +76,23 @@ final class Panel
 		return $this->allow_auto_register;
 	}
 
-	public function getFieldUsername(string $index = null): string | array
+	public function getFieldUsername(): FieldUsername
 	{
-		if($index && isset($this->field_username[$index]))
+		return $this->field_username;
+	}
+
+	public function getModel(): ?Model
+	{
+		$model_name = Auth::guard($this->getGuardName())->getProvider()->getModel();
+
+		$model = new $model_name();
+
+		if(is_subclass_of($model, Model::class))
 		{
-			return $this->field_username[$index];
+			return $model;
 		}
 
-		return $this->field_username;
+		return null;
 	}
 
 	public function tryLogin(User $user, string $password): bool
@@ -86,10 +104,10 @@ final class Panel
 			return true;
         }
 
-		$field = $this->getFieldUsername('field');
+		$field_username = $this->getFieldUsername();
 
         $attempt = Auth::guard($this->getGuardName())->attempt([
-            $field => $user->{$field},
+            $field_username->getField() => $user->{$field_username->getField()},
             'password' => $password
         ]);
 
@@ -101,17 +119,15 @@ final class Panel
 		return Auth::guard($this->getGuardName())->check();
 	}
 
-	public function checkPassword(Authenticatable $user = null, string $password = null): bool
+	public function checkPassword(Authenticatable $user, string $password = null): bool
 	{
-		throw_if(!$user, 'Account not found');
-
 		$key = 'password:'.$this->guard_name.'.'.$user->id;
 
-		throw_if(RateLimiter::tooManyAttempts($key, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
+		throw_if(!App::environment('testing') && RateLimiter::tooManyAttempts($key, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
 
 		RateLimiter::hit($key);
         
-		throw_if(!Hash::check($password, $user->password), 'Senha inválida. Tente novamente');
+		throw_if(!Hash::check($password ?? '', $user->password), 'Senha inválida. Tente novamente');
 
 		return true;
 	}
@@ -136,6 +152,10 @@ final class Panel
 		return $module;
 	}
 
+	/**
+	 *
+	 * @return array<Module>
+	 */
 	public function getModules(): array
 	{
 		return $this->modules;
@@ -143,7 +163,7 @@ final class Panel
 
 	public static function current(): ?string
 	{
-		return Utils::getSegmentRouteName(1, request()->route()->getAction('as'));
+		return Utils::getSegmentRouteName(1);
 	}
 
 	public function getModule(string $module_name = null): ?Module
@@ -151,9 +171,13 @@ final class Panel
 		return $this->modules[$module_name] ?? null;
 	}
 
-	public function getLayout(string $view = null, array $data = []): View
+	/**
+	 *
+	 * @param array<mixed> $data
+	 */
+	public function getLayout(string $view = null, array $data = []): null | \Illuminate\Contracts\View\View | \Illuminate\Contracts\View\Factory
 	{	
-		return $this->getModule(Module::current())->getLayout($view, array_merge($data, [
+		return $this->getModule(Module::current())?->getLayout($view, array_merge($data, [
 			'panel' => $this,
 			'guard_name' => $this->getGuardName(),
 			'menu' => $this->getMenu(),
@@ -162,8 +186,13 @@ final class Panel
 		]));
 	}
 
+	/**
+	 *
+	 * @return array<MenuItem>
+	 */
 	public function getMenu(): array
 	{
+		 /** @phpstan-ignore-next-line  */
 		$current_route = request()?->route()?->getAction('as');
 
 		foreach($this->getModules() as $module)
@@ -175,7 +204,14 @@ final class Panel
 
 			$menu_item = (new MenuItem($module->getTitle(), $module->getSlug()));
 
-			$module_route = $this->getRouteName($module->getSlug(), 'index');
+			$first_page = $module->getFirstPage();
+
+			if(!$first_page)
+			{
+				continue;
+			}
+
+			$module_route = $this->getRouteName($module->getSlug(), $first_page->getSlug());
 			
 			$module_route_prefix = $this->getRouteName($module->getSlug());
 			
@@ -192,7 +228,7 @@ final class Panel
 		return $menu ?? [];
 	}
 
-	public function sendLinkRecoveryPassword(User $user)
+	public function sendLinkRecoveryPassword(User $user): mixed
 	{
 		return Password::broker($this->getGuardName())->sendResetLink(['email' => $user->email], function($user, $token)
         {
@@ -204,7 +240,7 @@ final class Panel
         });
 	}
 
-	public function resetPassword(User $user, string $token, string $new_password)
+	public function resetPassword(User $user, string $token, string $new_password): mixed
 	{
 		return Password::broker($this->getGuardName())->reset([
 			'email' => $user->email,

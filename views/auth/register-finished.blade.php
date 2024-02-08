@@ -1,5 +1,7 @@
 @extends('laraguard::auth.main')
 
+@section('title', 'Account created')
+
 @section('content')
 
 	<div class="text-center mb-10 text-base text-gray-700">

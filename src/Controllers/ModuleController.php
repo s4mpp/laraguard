@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ModuleController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(): null | \Illuminate\Contracts\View\View | \Illuminate\Contracts\View\Factory
     {
         return Laraguard::layout();
     }

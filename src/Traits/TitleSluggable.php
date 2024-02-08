@@ -5,11 +5,11 @@ use Illuminate\Support\Str;
 
 trait TitleSluggable
 {
-	private string $slug;
+	private ?string $slug = null;
 
-	public function getTitle(): ?string
+	public function getTitle(): string
 	{
-		return $this->title;
+		return $this->title ?? 'No title';
 	}
 
 	public function setSlug(string $slug = null): void
@@ -19,6 +19,6 @@ trait TitleSluggable
 
 	public function getSlug(): string
 	{
-		return $this->slug;
+		return $this->slug ?? 'no-title';
 	}
 }

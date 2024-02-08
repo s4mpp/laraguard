@@ -3,6 +3,7 @@
 namespace S4mpp\Laraguard\Base;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 use S4mpp\Laraguard\Utils;
 use Illuminate\Support\Str;
 use S4mpp\Laraguard\Base\Page;
@@ -16,6 +17,10 @@ final class Module
 
 	private bool $show_in_menu = true;
 	
+	/**
+	 *
+	 * @var array<Page>
+	 */
 	private array $pages = [];
 
 	public function __construct(private string $title, string $slug = null)
@@ -49,7 +54,7 @@ final class Module
 		return $this->controller;
 	}
 
-	public function addPage(string $title, string $uri = null, string $slug = null)
+	public function addPage(string $title, string $uri = null, string $slug = null): Page
 	{
 		$slug_title = Str::slug($title);
 
@@ -64,14 +69,23 @@ final class Module
 		return $page;
 	}
 
+	/**
+	 *
+	 * @return array<Page>
+	 */
 	public function getPages(): array
 	{
 		return $this->pages;
 	}
 
+	public function getFirstPage(): ?Page
+	{
+		return $this->pages['index'] ?? $this->pages[0] ?? null;
+	}
+
 	public static function current(): ?string
 	{
-		return Utils::getSegmentRouteName(2,  request()->route()->getAction('as'));
+		return Utils::getSegmentRouteName(2);
 	}
 
 	public function getPage(string $page_name = null): ?Page
@@ -91,9 +105,13 @@ final class Module
 		return $this->show_in_menu;
 	}
 
-	public function getLayout(string $view = null, array $data = []): View
+	/**
+	 *
+	 * @param array<mixed> $data
+	 */
+	public function getLayout(string $view = null, array $data = []): null | \Illuminate\Contracts\View\View | \Illuminate\Contracts\View\Factory
 	{
-		return $this->getPage(Page::current())->render($view, array_merge($data, [
+		return $this->getPage(Page::current())?->render($view, array_merge($data, [
 			'module_title' => $this->getTitle()
 		]));
 	}
