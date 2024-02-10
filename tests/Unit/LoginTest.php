@@ -70,7 +70,7 @@ class LoginTest extends TestCase
 	 */
 	public function test_check_password($guard_name, $uri, $factory)
 	{
-		$user = $factory::new(['password' => Hash::make('p455w9rd')])->create();
+		$user = $factory::new()->create(['password' => Hash::make('p455w9rd')]);
 
 		$panel = new Panel('', '', $guard_name);
 
@@ -86,7 +86,7 @@ class LoginTest extends TestCase
 	{
 		$this->expectException(RuntimeException::class);
 
-		$user = $factory::new(['password' => Hash::make('p455w9rd')])->create();
+		$user = $factory::new()->create(['password' => Hash::make('p455w9rd')]);
 
 		$panel = new Panel('', '', $guard_name);
 

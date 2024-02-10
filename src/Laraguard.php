@@ -2,47 +2,43 @@
 
 namespace S4mpp\Laraguard;
 
-use Illuminate\Contracts\View\View;
 use S4mpp\Laraguard\Base\Panel;
+use Illuminate\Contracts\View\View;
 
-
-class Laraguard
+final class Laraguard
 {
-	/**
-	 *
-	 * @var array<Panel>
-	 */
-	private static array $panels = [];
+    /**
+     * @var array<Panel>
+     */
+    private static array $panels = [];
 
-	public static function panel(string $title, string $prefix = '', string $guard = 'web'): Panel
-	{
-		$panel = new Panel($title, $prefix, $guard);
-		
-		self::$panels[$guard] = $panel;
+    public static function panel(string $title, string $prefix = '', string $guard = 'web'): Panel
+    {
+        $panel = new Panel($title, $prefix, $guard);
 
-		return $panel;
-	}
+        self::$panels[$guard] = $panel;
 
-	/**
-	 *
-	 * @return array<Panel>
-	 */
-	public static function getPanels(): array
-	{
-		return self::$panels;
-	}
+        return $panel;
+    }
 
-	public static function getPanel(string $guard_name = null): ?Panel
-	{
-		return self::$panels[$guard_name] ?? null;
-	}
+    /**
+     * @return array<Panel>
+     */
+    public static function getPanels(): array
+    {
+        return self::$panels;
+    }
 
-	/**
-	 *
-	 * @param array<mixed> $data
-	 */
-	public static function layout(string $view = null, array $data = []): null | \Illuminate\Contracts\View\View | \Illuminate\Contracts\View\Factory
-	{
-		return self::getPanel(Panel::current())?->getLayout($view, $data);
-	}
+    public static function getPanel(?string $guard_name = null): ?Panel
+    {
+        return self::$panels[$guard_name] ?? null;
+    }
+
+    /**
+     * @param  array<mixed>  $data
+     */
+    public static function layout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
+    {
+        return self::getPanel(Panel::current())?->getLayout($view, $data);
+    }
 }

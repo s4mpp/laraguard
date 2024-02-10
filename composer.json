@@ -21,7 +21,8 @@
         "orchestra/testbench": "^8.20",
         "nunomaduro/collision": "^7.8",
         "larastan/larastan": "^2.0",
-        "laravel/pint": "^1.13"
+        "laravel/pint": "^1.13",
+        "orchestra/testbench-dusk": "^8.22"
     },
     "autoload-dev": {
         "psr-4": {
@@ -50,6 +51,12 @@
         ],
         "test": [
             "@php vendor/bin/phpunit"
-        ]
+        ],
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare",
+            "@dusk:install-chromedriver"
+        ],
+        "dusk:install-chromedriver": "@php vendor/bin/dusk-updater detect --auto-update --ansi"
     }
 }

@@ -1,6 +1,6 @@
 @extends('laraguard::auth.main')
 
-@section('title', 'Recovery password')
+@section('title', __('laraguard::recovery_password.title'))
 
 @section('content')
 
@@ -25,11 +25,11 @@
 		</div>
 
 		<div>
-			<button type="submit" class="ease-linear transition  flex w-full justify-center rounded-md bg-gray-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">Enviar e-mail</button>
+			<button type="submit" class="ease-linear transition  flex w-full justify-center rounded-md bg-gray-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">{{ __('laraguard::recovery_password.send_email') }}</button>
 		</div>
 
 		<p class="mt-10 text-center text-sm text-gray-500">
-			<a tabindex="-1" href="{{route($panel->getRouteName('login')) }}" class="font-semibold leading-6 text-gray-600 hover:text-gray-500">Go back</a>
+			<a tabindex="-1" href="{{route($panel->getRouteName('login')) }}" class="font-semibold leading-6 text-gray-600 hover:text-gray-500">{{ __('laraguard::login.go_back') }}</a>
 		</p>
 	</form>
 @endsection

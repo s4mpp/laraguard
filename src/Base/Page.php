@@ -8,166 +8,162 @@ use S4mpp\Laraguard\Traits\TitleSluggable;
 use S4mpp\Laraguard\Controllers\PageController;
 
 final class Page
-{	
-	use TitleSluggable;
+{
+    use TitleSluggable;
 
-	// private string $controller = PageController::class;
+    // private string $controller = PageController::class;
 
-	private ?string $method = 'GET';
-	
-	private ?string $action = null;
-	
-	private ?string $view = null;
-	
-	private ?string $uri = null;
+    private ?string $method = 'GET';
 
-	private bool $is_index = false;
+    private ?string $action = null;
 
-	/**
-	 *
-	 * @var array<string>
-	 */
-	private array $middlewares = [];
+    private ?string $view = null;
 
-	// private bool $show_in_menu = true;
+    private ?string $uri = null;
 
-	public function __construct(private string $title, string $slug = null)
-	{
-		$this->setSlug($slug);
-	}
+    private bool $is_index = false;
 
-	public function uri(string $uri): self
-	{
-		$this->uri = $uri;
+    /**
+     * @var array<string>
+     */
+    private array $middlewares = [];
 
-		return $this;
-	}
+    // private bool $show_in_menu = true;
 
-	public function view(string $view): self
-	{
-		$this->view = $view;
+    public function __construct(private string $title, ?string $slug = null)
+    {
+        $this->setSlug($slug);
+    }
 
-		return $this;
-	}
+    public function uri(string $uri): self
+    {
+        $this->uri = $uri;
 
-	public function action(string $action): self
-	{
-		$this->action = $action;
+        return $this;
+    }
 
-		return $this;
-	}
+    public function view(string $view): self
+    {
+        $this->view = $view;
 
-	public function method(string $method): self
-	{
-		$this->method = $method;
+        return $this;
+    }
 
-		return $this;
-	}
+    public function action(string $action): self
+    {
+        $this->action = $action;
 
-	public function index(): self
-	{
-		$this->is_index = true;
+        return $this;
+    }
 
-		return $this;
-	}
-	
-	public function isIndex(): bool
-	{
-		return $this->is_index;
-	}
+    public function method(string $method): self
+    {
+        $this->method = $method;
 
-	/**
-	 *
-	 * @param array<mixed> $middlewares
-	 */
-	public function middleware(...$middlewares): self
-	{
-		array_push($this->middlewares, $middlewares);
+        return $this;
+    }
 
-		return $this;
-	}
+    public function index(): self
+    {
+        $this->is_index = true;
 
-	public static function current(): ?string
-	{
-		return Utils::getSegmentRouteName(3);
-	}
-	
+        return $this;
+    }
 
-	// public function controller(string $controller, string $action = null)
-	// {
-	// 	$this->controller = $controller;
+    public function isIndex(): bool
+    {
+        return $this->is_index;
+    }
 
-	// 	$this->method = $action;
+    /**
+     * @param  array<mixed>  $middlewares
+     */
+    public function middleware(...$middlewares): self
+    {
+        array_push($this->middlewares, $middlewares);
 
-	// 	return $this;
-	// }
+        return $this;
+    }
 
-	// public function hideInMenu()
-	// {
-	// 	$this->show_in_menu = false;
+    public static function current(): ?string
+    {
+        return Utils::getSegmentRouteName(3);
+    }
 
-	// 	return $this;
-	// }
+    // public function controller(string $controller, string $action = null)
+    // {
+    // 	$this->controller = $controller;
 
-	// public function canShowInMenu(): bool
-	// {
-	// 	return $this->show_in_menu;
-	// }
+    // 	$this->method = $action;
 
-	public function getAction(): ?string
-	{
-		return $this->action;
-	}
+    // 	return $this;
+    // }
 
-	public function getMethod(): ?string
-	{
-		return $this->method;
-	}
+    // public function hideInMenu()
+    // {
+    // 	$this->show_in_menu = false;
 
-	public function getView(): string
-	{
-		return $this->view ?? 'laraguard::blank';
-	}
+    // 	return $this;
+    // }
 
-	public function getUri(): ?string
-	{
-		return $this->uri;
-	}
+    // public function canShowInMenu(): bool
+    // {
+    // 	return $this->show_in_menu;
+    // }
 
-	/**
-	 *
-	 * @param array<mixed> $data
-	 */
-	public function render(string $file = null, array $data = []): \Illuminate\Contracts\View\View | \Illuminate\Contracts\View\Factory
-	{
-		$file = $file ?? $this->getView();
+    public function getAction(): ?string
+    {
+        return $this->action;
+    }
 
-		$title = $this->getTitle();
+    public function getMethod(): ?string
+    {
+        return $this->method;
+    }
 
-		$data['home_url'] = $data['my_account_url'];
+    public function getView(): string
+    {
+        return $this->view ?? 'laraguard::blank';
+    }
 
-		$data['page_title'] = !empty($title) ? $title : $data['module_title'];
+    public function getUri(): ?string
+    {
+        return $this->uri;
+    }
 
-		return view($file, $data);
-	}
+    /**
+     * @param  array<mixed>  $data
+     */
+    public function render(?string $file = null, array $data = []): View|\Illuminate\Contracts\View\Factory
+    {
+        $file ??= $this->getView();
 
-	// public function getController(): string
-	// {
-	// 	return $this->controller;
-	// }
+        $title = $this->getTitle();
 
-	// public function getMethod(): string
-	// {
-	// 	return $this->method;
-	// }
+        $data['home_url'] = $data['my_account_url'];
 
-	// public function hasController(): bool
-	// {
-	// 	return isset($this->controller);
-	// }
+        $data['page_title'] = ! empty($title) ? $title : $data['module_title'];
 
-	// public function getRouteName(string $panel_slug): string
-	// {
-	// 	return 'my-account.'.$panel_slug.'.page.'.$this->getSlug();
-	// }
+        return view($file, $data);
+    }
+
+    // public function getController(): string
+    // {
+    // 	return $this->controller;
+    // }
+
+    // public function getMethod(): string
+    // {
+    // 	return $this->method;
+    // }
+
+    // public function hasController(): bool
+    // {
+    // 	return isset($this->controller);
+    // }
+
+    // public function getRouteName(string $panel_slug): string
+    // {
+    // 	return 'my-account.'.$panel_slug.'.page.'.$this->getSlug();
+    // }
 }

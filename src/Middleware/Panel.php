@@ -6,10 +6,9 @@ use Closure;
 use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel as BasePanel;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class Panel
+final class Panel
 {
     /**
      * Handle an incoming request.
@@ -19,13 +18,12 @@ class Panel
     public function handle(Request $request, Closure $next): Response
     {
         $panel = Laraguard::getPanel(BasePanel::current());
-        
-        if(!$panel)
-        {
+
+        if (! $panel) {
             abort(404);
         }
 
-		$request->attributes->add([
+        $request->attributes->add([
             'laraguard_panel' => $panel,
         ]);
 

@@ -9,7 +9,7 @@ use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class RestrictedArea
+final class RestrictedArea
 {
     /**
      * Handle an incoming request.
@@ -20,8 +20,7 @@ class RestrictedArea
     {
         $panel = Laraguard::getPanel(Panel::current());
 
-        if($panel && !Auth::guard($panel->getGuardName())->check())
-        {
+        if ($panel && ! Auth::guard($panel->getGuardName())->check()) {
             return to_route($panel->getRouteName('login'))->withErrors('You are not logged in');
         }
 

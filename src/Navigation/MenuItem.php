@@ -4,80 +4,78 @@ namespace S4mpp\Laraguard\Navigation;
 
 use S4mpp\Laraguard\Traits\TitleSluggable;
 
-
 final class MenuItem
 {
-	use TitleSluggable;
+    use TitleSluggable;
 
-	private string $action = '#';
+    private string $action = '#';
 
-	private bool $is_active = false;
-	
-	public function __construct(private string $title, string $slug = null)
-	{
-		$this->slug = $slug;
-	}
+    private bool $is_active = false;
 
-	public function setAction(string $action): self
-	{
-		$this->action = $action;
+    public function __construct(private string $title, ?string $slug = null)
+    {
+        $this->slug = $slug;
+    }
 
-		return $this;
-	}
+    public function setAction(string $action): self
+    {
+        $this->action = $action;
 
-	public function getAction(): string
-	{
-		return $this->action;
-	}
+        return $this;
+    }
 
-	// use Slugable, Ordenable, Titleable;
+    public function getAction(): string
+    {
+        return $this->action;
+    }
 
-	// private $is_active = false;
+    // use Slugable, Ordenable, Titleable;
 
-	// private ?string $route = null;
-	
-	// private $target = null;
+    // private $is_active = false;
 
-	// public function __construct(private string $title)
-	// {
-	// // 	$this->createSlug($title);
+    // private ?string $route = null;
 
-	// // 	$this->route('admin.'.$this->slug);
+    // private $target = null;
 
-	// }
+    // public function __construct(private string $title)
+    // {
+    // // 	$this->createSlug($title);
 
-	// public function route(string $route)
-	// {
-	// 	$this->route = $route;
+    // // 	$this->route('admin.'.$this->slug);
 
-	// 	return $this;
-	// }
+    // }
 
-	// public function target(array | string $target)
-	// {
-	// 	$this->target = $target;
+    // public function route(string $route)
+    // {
+    // 	$this->route = $route;
 
-	// 	return $this;
-	// }
+    // 	return $this;
+    // }
 
-	public function activate(): void
-	{
-		$this->is_active = true;
-	}
+    // public function target(array | string $target)
+    // {
+    // 	$this->target = $target;
 
-	// public function getTarget(): array | string
-	// {
-	// 	return $this->target;
-	// }
+    // 	return $this;
+    // }
 
-	public function isActive(): bool
-	{
-		return $this->is_active;
-	}
+    public function activate(): void
+    {
+        $this->is_active = true;
+    }
 
+    // public function getTarget(): array | string
+    // {
+    // 	return $this->target;
+    // }
 
-	// public function getRoute()
-	// {
-	// 	return $this->route;
-	// }
+    public function isActive(): bool
+    {
+        return $this->is_active;
+    }
+
+    // public function getRoute()
+    // {
+    // 	return $this->route;
+    // }
 }

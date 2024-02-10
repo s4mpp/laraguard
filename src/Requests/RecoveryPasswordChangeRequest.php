@@ -4,7 +4,7 @@ namespace S4mpp\Laraguard\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RecoveryPasswordChangeRequest extends FormRequest
+final class RecoveryPasswordChangeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,7 +19,7 @@ class RecoveryPasswordChangeRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     *  @return array<array{string}>
+     * @return array<array{string}>
      */
     public function rules(): array
     {

@@ -4,40 +4,38 @@ namespace S4mpp\Laraguard;
 
 use Illuminate\Support\Facades\Lang;
 
-
-class Utils
+final class Utils
 {
-	public static function getSegmentRouteName(int $path_step, string $current_route = null): ?string
-	{
-		if(!$current_route)
-		{
-			/** @phpstan-ignore-next-line  */
-		   $current_route = request()?->route()?->getAction('as');
-		}
+    public static function getSegmentRouteName(int $path_step, ?string $current_route = null): ?string
+    {
+        if (!$current_route)
+        {
+            /** @phpstan-ignore-next-line  */
+            $current_route = request()?->route()?->getAction('as');
+        }
 
-		$path_steps = explode('.', $current_route);
-		
-		return $path_steps[$path_step] ?? null;
-	}
+        $path_steps = explode('.', $current_route);
 
-	/**
-	 *
-	 * @param array<mixed> $replace
-	 */
-	public static function translate(string $key, array $replace = []): string
-	{
-		if(!Lang::has($key))
-		{
-			return $key;
-		}
+        return $path_steps[$path_step] ?? null;
+    }
 
-		$str_translated = Lang::get($key, $replace);
+    /**
+     * @param  array<mixed>  $replace
+     */
+    public static function translate(string $key, array $replace = []): string
+    {
+        if (!Lang::has($key))
+        {
+            return $key;
+        }
 
-		if(is_array($str_translated))
-		{
-			return 'TRANSLATION ARRAY: '.json_encode($str_translated);
-		}
+        $str_translated = Lang::get($key, $replace);
 
-		return $str_translated;
-	}
+        if (is_array($str_translated))
+        {
+            return 'TRANSLATION ARRAY: ' . json_encode($str_translated);
+        }
+
+        return $str_translated;
+    }
 }

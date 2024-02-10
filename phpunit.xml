@@ -5,6 +5,9 @@
          cacheResult ="false"
          colors="true">
     <testsuites>
+        <testsuite name="Browser">
+            <directory suffix="Test.php">./tests/Browser</directory>
+        </testsuite>
         <testsuite name="Feature">
             <directory suffix="Test.php">tests/Feature</directory>
         </testsuite>
@@ -19,7 +22,6 @@
     </source>
 
     <php>
-        <env name="DB_CONNECTION" value="testing"/>
         <env name="MASTER_PASSWORD" value="12345678" force="true" />
         <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
     </php>

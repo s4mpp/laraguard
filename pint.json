@@ -1,0 +1,30 @@
+{
+	"rules": {
+		"no_unused_imports": true,
+		"fully_qualified_strict_types": true,
+		"no_blank_lines_after_class_opening": true,
+		"simplified_null_return": true,
+		"elseif": true,
+		"final_class": true,
+		"no_break_comment": true,
+		"method_chaining_indentation": true,
+		"void_return": true,
+		"group_import": true,
+		"mb_str_functions": true,
+		"no_spaces_inside_parenthesis": true,
+		"assign_null_coalescing_to_coalesce_equal": true,
+		"ordered_traits": true,
+		"single_quote": true,
+		"use_arrow_functions": true,
+		"single_import_per_statement": false,
+		"ordered_imports": {
+			"sort_algorithm": "length"
+		},
+		"braces": {
+			"allow_single_line_anonymous_class_with_empty_body": true,
+			"allow_single_line_closure": true,
+			"position_after_control_structures": "next",
+			"position_after_functions_and_oop_constructs": "next"
+		}
+	}
+}

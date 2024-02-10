@@ -3,3 +3,4 @@ vendor
 .phpunit.cache
 --configuration=
 .env
+.editorconfig
