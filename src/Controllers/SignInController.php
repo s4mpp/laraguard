@@ -20,7 +20,7 @@ final class SignInController extends Controller
 
     public function attempt(Request $request): RedirectResponse
     {
-        $field_username = $request->get('laraguard_panel')->auth()->getFieldUsername();
+        $field_username = $request->get('laraguard_panel')->auth()->getCredentialFields();
 
         $field = $field_username->getField();
 

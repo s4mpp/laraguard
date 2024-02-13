@@ -7,9 +7,9 @@
 		@csrf
 
 		<div>
-			<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{ $panel->auth()->getFieldUsername()->getTitle() }}</label>
+			<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{ $panel->auth()->getCredentialFields()->getTitle() }}</label>
 			<div class="mt-2">
-			  <input name="{{ $panel->auth()->getFieldUsername()->getField() }}" type="text" required value="{{ old($panel->auth()->getFieldUsername()->getField()) }}" class="
+			  <input name="{{ $panel->auth()->getCredentialFields()->getField() }}" type="text" required value="{{ old($panel->auth()->getCredentialFields()->getField()) }}" class="
 				block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm 
 				px-3
 				ring-none

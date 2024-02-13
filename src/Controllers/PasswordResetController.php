@@ -34,7 +34,7 @@ final class PasswordResetController extends Controller
             return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(__('laraguard::password_recovery.invalid_token'));
         }
 
-        $status = $request->get('laraguard_panel')->password()->resetPassword($user, $request->token ?? '', $request->password ?? '');
+        $status = $request->get('laraguard_panel')->auth()->resetPassword($user, $request->token ?? '', $request->password ?? '');
 
         return $status === PasswordBroker::PASSWORD_RESET
             ? to_route($request->get('laraguard_panel')->getRouteName('login'))->with('message', __($status))->withInput(['email' => $user->email])

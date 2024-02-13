@@ -6,7 +6,6 @@ use S4mpp\Laraguard\Laraguard;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Workbench\App\Models\{Customer, User};
-use Workbench\App\MIddleware\ExampleMiddleware;
 use Workbench\App\Controllers\{ExtractController, TeamController, WithdrawalController};
 
 final class WorkbenchServiceProvider extends ServiceProvider
@@ -21,7 +20,7 @@ final class WorkbenchServiceProvider extends ServiceProvider
         $restricted_area->addModule('Dashboard', 'home')->addIndex();
 
         $restricted_area->addModule('No Index', 'no-index');
-        
+
         $events = $restricted_area->addModule('Events', 'events');
         $events->addPage('List', 'list')->isIndex();
 
@@ -30,7 +29,7 @@ final class WorkbenchServiceProvider extends ServiceProvider
 
         $restricted_area->addSection('Section 1', 'section-1', [
             $restricted_area->addModule('Orders', 'orders')->addIndex('index-example'),
-            
+
             $restricted_area->addModule('Team')->controller(TeamController::class)->addIndex(),
         ]);
 

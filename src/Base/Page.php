@@ -6,7 +6,6 @@ use S4mpp\Laraguard\Utils;
 use Illuminate\Contracts\View\View;
 use S4mpp\Laraguard\Navigation\Breadcrumb;
 use S4mpp\Laraguard\Traits\TitleSluggable;
-use S4mpp\Laraguard\Controllers\PageController;
 
 final class Page
 {
@@ -123,13 +122,13 @@ final class Page
 
         $title = $this->getTitle();
 
-        $title = !empty($title) ? $title : $data['module_title'];
+        $title = ! empty($title) ? $title : $data['module_title'];
 
         $data['page_title'] = $title;
 
         // $data['breadcrumbs'][] = new Breadcrumb($title);
 
-        Breadcrumb::add(new Breadcrumb($title));
+        Breadcrumb::add(new Breadcrumb($title ?? ''));
 
         $data['breadcrumbs'] = Breadcrumb::getBreadcrumbs();
 

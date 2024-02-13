@@ -111,7 +111,7 @@ final class MenuItem
     {
         $route = $this->getRoute();
 
-        return $route && (strpos($current_route, $route) !== false);
+        return $route && (mb_strpos($current_route, $route) !== false);
     }
 
     // public function getRoute()

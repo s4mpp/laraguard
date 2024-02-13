@@ -23,7 +23,7 @@ final class LoginTest extends TestCase
 
         $guard = new Panel('', '', $guard_name);
 
-        $try = $guard->tryLogin($user, $this->password);
+        $try = $guard->auth()->tryLogin($user, $this->password);
 
         $this->assertTrue($try);
 
@@ -39,7 +39,7 @@ final class LoginTest extends TestCase
 
         $guard = new Panel('', '', $guard_name);
 
-        $try = $guard->tryLogin($user, '12345678');
+        $try = $guard->auth()->tryLogin($user, '12345678');
 
         $this->assertTrue($try);
 
@@ -55,7 +55,7 @@ final class LoginTest extends TestCase
 
         $guard = new Panel('', '', $guard_name);
 
-        $try = $guard->tryLogin($user, 'another_password');
+        $try = $guard->auth()->tryLogin($user, 'another_password');
 
         $this->assertFalse($try);
 
@@ -71,7 +71,7 @@ final class LoginTest extends TestCase
 
         $panel = new Panel('', '', $guard_name);
 
-        $test = $panel->checkPassword($user, 'p455w9rd');
+        $test = $panel->auth()->check($user, 'p455w9rd');
 
         $this->assertTrue($test);
     }
@@ -87,7 +87,7 @@ final class LoginTest extends TestCase
 
         $panel = new Panel('', '', $guard_name);
 
-        $test = $panel->checkPassword($user, 'xxxxxx123');
+        $test = $panel->auth()->check($user, 'xxxxxx123');
 
         $this->assertNull($test);
     }
@@ -105,7 +105,7 @@ final class LoginTest extends TestCase
 
         $guard = new Panel('', '', $another_guard);
 
-        $try = $guard->tryLogin($user, $password);
+        $try = $guard->auth()->tryLogin($user, $password);
 
         $this->assertFalse($try);
 

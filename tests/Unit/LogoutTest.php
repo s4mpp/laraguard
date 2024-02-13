@@ -20,7 +20,7 @@ final class LogoutTest extends TestCase
 
         Auth::guard($guard_name)->login($user);
 
-        $guard->logout();
+        $guard->auth()->logout();
 
         $this->assertNull(Auth::guard($guard_name)->user());
     }
@@ -32,7 +32,7 @@ final class LogoutTest extends TestCase
     {
         $guard = new Panel('', '', $guard_name);
 
-        $guard->logout();
+        $guard->auth()->logout();
 
         $this->assertNull(Auth::guard($guard_name)->user());
     }

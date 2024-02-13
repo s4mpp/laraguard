@@ -1,6 +1,6 @@
 <?php
 
-namespace S4mpp\Laraguard\Tests\Unit;
+namespace S4mpp\Laraguard\Tests\Unit\Navigation;
 
 use S4mpp\Laraguard\Tests\TestCase;
 use S4mpp\Laraguard\Navigation\MenuItem;
@@ -38,5 +38,14 @@ final class MenuItemTest extends TestCase
         $menu->setAction('test');
 
         $this->assertEquals('test', $menu->getAction());
+    }
+
+    public function test_add_submenu(): void
+    {
+        $menu = new MenuItem('', '');
+
+        $menu->addSubMenu(new MenuItem('', ''));
+
+        $this->assertTrue($menu->hasSubMenu());
     }
 }

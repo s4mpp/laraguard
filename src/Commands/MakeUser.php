@@ -4,11 +4,11 @@ namespace S4mpp\Laraguard\Commands;
 
 use S4mpp\Laraguard\Laraguard;
 use Illuminate\Console\Command;
-use S4mpp\Laraguard\Helpers\User;
 use Illuminate\Support\Facades\Hash;
-use S4mpp\Laraguard\Helpers\Credential;
+use Illuminate\Support\Facades\Validator;
+use S4mpp\Laraguard\Helpers\{Credential, User};
 
-class MakeUser extends Command
+final class MakeUser extends Command
 {
     /**
      * The name and signature of the console command.
@@ -29,19 +29,28 @@ class MakeUser extends Command
      */
     public function handle()
     {
-        try
-        {
+        try {
             $guard = $this->option('guard');
 
             $panel = Laraguard::getPanel($guard);
 
+            throw_if(!$panel, 'Invalid guard/panel');
+
             $model = $panel->getModel();
 
-            $name = $this->option('name') ?? Credential::suggestName();
-            Credential::validateName($name);
+            $name = $this->option('name') ?? 'User';
 
             $email = $this->option('email') ?? Credential::suggestEmail($model, $name);
-            Credential::validateEmail($panel->getModel(), $email);
+        
+            $validator = Validator::make([
+                'name' => $name,
+                'email' => $email,
+            ], [
+                'name' => ['required', 'string', 'min:3', 'max:150', "regex:/^[a-zA-ZãáàéèíìõóòúùÁÀÉÈÍÌÓÒÚÙçÇ.' ]+$/u"],
+                'email' => ['required', 'string', 'email', 'unique:'.$model->getTable()],
+            ]);
+
+            $validator->stopOnFirstFailure()->validate();
 
             $password = Credential::generatePassword();
 
@@ -49,21 +58,19 @@ class MakeUser extends Command
             $user->name = $name;
             $user->email = $email;
             $user->password = Hash::make($password);
-            
+
             $user->save();
 
-            $this->info('User created successfully:');
+            $this->line('User created successfully:');
+
             $this->info('Name: '.$name);
             $this->info('E-mail: '.$email);
             $this->info('Password: '.$password);
-
             $this->info('URL: '.route($panel->getRouteName('login')));
-        }
-        catch(\Exception $e)
-        {
+
+            return 0;
+        } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
-
-        return 0;
     }
 }

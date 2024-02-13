@@ -7,7 +7,8 @@ final class Menu
     private array $items = [];
 
     public function __construct(private $callback_get_route_name)
-    {}
+    {
+    }
 
     public function getLinks(): array
     {

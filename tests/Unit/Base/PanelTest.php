@@ -5,8 +5,8 @@ namespace S4mpp\Laraguard\Tests\Unit;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
-use S4mpp\Laraguard\Navigation\MenuItem;
 use S4mpp\Laraguard\Helpers\Credential;
+use S4mpp\Laraguard\Navigation\{MenuItem, MenuSection};
 
 final class PanelTest extends TestCase
 {
@@ -32,7 +32,7 @@ final class PanelTest extends TestCase
 
     public function test_get_name_fields(): void
     {
-        $field_username = $this->panel->getFieldUsername();
+        $field_username = $this->panel->auth()->getCredentialFields();
 
         $this->assertInstanceOf(Credential::class, $field_username);
 
@@ -55,11 +55,34 @@ final class PanelTest extends TestCase
         $this->assertTrue($this->panel->hasAutoRegister());
     }
 
+    public function test_get_menu_sections(): void
+    {
+        $panel = Laraguard::getPanel('web');
+
+        $sections = $panel->getMenuSections();
+
+        $this->assertIsArray($sections);
+        $this->assertContainsOnlyInstancesOf(MenuSection::class, $sections);
+    }
+
+    public function test_get_menu_section(): void
+    {
+        $panel = Laraguard::getPanel('web');
+
+        $section = $panel->getMenuSection('section-1');
+
+        $this->assertInstanceOf(MenuSection::class, $section);
+        $this->assertSame('Section 1', $section->getTitle());
+        $this->assertSame('section-1', $section->getSlug());
+    }
+
     public function test_get_menu(): void
     {
         $panel = Laraguard::getPanel('web');
 
-        $menu = $panel->getMenu();
+        $panel->menu()->generate($panel->getModules());
+
+        $menu = $panel->menu()->getLinks();
 
         $this->assertIsArray($menu);
 

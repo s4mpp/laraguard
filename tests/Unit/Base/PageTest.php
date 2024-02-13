@@ -11,7 +11,7 @@ final class PageTest extends TestCase
     public static function pageIndexProvider()
     {
         return [
-            'Blank' => [null, 'laraguard::blank'],
+            'Blank' => ['', 'laraguard::blank'],
             'View file' => ['view-file', 'view-file'],
         ];
     }
@@ -36,7 +36,7 @@ final class PageTest extends TestCase
         $this->assertCount(1, $module->getPages());
 
         $this->assertInstanceOf(Page::class, $index);
-        $this->assertEquals('Name Module', $index->getTitle());
+        $this->assertEquals('', $index->getTitle());
         $this->assertNull($index->getAction());
         $this->assertEquals($view_to_render, $index->getView());
         $this->assertEquals('index', $index->getSlug());

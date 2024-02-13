@@ -7,7 +7,7 @@ use S4mpp\Laraguard\Tests\TestCase;
 
 final class UtilsTest extends TestCase
 {
-    public function segmentRouteProvider()
+    public static function segmentRouteProvider()
     {
         return [
             ['lg.web', 1, 'web'],
@@ -17,7 +17,7 @@ final class UtilsTest extends TestCase
         ];
     }
 
-    public function translateProvider()
+    public static function translateProvider()
     {
         return [
             ['test.key', [], 'test.key'],

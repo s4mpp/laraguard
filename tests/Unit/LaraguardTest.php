@@ -8,6 +8,14 @@ use S4mpp\Laraguard\Tests\TestCase;
 
 final class LaraguardTest extends TestCase
 {
+    public function test_get_panels(): void
+    {
+        $all_panels = Laraguard::getPanels();
+
+        $this->assertIsArray($all_panels);
+        $this->assertCount(2, $all_panels);
+    }
+
     public function test_create_panel(): void
     {
         $creation = Laraguard::panel('New panel', 'new-panel', 'guard');
@@ -20,14 +28,6 @@ final class LaraguardTest extends TestCase
         $this->assertSame('new-panel', $creation->getPrefix());
 
         $this->assertFalse($creation->hasAutoRegister());
-    }
-
-    public function test_get_panels(): void
-    {
-        $all_panels = Laraguard::getPanels();
-
-        $this->assertIsArray($all_panels);
-        $this->assertCount(2, $all_panels);
     }
 
     /**

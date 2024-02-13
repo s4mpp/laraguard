@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Config;
 
-class Check extends Command
+final class Check extends Command
 {
     /**
      * The name and signature of the console command.
@@ -28,28 +28,27 @@ class Check extends Command
      */
     public function handle()
     {
-        foreach(Laraguard::getPanels() as $panel)
-		{
-			$this->line('Panel: '.$panel->getTitle());
+        foreach (Laraguard::getPanels() as $panel) {
+            $this->line('Panel: '.$panel->getTitle());
 
-			$guard = $panel->getGuardName();
+            $guard = $panel->getGuardName();
 
-			Config::has('auth.guards.'.$guard) ? $this->info('Guard '.$guard.' OK') : $this->error('Guard '.$guard.' NOT FOUND');
-			
-			Config::has('auth.passwords.'.$guard) ? $this->info('Password resetter '.$guard.' OK') : $this->error('Password resetter '.$guard.' NOT FOUND');
+            Config::has('auth.guards.'.$guard) ? $this->info('Guard '.$guard.' OK') : $this->error('Guard '.$guard.' NOT FOUND');
 
-			$model = $panel->getModel();
-			
-			$name_model = get_class($model) ?? null;
+            Config::has('auth.passwords.'.$guard) ? $this->info('Password resetter '.$guard.' OK') : $this->error('Password resetter '.$guard.' NOT FOUND');
 
-			$model ? $this->info('Model '.$name_model.' OK') : $this->error('Model '.$name_model.' NOT FOUND');
-			
-			method_exists($model, 'notify') ? $this->info('Notification Model OK') : $this->error('Notification Model NOT FOUND');
-			
-			is_subclass_of($model, User::class) ? $this->info('Authentication Model OK') : $this->error('Authentication Model NOT FOUND');
+            $model = $panel->getModel();
 
-			$this->newLine();
-		}
+            $name_model = get_class($model) ?? null;
+
+            $model ? $this->info('Model '.$name_model.' OK') : $this->error('Model '.$name_model.' NOT FOUND');
+
+            method_exists($model, 'notify') ? $this->info('Notification Model OK') : $this->error('Notification Model NOT FOUND');
+
+            is_subclass_of($model, User::class) ? $this->info('Authentication Model OK') : $this->error('Authentication Model NOT FOUND');
+
+            $this->newLine();
+        }
 
         return 0;
     }

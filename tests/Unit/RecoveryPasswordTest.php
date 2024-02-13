@@ -23,7 +23,7 @@ final class RecoveryPasswordTest extends TestCase
 
         $panel = new Panel('', '', $guard_name);
 
-        $status = $panel->password()->sendLink($user);
+        $status = $panel->auth()->sendLinkResetPassword($user);
 
         $this->assertSame($status, PasswordBroker::RESET_LINK_SENT);
 
@@ -45,7 +45,7 @@ final class RecoveryPasswordTest extends TestCase
 
         $panel = new Panel('', '', $guard_name);
 
-        $status = $panel->password()->sendLink($user);
+        $status = $panel->auth()->sendLinkResetPassword($user);
 
         $this->assertSame($status, PasswordBroker::INVALID_USER);
 

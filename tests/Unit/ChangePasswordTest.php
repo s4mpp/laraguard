@@ -23,7 +23,7 @@ final class ChangePasswordTest extends TestCase
 
         $token = Password::broker($guard_name)->createToken($user);
 
-        $status = $panel->resetPassword($user, $token, $new_password);
+        $status = $panel->auth()->resetPassword($user, $token, $new_password);
 
         $user->refresh();
 
@@ -49,7 +49,7 @@ final class ChangePasswordTest extends TestCase
 
         $panel = new Panel('', '', $guard_name);
 
-        $status = $panel->resetPassword($user, rand(), $new_password);
+        $status = $panel->auth()->resetPassword($user, rand(), $new_password);
 
         $user->refresh();
 

@@ -2,9 +2,8 @@
 
 namespace S4mpp\Laraguard\Providers;
 
-use S4mpp\Laraguard\Commands\Check;
-use S4mpp\Laraguard\Commands\MakeUser;
 use Illuminate\Support\ServiceProvider;
+use S4mpp\Laraguard\Commands\{Check, MakeUser};
 
 final class LaraguardServiceProvider extends ServiceProvider
 {
@@ -16,11 +15,10 @@ final class LaraguardServiceProvider extends ServiceProvider
 
         $this->loadTranslationsFrom(__DIR__.'/../../lang', 'laraguard');
 
-        if($this->app->runningInConsole())
-		{
+        if ($this->app->runningInConsole()) {
             $this->commands([
                 MakeUser::class,
-                Check::class
+                Check::class,
             ]);
         }
     }

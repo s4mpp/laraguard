@@ -5,9 +5,8 @@ namespace S4mpp\Laraguard\Base;
 use S4mpp\Laraguard\Utils;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\View\View;
-use S4mpp\Laraguard\Navigation\Breadcrumb;
 use S4mpp\Laraguard\Traits\TitleSluggable;
-use S4mpp\Laraguard\Navigation\MenuSection;
+use S4mpp\Laraguard\Navigation\{Breadcrumb, MenuSection};
 
 final class Module
 {
@@ -105,8 +104,8 @@ final class Module
 
     public function getPageIndex(): ?Page
     {
-        foreach($this->getPages() as $page) {
-            if($page->getIsIndex()) {
+        foreach ($this->getPages() as $page) {
+            if ($page->getIsIndex()) {
                 return $page;
             }
         }
@@ -143,13 +142,12 @@ final class Module
     {
         $module_title = ($this->translate_title) ? Utils::translate($this->title) : $this->getTitle();
 
-        if($this->section)
-        {
+        if ($this->section) {
             Breadcrumb::add(new Breadcrumb($this->section->getTitle()));
         }
 
         Breadcrumb::add(new Breadcrumb(new Breadcrumb($module_title)));
-        
+
         return $this->getPage(Page::current())?->render($view, array_merge($data, [
             'module_title' => $module_title,
         ]));

@@ -2,23 +2,24 @@
 
 namespace S4mpp\Laraguard;
 
-use Illuminate\Auth\Authenticatable;
 use Illuminate\Foundation\Auth\User;
 use S4mpp\Laraguard\Helpers\Credential;
-use Illuminate\Support\Facades\{App, Auth as LaravelAuth, Hash, RateLimiter, Session};
+use Illuminate\Contracts\Auth\PasswordBroker;
+use S4mpp\Laraguard\Notifications\ResetPassword;
+use Illuminate\Support\Facades\{App, Auth as LaravelAuth, Hash, Password, RateLimiter, Session};
 
 final class Auth
 {
-    private Credential $field_username;
+    private Credential $credential_fields;
 
-    public function __construct(private string $guard_name)
+    public function __construct(private string $guard_name, private $callback_get_route_name)
     {
-        $this->field_username = new Credential('E-mail', 'email');
+        $this->credential_fields = new Credential('E-mail', 'email');
     }
 
-    public function getFieldUsername(): Credential
+    public function getCredentialFields(): Credential
     {
-        return $this->field_username;
+        return $this->credential_fields;
     }
 
     public function tryLogin(User $user, string $password): bool
@@ -29,10 +30,10 @@ final class Auth
             return true;
         }
 
-        $field_username = $this->getFieldUsername();
+        $credential_fields = $this->getCredentialFields();
 
         $attempt = LaravelAuth::guard($this->guard_name)->attempt([
-            $field_username->getField() => $user->{$field_username->getField()},
+            $credential_fields->getField() => $user->{$credential_fields->getField()},
             'password' => $password,
         ]);
 
@@ -66,5 +67,29 @@ final class Auth
         Session::regenerateToken();
 
         return ! $this->checkIfIsUserIsLogged();
+    }
+
+    public function sendLinkResetPassword(User $user): mixed
+    {
+        return Password::broker($this->guard_name)->sendResetLink(['email' => $user->email], function ($user, $token) {
+            $url = route(call_user_func($this->callback_get_route_name, 'change_password'), ['token' => $token, 'email' => $user->email]);
+
+            $user->notify(new ResetPassword($url));
+
+            return PasswordBroker::RESET_LINK_SENT;
+        });
+    }
+
+    public function resetPassword(User $user, string $token, string $new_password): mixed
+    {
+        return Password::broker($this->guard_name)->reset([
+            'email' => $user->email,
+            'token' => $token,
+            'password' => $new_password,
+        ], function (User $user, string $password): void {
+            $user->forceFill([
+                'password' => Hash::make($password),
+            ])->save();
+        });
     }
 }

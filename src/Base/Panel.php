@@ -22,8 +22,6 @@ final class Panel
 
     private LaraguardAuth $auth;
 
-    private LaraguardPassword $password;
-
     private Menu $menu;
 
     /**
@@ -42,11 +40,11 @@ final class Panel
         $my_account->addPage('', 'save-personal-data', 'save-personal-data')->method('put')->action('savePersonalData');
         $my_account->addPage('', 'change-password', 'change-password')->method('put')->action('changePassword');
 
-        $this->auth = new LaraguardAuth($guard_name);
+        $callback_get_route_name = fn (...$params) => $this->getRouteName(...$params);
 
-        $this->password = new LaraguardPassword($guard_name);
+        $this->auth = new LaraguardAuth($guard_name, $callback_get_route_name);
 
-        $this->menu = new Menu(fn (...$params) => $this->getRouteName(...$params));
+        $this->menu = new Menu($callback_get_route_name);
     }
 
     public function auth(): LaraguardAuth
@@ -54,9 +52,9 @@ final class Panel
         return $this->auth;
     }
 
-    public function password(): LaraguardPassword
+    public function menu(): Menu
     {
-        return $this->password;
+        return $this->menu;
     }
 
     public function getTitle(): string
@@ -97,11 +95,7 @@ final class Panel
 
         $model = new $model_name();
 
-        if (is_subclass_of($model, Model::class)) {
-            return $model;
-        }
-
-        return null;
+        return (is_subclass_of($model, Model::class)) ? $model : null;
     }
 
     public function addModule(string $title, ?string $slug = null): Module

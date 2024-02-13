@@ -4,7 +4,6 @@ namespace S4mpp\Laraguard\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\{RedirectResponse, Request};
 use Illuminate\Support\Facades\{Auth, Password};
 use S4mpp\Laraguard\Controllers\{BaseController, LaraguardController};
@@ -31,11 +30,7 @@ final class PasswordRecoveryController extends Controller
 
             throw_if(! $user, __('laraguard::password_recovery.account_not_found'));
 
-            throw_if(! is_subclass_of($user, User::class), 'Exception: Element is not Authenticatable');
-
-            throw_if(! method_exists($user, 'notify'), 'Exception: Element is not notifiable');
-
-            $status = $request->get('laraguard_panel')->password()->sendLinkRecoveryPassword($user);
+            $status = $request->get('laraguard_panel')->auth()->sendLinkResetPassword($user);
 
             throw_if(! is_string($status), __('laraguard::password_recovery.fail_to_send_email'));
 

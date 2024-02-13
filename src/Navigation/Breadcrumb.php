@@ -7,12 +7,12 @@ final class Breadcrumb
     private static array $breadcrumbs = [];
 
     public function __construct(private string $title, private ?string $url = null)
-    {}
+    {
+    }
 
     public static function add(Breadcrumb $breadcrumb): void
     {
-        if(array_key_exists($breadcrumb->title, self::$breadcrumbs))
-        {
+        if (array_key_exists($breadcrumb->title, self::$breadcrumbs)) {
             return;
         }
 
