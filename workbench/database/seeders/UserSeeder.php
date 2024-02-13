@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Workbench\Database\Factories\UserFactory;
 
-class UserSeeder extends Seeder
+final class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.

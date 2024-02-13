@@ -2,19 +2,14 @@
 
 namespace Workbench\App\Providers;
 
-use FinanceController;
 use S4mpp\Laraguard\Laraguard;
-use Workbench\App\Models\User;
-use Workbench\App\Models\Customer;
-use S4mpp\Laraguard\Navigation\Page;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
-use Workbench\App\Controllers\TeamController;
+use Workbench\App\Models\{Customer, User};
 use Workbench\App\MIddleware\ExampleMiddleware;
-use Workbench\App\Controllers\ExtractController;
-use Workbench\App\Controllers\WithdrawalController;
+use Workbench\App\Controllers\{ExtractController, TeamController, WithdrawalController};
 
-class WorkbenchServiceProvider extends ServiceProvider
+final class WorkbenchServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -27,15 +22,21 @@ class WorkbenchServiceProvider extends ServiceProvider
 
         $restricted_area->addModule('No Index', 'no-index');
         
+        $events = $restricted_area->addModule('Events', 'events');
+        $events->addPage('List', 'list')->isIndex();
+
         $finances_module = $restricted_area->addModule('Finances', 'finances')->addIndex();
-        $finances_module->addPage('Report')->middleware(ExampleMiddleware::class);
-        
-        $restricted_area->addModule('Orders', 'orders')->addIndex('index-example');
-        $restricted_area->addModule('Team')->controller(TeamController::class)->addIndex();
+        $finances_module->addPage('Report');
+
+        $restricted_area->addSection('Section 1', 'section-1', [
+            $restricted_area->addModule('Orders', 'orders')->addIndex('index-example'),
+            
+            $restricted_area->addModule('Team')->controller(TeamController::class)->addIndex(),
+        ]);
+
         $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class)->addIndex();
         $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class)->addIndex();
-            
-        
+
         Laraguard::panel('My account', 'customer-area', 'customer')->allowAutoRegister();
     }
 
@@ -56,7 +57,7 @@ class WorkbenchServiceProvider extends ServiceProvider
 
         Config::set('auth.guards.customer', [
             'driver' => 'session',
-            'provider' => 'customers'
+            'provider' => 'customers',
         ]);
 
         Config::set('auth.passwords.customer', [

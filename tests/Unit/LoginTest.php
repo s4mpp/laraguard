@@ -5,114 +5,111 @@ namespace S4mpp\Laraguard\Tests\Unit;
 use RuntimeException;
 use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
-use Illuminate\Foundation\Auth\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Workbench\Database\Factories\UserFactory;
-use Workbench\Database\Factories\CustomerFactory;
+use Illuminate\Support\Facades\{Auth, Hash};
+use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 
-class LoginTest extends TestCase
-{	
-	private string $password = 'passwd';
+final class LoginTest extends TestCase
+{
+    private string $password = 'passwd';
 
-	/**
-	 * @dataProvider guardProvider
-	 */
-	public function test_login($guard_name, $uri, $factory)
-	{
-		$user = $factory::new()->create([
-			'password' => Hash::make($this->password)
-		]);
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_login($guard_name, $uri, $factory): void
+    {
+        $user = $factory::new()->create([
+            'password' => Hash::make($this->password),
+        ]);
 
-		$guard = new Panel('', '', $guard_name);
+        $guard = new Panel('', '', $guard_name);
 
-		$try = $guard->tryLogin($user, $this->password);
+        $try = $guard->tryLogin($user, $this->password);
 
-		$this->assertTrue($try);
+        $this->assertTrue($try);
 
-		$this->assertAuthenticatedAs($user, $guard_name);
-	}
+        $this->assertAuthenticatedAs($user, $guard_name);
+    }
 
-	/**
-	 * @dataProvider guardProvider
-	 */
-	public function test_login_master_password($guard_name, $uri, $factory)
-	{
-		$user = $factory::new()->create();
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_login_master_password($guard_name, $uri, $factory): void
+    {
+        $user = $factory::new()->create();
 
-		$guard = new Panel('', '', $guard_name);
+        $guard = new Panel('', '', $guard_name);
 
-		$try = $guard->tryLogin($user, '12345678');
+        $try = $guard->tryLogin($user, '12345678');
 
-		$this->assertTrue($try);
+        $this->assertTrue($try);
 
-		$this->assertAuthenticatedAs($user, $guard_name);
-	}
+        $this->assertAuthenticatedAs($user, $guard_name);
+    }
 
-	/**
-	 * @dataProvider guardProvider
-	 */
-	public function test_login_invalid_password($guard_name, $uri, $factory)
-	{
-		$user = $factory::new()->create();
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_login_invalid_password($guard_name, $uri, $factory): void
+    {
+        $user = $factory::new()->create();
 
-		$guard = new Panel('', '', $guard_name);
+        $guard = new Panel('', '', $guard_name);
 
-		$try = $guard->tryLogin($user, 'another_password');
+        $try = $guard->tryLogin($user, 'another_password');
 
-		$this->assertFalse($try);
+        $this->assertFalse($try);
 
-		$this->assertNull(Auth::guard($guard_name)->user());
-	}
+        $this->assertNull(Auth::guard($guard_name)->user());
+    }
 
-	/**
-	 * @dataProvider guardProvider
-	 */
-	public function test_check_password($guard_name, $uri, $factory)
-	{
-		$user = $factory::new()->create(['password' => Hash::make('p455w9rd')]);
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_check_password($guard_name, $uri, $factory): void
+    {
+        $user = $factory::new()->create(['password' => Hash::make('p455w9rd')]);
 
-		$panel = new Panel('', '', $guard_name);
+        $panel = new Panel('', '', $guard_name);
 
-		$test = $panel->checkPassword($user, 'p455w9rd');
-		
-		$this->assertTrue($test);
-	}
+        $test = $panel->checkPassword($user, 'p455w9rd');
 
-	/**
-	 * @dataProvider guardProvider
-	 */
-	public function test_check_wrong_password($guard_name, $uri, $factory)
-	{
-		$this->expectException(RuntimeException::class);
+        $this->assertTrue($test);
+    }
 
-		$user = $factory::new()->create(['password' => Hash::make('p455w9rd')]);
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_check_wrong_password($guard_name, $uri, $factory): void
+    {
+        $this->expectException(RuntimeException::class);
 
-		$panel = new Panel('', '', $guard_name);
+        $user = $factory::new()->create(['password' => Hash::make('p455w9rd')]);
 
-		$test = $panel->checkPassword($user, 'xxxxxx123');
-		
-		$this->assertNull($test);
-	}
+        $panel = new Panel('', '', $guard_name);
 
-	/**
-	 * @dataProvider guardProvider
-	 */
-	public function test_login_in_another_guard($guard_name, $uri, $factory, $another_guard)
-	{
-		$password = 'passwd';
+        $test = $panel->checkPassword($user, 'xxxxxx123');
 
-		$user = $factory::new()->create([
-			'password' => Hash::make($password)
-		]);
+        $this->assertNull($test);
+    }
 
-		$guard = new Panel('', '', $another_guard);
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_login_in_another_guard($guard_name, $uri, $factory, $another_guard): void
+    {
+        $password = 'passwd';
 
-		$try = $guard->tryLogin($user, $password);
+        $user = $factory::new()->create([
+            'password' => Hash::make($password),
+        ]);
 
-		$this->assertFalse($try);
+        $guard = new Panel('', '', $another_guard);
 
-		$this->assertNull(Auth::guard($another_guard)->user());
-		$this->assertNull(Auth::guard($guard_name)->user());
-	}
+        $try = $guard->tryLogin($user, $password);
+
+        $this->assertFalse($try);
+
+        $this->assertNull(Auth::guard($another_guard)->user());
+        $this->assertNull(Auth::guard($guard_name)->user());
+    }
 }

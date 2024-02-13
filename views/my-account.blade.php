@@ -1,7 +1,5 @@
 @extends('laraguard::layout')
 
-@section('title', 'My account')
-
 @section('content')
 
 	<x-laraguard::errors />
@@ -25,7 +23,7 @@
 		</x-laraguard::card-setting>
 
 		<x-laraguard::card-setting title="Change password" subtitle="Update your password associated with your account">
-			<form action="{{ $url_save_new_password }}" method="POST">
+			<form action="{{ $url_save_password }}" method="POST">
 				@csrf
 				@method('PUT')
 				<div class="space-y-4">

@@ -4,7 +4,7 @@ namespace S4mpp\Laraguard\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-final class RecoveryPasswordChangeRequest extends FormRequest
+final class PasswordResetRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

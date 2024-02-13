@@ -4,10 +4,10 @@ namespace S4mpp\Laraguard\Controllers;
 
 use S4mpp\Laraguard\Laraguard;
 use Illuminate\Validation\Rule;
+use Illuminate\Routing\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\{Auth, Hash};
 use Illuminate\Http\{RedirectResponse, Request};
-use Illuminate\Routing\Controller;
 
 final class PersonalDataController extends Controller
 {
@@ -22,7 +22,7 @@ final class PersonalDataController extends Controller
         return Laraguard::layout('laraguard::my-account', [
             'guard' => $panel->getGuardName(),
             'url_save_personal_data' => route($route_save_personal_data),
-            'url_save_new_password' => route($route_change_password),
+            'url_save_password' => route($route_change_password),
         ]);
     }
 
@@ -43,18 +43,18 @@ final class PersonalDataController extends Controller
         ]);
 
         try {
-            $account = Auth::user();
+            $user = Auth::user();
 
-            if (! $account) {
+            if (! $user) {
                 throw new \Exception('Account not found');
             }
 
-            $panel->checkPassword($account, $validated_data['current_password']);
+            $panel->auth()->check($user, $validated_data['current_password']);
 
-            $account->name = $validated_data['name'];
-            $account->email = $validated_data['email'];
+            $user->name = $validated_data['name'];
+            $user->email = $validated_data['email'];
 
-            $account->save();
+            $user->save();
 
             return back()->with('message', 'Personal data saved');
         } catch (\Exception $e) {
@@ -73,17 +73,17 @@ final class PersonalDataController extends Controller
         ]);
 
         try {
-            $account = Auth::user();
+            $user = Auth::user();
 
-            if (! $account) {
+            if (! $user) {
                 throw new \Exception('Account not found');
             }
 
-            $panel->checkPassword($account, $validated_data['current_password']);
+            $panel->auth()->check($user, $validated_data['current_password']);
 
-            $account->password = Hash::make($validated_data['password']);
+            $user->password = Hash::make($validated_data['password']);
 
-            $account->save();
+            $user->save();
 
             return back()->with('message', 'Password has been changed');
         } catch (\Exception $e) {

@@ -8,33 +8,33 @@ use S4mpp\Laraguard\{Laraguard, Utils};
 use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Http\{RedirectResponse, Request};
 use Illuminate\Support\Facades\{Hash, Password};
-use S4mpp\Laraguard\Requests\RecoveryPasswordChangeRequest;
 use S4mpp\Laraguard\Controllers\{BaseController, LaraguardController};
+use S4mpp\Laraguard\Requests\{PasswordResetRequest, RecoveryPasswordChangeRequest};
 
-final class ChangePasswordController extends Controller
+final class PasswordResetController extends Controller
 {
     public function index(Request $request, string $token): View|\Illuminate\Contracts\View\Factory|RedirectResponse
     {
         $user = Password::broker($request->get('laraguard_panel')->getGuardName())->getUser(['email' => $request->get('email')]);
 
         if (! $user || ! Password::tokenExists($user, $token)) {
-            return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(__('laraguard::recovery_password.invalid_token'));
+            return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(__('laraguard::password_recovery.invalid_token'));
         }
 
         $panel = $request->get('laraguard_panel');
 
-        return view('laraguard::auth.change-password', compact('panel', 'user', 'token'));
+        return view('laraguard::auth.password-reset', compact('panel', 'user', 'token'));
     }
 
-    public function storePassword(RecoveryPasswordChangeRequest $request): RedirectResponse
+    public function storePassword(PasswordResetRequest $request): RedirectResponse
     {
         $user = Password::broker($request->get('laraguard_panel')->getGuardName())->getUser(['email' => $request->get('email')]);
 
         if (! $user || ! Password::tokenExists($user, $request->token ?? '')) {
-            return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(__('laraguard::recovery_password.invalid_token'));
+            return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(__('laraguard::password_recovery.invalid_token'));
         }
 
-        $status = $request->get('laraguard_panel')->resetPassword($user, $request->token ?? '', $request->password ?? '');
+        $status = $request->get('laraguard_panel')->password()->resetPassword($user, $request->token ?? '', $request->password ?? '');
 
         return $status === PasswordBroker::PASSWORD_RESET
             ? to_route($request->get('laraguard_panel')->getRouteName('login'))->with('message', __($status))->withInput(['email' => $user->email])

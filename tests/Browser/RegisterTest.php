@@ -2,69 +2,55 @@
 
 namespace S4mpp\Laraguard\Tests\Browser;
 
-use App\Models\User;
-use Laravel\Dusk\Chrome;
-use Laravel\Dusk\Browser;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Config;
+use Laravel\Dusk\{Browser, Chrome};
 use S4mpp\Laraguard\Tests\DuskTestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Workbench\Database\Factories\CustomerFactory;
+use Illuminate\Support\Facades\{Config, DB, Hash};
 
-class RegisterTest extends DuskTestCase
+final class RegisterTest extends DuskTestCase
 {
-	/**
-	 * @dataProvider panelProvider
-	 */
-	public function test_register_screen($panel): void
-	{
-		$this->browse(function (Browser $browser) use ($panel)
-		{
-			$browser->visit('/customer-area/signin')
-				->click('@register-button')
-				->assertPathIs('/customer-area/signup')
-				->assertTitle('My account | Register')
-	
-				->assertSee('Nome')
-				->assertInputValue('name', '')
-				
-				->assertSee('E-mail')
-				->assertInputValue('email', '')
+    /**
+     * @dataProvider panelProvider
+     */
+    public function test_register_screen($panel): void
+    {
+        $this->browse(function (Browser $browser): void {
+            $browser->visit('/customer-area/signin')
+                ->click('@register-button')
+                ->assertPathIs('/customer-area/signup')
+                ->assertTitle('My account | Register')
 
-				->assertSee('Password')
-				->assertInputValue('password', '')
+                ->assertSee('Nome')
+                ->assertInputValue('name', '')
 
-				->assertButtonEnabled('Cadastrar')
+                ->assertSee('E-mail')
+                ->assertInputValue('email', '')
 
-				->assertSeeLink('Go back');
-		});
-	}
+                ->assertSee('Password')
+                ->assertInputValue('password', '')
 
-	public function test_try_register(): void
-	{
-		$this->browse(function (Browser $browser) 
-		{
-			$password = '12346578abcd';
+                ->assertButtonEnabled('Cadastrar')
 
-			$user = CustomerFactory::new()->make();
+                ->assertSeeLink('Go back');
+        });
+    }
 
-			$browser->visit('/customer-area/signup')
-				->type('name', $user->name)
-				->type('email', $user->email)
-				->type('password', $password)
-				->press('@register')
-				->assertPathIs('/customer-area/signup/user-registered')
-				->assertSeeLink('Clique aqui para acessar')
-				->press('@click-to-access')
-				->assertPathIs('/customer-area/signin');
-		});
-	}
+    public function test_try_register(): void
+    {
+        $this->browse(function (Browser $browser): void {
+            $password = '12346578abcd';
 
+            $user = CustomerFactory::new()->make();
 
-	
-
-
-
-
+            $browser->visit('/customer-area/signup')
+                ->type('name', $user->name)
+                ->type('email', $user->email)
+                ->type('password', $password)
+                ->press('@register')
+                ->assertPathIs('/customer-area/signup/user-registered')
+                ->assertSeeLink('Clique aqui para acessar')
+                ->press('@click-to-access')
+                ->assertPathIs('/customer-area/signin');
+        });
+    }
 }

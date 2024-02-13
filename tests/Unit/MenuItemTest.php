@@ -2,46 +2,41 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
-use Illuminate\Foundation\Auth\User;
-use RuntimeException;
-use S4mpp\Laraguard\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use S4mpp\Laraguard\Navigation\MenuItem;
-use Workbench\Database\Factories\CustomerFactory;
-use Workbench\Database\Factories\UserFactory;
+use Illuminate\Support\Facades\{Auth, Hash};
+use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 
-class MenuItemTest extends TestCase
-{	
-	public function test_creation_menu()
-	{
-		$menu = new MenuItem('Title menu', 'title-menu');
+final class MenuItemTest extends TestCase
+{
+    public function test_creation_menu(): void
+    {
+        $menu = new MenuItem('Title menu', 'title-menu');
 
-		$this->assertEquals('Title menu', $menu->getTitle());
-		
-		$this->assertEquals('title-menu', $menu->getSlug());
-		
-		$this->assertEquals('#', $menu->getAction());
+        $this->assertEquals('Title menu', $menu->getTitle());
 
-		$this->assertFalse($menu->isActive());
-	}
+        $this->assertEquals('title-menu', $menu->getSlug());
 
-	public function test_activation_menu()
-	{
-		$menu = new MenuItem('', '');
+        $this->assertEquals('#', $menu->getAction());
 
-		$menu->activate();
+        $this->assertFalse($menu->isActive());
+    }
 
-		$this->assertTrue($menu->isActive());
-	}
+    public function test_activation_menu(): void
+    {
+        $menu = new MenuItem('', '');
 
-	public function test_action_menu()
-	{
-		$menu = new MenuItem('', '');
+        $menu->activate();
 
-		$menu->setAction('test');
+        $this->assertTrue($menu->isActive());
+    }
 
-		$this->assertEquals('test', $menu->getAction());
-	}
+    public function test_action_menu(): void
+    {
+        $menu = new MenuItem('', '');
+
+        $menu->setAction('test');
+
+        $this->assertEquals('test', $menu->getAction());
+    }
 }

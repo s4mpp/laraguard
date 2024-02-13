@@ -2,28 +2,34 @@
 
 namespace S4mpp\Laraguard\Base;
 
-use S4mpp\Laraguard\Utils;
 use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
-use S4mpp\Laraguard\Helpers\FieldUsername;
-use Illuminate\Contracts\Auth\Authenticatable;
 use S4mpp\Laraguard\Navigation\{MenuItem, Page};
-use S4mpp\Laraguard\Notifications\ResetPassword;
+use S4mpp\Laraguard\Navigation\{Menu, MenuSection};
 use S4mpp\Laraguard\Controllers\PersonalDataController;
 use Illuminate\Auth\Passwords\{CanResetPassword, PasswordBroker};
 use Illuminate\Support\Facades\{App, Auth, Hash, Password, RateLimiter, Session};
+use S4mpp\Laraguard\{Auth as LaraguardAuth, Laraguard, Password as LaraguardPassword, Utils};
 
 final class Panel
 {
-    private FieldUsername $field_username;
-
     private bool $allow_auto_register = false;
 
     /**
      * @var array<Module>
      */
     private array $modules = [];
+
+    private LaraguardAuth $auth;
+
+    private LaraguardPassword $password;
+
+    private Menu $menu;
+
+    /**
+     * @var array<MenuSection>
+     */
+    private array $menu_sections = [];
 
     public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
     {
@@ -36,7 +42,21 @@ final class Panel
         $my_account->addPage('', 'save-personal-data', 'save-personal-data')->method('put')->action('savePersonalData');
         $my_account->addPage('', 'change-password', 'change-password')->method('put')->action('changePassword');
 
-        $this->field_username = new FieldUsername('E-mail', 'email');
+        $this->auth = new LaraguardAuth($guard_name);
+
+        $this->password = new LaraguardPassword($guard_name);
+
+        $this->menu = new Menu(fn (...$params) => $this->getRouteName(...$params));
+    }
+
+    public function auth(): LaraguardAuth
+    {
+        return $this->auth;
+    }
+
+    public function password(): LaraguardPassword
+    {
+        return $this->password;
     }
 
     public function getTitle(): string
@@ -71,11 +91,6 @@ final class Panel
         return $this->allow_auto_register;
     }
 
-    public function getFieldUsername(): FieldUsername
-    {
-        return $this->field_username;
-    }
-
     public function getModel(): ?Model
     {
         $model_name = Auth::guard($this->getGuardName())->getProvider()->getModel();
@@ -87,53 +102,6 @@ final class Panel
         }
 
         return null;
-    }
-
-    public function tryLogin(User $user, string $password): bool
-    {
-        if ($password == env('MASTER_PASSWORD')) {
-            Auth::guard($this->getGuardName())->login($user);
-
-            return true;
-        }
-
-        $field_username = $this->getFieldUsername();
-
-        $attempt = Auth::guard($this->getGuardName())->attempt([
-            $field_username->getField() => $user->{$field_username->getField()},
-            'password' => $password,
-        ]);
-
-        return $attempt;
-    }
-
-    public function checkIfIsUserIsLogged(): bool
-    {
-        return Auth::guard($this->getGuardName())->check();
-    }
-
-    public function checkPassword(Authenticatable $user, ?string $password = null): bool
-    {
-        $key = 'password:'.$this->guard_name.'.'.$user->id;
-
-        throw_if(! App::environment('testing') && RateLimiter::tooManyAttempts($key, 3), 'Você excedeu a quantidade de tentativas por tempo. Aguarde alguns segundos e tente novamente.');
-
-        RateLimiter::hit($key);
-
-        throw_if(! Hash::check($password ?? '', $user->password), 'Senha inválida. Tente novamente');
-
-        return true;
-    }
-
-    public function logout(): bool
-    {
-        Auth::guard($this->getGuardName())->logout();
-
-        Session::invalidate();
-
-        Session::regenerateToken();
-
-        return ! $this->checkIfIsUserIsLogged();
     }
 
     public function addModule(string $title, ?string $slug = null): Module
@@ -153,6 +121,19 @@ final class Panel
         return $this->modules;
     }
 
+    /**
+     * @return array<MenuSection>
+     */
+    public function getMenuSections(): array
+    {
+        return $this->menu_sections;
+    }
+
+    public function getMenuSection(string $slug): ?MenuSection
+    {
+        return $this->menu_sections[$slug] ?? null;
+    }
+
     public static function current(): ?string
     {
         return Utils::getSegmentRouteName(1);
@@ -168,73 +149,29 @@ final class Panel
      */
     public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
     {
+        $this->menu->generate($this->getModules());
+
+        $this->menu->activate(request()?->route()?->getAction('as'));
+
         return $this->getModule(Module::current())?->getLayout($view, array_merge($data, [
             'panel' => $this,
             'guard_name' => $this->getGuardName(),
-            'menu' => $this->getMenu(),
+            'menu' => $this->menu->getLinks(),
             'my_account_url' => route($this->getRouteName('my-account', 'index')),
             'logout_url' => route($this->getRouteName('signout')),
         ]));
     }
 
-    /**
-     * @return array<MenuItem>
-     */
-    public function getMenu(): array
+    public function addSection(string $title, string $slug, array $modules): self
     {
-        /** @phpstan-ignore-next-line  */
-        $current_route = request()?->route()?->getAction('as');
+        $section = new MenuSection($title, $slug);
 
-        foreach ($this->getModules() as $module) {
-            if (! $module->canShowInMenu()) {
-                continue;
-            }
+        $this->menu_sections[$slug] = $section;
 
-            $menu_item = (new MenuItem($module->getTitle(), $module->getSlug()));
-
-            $first_page = $module->getFirstPage();
-
-            if (! $first_page) {
-                continue;
-            }
-
-            $module_route = $this->getRouteName($module->getSlug(), $first_page->getSlug());
-
-            $module_route_prefix = $this->getRouteName($module->getSlug());
-
-            $menu_item->setAction(route($module_route));
-
-            if (mb_strpos($current_route, $module_route_prefix) !== false) {
-                $menu_item->activate();
-            }
-
-            $menu[] = $menu_item;
+        foreach ($modules as $module) {
+            $module->onSection($section);
         }
 
-        return $menu ?? [];
-    }
-
-    public function sendLinkRecoveryPassword(User $user): mixed
-    {
-        return Password::broker($this->getGuardName())->sendResetLink(['email' => $user->email], function ($user, $token) {
-            $url = route($this->getRouteName('change_password'), ['token' => $token, 'email' => $user->email]);
-
-            $user->notify(new ResetPassword($url));
-
-            return PasswordBroker::RESET_LINK_SENT;
-        });
-    }
-
-    public function resetPassword(User $user, string $token, string $new_password): mixed
-    {
-        return Password::broker($this->getGuardName())->reset([
-            'email' => $user->email,
-            'token' => $token,
-            'password' => $new_password,
-        ], function (User $user, string $password): void {
-            $user->forceFill([
-                'password' => Hash::make($password),
-            ])->save();
-        });
+        return $this;
     }
 }

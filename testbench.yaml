@@ -15,7 +15,7 @@ workbench:
   discovers:
     web: true
     api: false
-    commands: false
+    commands: true
     components: false
     views: true
   build: []

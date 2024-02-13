@@ -12,7 +12,7 @@ final class StartController extends Controller
     {
         $panel = $request->get('laraguard_panel');
 
-        if (! $panel->checkIfIsUserIsLogged()) {
+        if (! $panel->auth()->checkIfIsUserIsLogged()) {
             return to_route($panel->getRouteName('login'));
         }
 

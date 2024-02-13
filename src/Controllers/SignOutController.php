@@ -10,10 +10,10 @@ final class SignOutController extends Controller
 {
     public function __invoke(Request $request): RedirectResponse
     {
-        $request->get('laraguard_panel')->logout();
+        $request->get('laraguard_panel')->auth()->logout();
 
         return to_route($request->get('laraguard_panel')
             ->getRouteName('login'))
-            ->with('message', __('laraguard::auth.logout_successfull'));
+            ->with('message', __('laraguard::my_account.logout_successfull'));
     }
 }

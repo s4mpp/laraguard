@@ -2,42 +2,38 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
-use RuntimeException;
 use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
-use Illuminate\Foundation\Auth\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Workbench\Database\Factories\UserFactory;
-use Workbench\Database\Factories\CustomerFactory;
+use Illuminate\Support\Facades\{Auth, Hash};
+use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 
-class LogoutTest extends TestCase
-{	
-	/**
-	 * @dataProvider guardProvider
-	 */
-	public function test_logout($guard_name, $uri, $factory)
-	{
-		$user = $factory::new()->create();
+final class LogoutTest extends TestCase
+{
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_logout($guard_name, $uri, $factory): void
+    {
+        $user = $factory::new()->create();
 
-		$guard = new Panel('', '', $guard_name);
-		
-		Auth::guard($guard_name)->login($user);
+        $guard = new Panel('', '', $guard_name);
 
-		$guard->logout();
+        Auth::guard($guard_name)->login($user);
 
-		$this->assertNull(Auth::guard($guard_name)->user());
-	}
+        $guard->logout();
 
-	/**
-	 * @dataProvider guardProvider
-	 */
-	public function test_logout_when_not_logged($guard_name, $uri, $factory)
-	{
-		$guard = new Panel('', '', $guard_name);
-		
-		$guard->logout();
+        $this->assertNull(Auth::guard($guard_name)->user());
+    }
 
-		$this->assertNull(Auth::guard($guard_name)->user());
-	}
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_logout_when_not_logged($guard_name, $uri, $factory): void
+    {
+        $guard = new Panel('', '', $guard_name);
+
+        $guard->logout();
+
+        $this->assertNull(Auth::guard($guard_name)->user());
+    }
 }

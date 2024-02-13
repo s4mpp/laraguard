@@ -2,5 +2,6 @@ vendor
 .phpunit.result.cache
 .phpunit.cache
 --configuration=
+coverage-result
 .env
 .editorconfig

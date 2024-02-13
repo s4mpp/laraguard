@@ -12,9 +12,18 @@ final class MenuItem
 
     private bool $is_active = false;
 
+    private array $sub_menu_items = [];
+
+    private ?string $route = null;
+
     public function __construct(private string $title, ?string $slug = null)
     {
         $this->slug = $slug;
+    }
+
+    public function hasSubMenu(): bool
+    {
+        return count($this->sub_menu_items) > 0;
     }
 
     public function setAction(string $action): self
@@ -24,9 +33,33 @@ final class MenuItem
         return $this;
     }
 
+    public function setRoute(string $route): self
+    {
+        $this->route = $route;
+
+        return $this;
+    }
+
     public function getAction(): string
     {
         return $this->action;
+    }
+
+    public function getRoute(): ?string
+    {
+        return $this->route;
+    }
+
+    public function addSubMenu(MenuItem $item): self
+    {
+        $this->sub_menu_items[] = $item;
+
+        return $this;
+    }
+
+    public function getSubMenuItems(): array
+    {
+        return $this->sub_menu_items;
     }
 
     // use Slugable, Ordenable, Titleable;
@@ -72,6 +105,13 @@ final class MenuItem
     public function isActive(): bool
     {
         return $this->is_active;
+    }
+
+    public function checkActiveByRoute(string $current_route): bool
+    {
+        $route = $this->getRoute();
+
+        return $route && (strpos($current_route, $route) !== false);
     }
 
     // public function getRoute()

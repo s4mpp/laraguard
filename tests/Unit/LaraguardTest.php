@@ -2,33 +2,51 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
-use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 
-class LaraguardTest extends TestCase
+final class LaraguardTest extends TestCase
 {
-	public function test_created_instance_factory()
-	{
-		$all_guards = Laraguard::getPanels();
+    public function test_create_panel(): void
+    {
+        $creation = Laraguard::panel('New panel', 'new-panel', 'guard');
 
-		$this->assertIsArray($all_guards);
-		$this->assertCount(2, $all_guards);
-	}
+        $this->assertInstanceOf(Panel::class, $creation);
+        $this->assertCount(3, Laraguard::getPanels());
 
-	public function test_get_panel_by_guard()
-	{
-		$guard_customer = Laraguard::getPanel('customer'); 
-		
-		$this->assertInstanceOf(Panel::class, $guard_customer);
+        $this->assertSame('New panel', $creation->getTitle());
+        $this->assertSame('guard', $creation->getGuardName());
+        $this->assertSame('new-panel', $creation->getPrefix());
 
-		$this->assertCount(1, $guard_customer->getModules());
-		
-		$this->assertSame('My account', $guard_customer->getTitle());
-		$this->assertSame('customer', $guard_customer->getGuardName());
-		$this->assertSame('customer-area', $guard_customer->getPrefix());
-		
-		$this->assertTrue($guard_customer->hasAutoRegister());
-	}
+        $this->assertFalse($creation->hasAutoRegister());
+    }
+
+    public function test_get_panels(): void
+    {
+        $all_panels = Laraguard::getPanels();
+
+        $this->assertIsArray($all_panels);
+        $this->assertCount(2, $all_panels);
+    }
+
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_get_panel($guard, $prefix): void
+    {
+        $panel = Laraguard::getPanel($guard);
+
+        $this->assertInstanceOf(Panel::class, $panel);
+
+        $this->assertSame($guard, $panel->getGuardName());
+        $this->assertSame($prefix, $panel->getPrefix());
+    }
+
+    public function test_render_layout(): void
+    {
+        $layout = Laraguard::layout();
+
+        $this->assertNull($layout);
+    }
 }

@@ -13,14 +13,14 @@ final class SignInController extends Controller
 {
     public function index(Request $request): View|\Illuminate\Contracts\View\Factory
     {
-        $panel =  $request->get('laraguard_panel');
+        $panel = $request->get('laraguard_panel');
 
         return view('laraguard::auth.login', ['panel' => $panel]);
     }
 
     public function attempt(Request $request): RedirectResponse
     {
-        $field_username = $request->get('laraguard_panel')->getFieldUsername();
+        $field_username = $request->get('laraguard_panel')->auth()->getFieldUsername();
 
         $field = $field_username->getField();
 
@@ -46,9 +46,9 @@ final class SignInController extends Controller
 
             throw_if(! $user, Utils::translate('laraguard::auth.account_not_found'));
 
-            throw_if(! $request->get('laraguard_panel')->tryLogin($user, $validated_input['password']), Utils::translate('laraguard::auth.invalid_credentials'));
+            throw_if(! $request->get('laraguard_panel')->auth()->tryLogin($user, $validated_input['password']), Utils::translate('laraguard::auth.invalid_credentials'));
 
-            throw_if(! $request->get('laraguard_panel')->checkIfIsUserIsLogged(), Utils::translate('laraguard::auth.login_failed'));
+            throw_if(! $request->get('laraguard_panel')->auth()->checkIfIsUserIsLogged(), Utils::translate('laraguard::auth.login_failed'));
 
             return to_route($request->get('laraguard_panel')->getRouteName('my-account', 'index'));
         } catch (\Exception $e) {

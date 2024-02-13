@@ -4,14 +4,13 @@ namespace S4mpp\Laraguard\Base;
 
 use S4mpp\Laraguard\Utils;
 use Illuminate\Contracts\View\View;
+use S4mpp\Laraguard\Navigation\Breadcrumb;
 use S4mpp\Laraguard\Traits\TitleSluggable;
 use S4mpp\Laraguard\Controllers\PageController;
 
 final class Page
 {
     use TitleSluggable;
-
-    // private string $controller = PageController::class;
 
     private ?string $method = 'GET';
 
@@ -27,8 +26,6 @@ final class Page
      * @var array<string>
      */
     private array $middlewares = [];
-
-    // private bool $show_in_menu = true;
 
     public function __construct(private string $title, ?string $slug = null)
     {
@@ -63,14 +60,14 @@ final class Page
         return $this;
     }
 
-    public function index(): self
+    public function isIndex(): self
     {
         $this->is_index = true;
 
         return $this;
     }
 
-    public function isIndex(): bool
+    public function getIsIndex(): bool
     {
         return $this->is_index;
     }
@@ -78,38 +75,22 @@ final class Page
     /**
      * @param  array<mixed>  $middlewares
      */
-    public function middleware(...$middlewares): self
+    public function middleware(array $middlewares): self
     {
-        array_push($this->middlewares, $middlewares);
+        $this->middlewares = $middlewares;
 
         return $this;
+    }
+
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
     }
 
     public static function current(): ?string
     {
         return Utils::getSegmentRouteName(3);
     }
-
-    // public function controller(string $controller, string $action = null)
-    // {
-    // 	$this->controller = $controller;
-
-    // 	$this->method = $action;
-
-    // 	return $this;
-    // }
-
-    // public function hideInMenu()
-    // {
-    // 	$this->show_in_menu = false;
-
-    // 	return $this;
-    // }
-
-    // public function canShowInMenu(): bool
-    // {
-    // 	return $this->show_in_menu;
-    // }
 
     public function getAction(): ?string
     {
@@ -138,32 +119,20 @@ final class Page
     {
         $file ??= $this->getView();
 
-        $title = $this->getTitle();
-
         $data['home_url'] = $data['my_account_url'];
 
-        $data['page_title'] = ! empty($title) ? $title : $data['module_title'];
+        $title = $this->getTitle();
+
+        $title = !empty($title) ? $title : $data['module_title'];
+
+        $data['page_title'] = $title;
+
+        // $data['breadcrumbs'][] = new Breadcrumb($title);
+
+        Breadcrumb::add(new Breadcrumb($title));
+
+        $data['breadcrumbs'] = Breadcrumb::getBreadcrumbs();
 
         return view($file, $data);
     }
-
-    // public function getController(): string
-    // {
-    // 	return $this->controller;
-    // }
-
-    // public function getMethod(): string
-    // {
-    // 	return $this->method;
-    // }
-
-    // public function hasController(): bool
-    // {
-    // 	return isset($this->controller);
-    // }
-
-    // public function getRouteName(string $panel_slug): string
-    // {
-    // 	return 'my-account.'.$panel_slug.'.page.'.$this->getSlug();
-    // }
 }

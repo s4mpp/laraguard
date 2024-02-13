@@ -5,7 +5,9 @@ namespace S4mpp\Laraguard\Base;
 use S4mpp\Laraguard\Utils;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\View\View;
+use S4mpp\Laraguard\Navigation\Breadcrumb;
 use S4mpp\Laraguard\Traits\TitleSluggable;
+use S4mpp\Laraguard\Navigation\MenuSection;
 
 final class Module
 {
@@ -16,6 +18,8 @@ final class Module
     private bool $show_in_menu = true;
 
     private bool $translate_title = false;
+
+    private ?MenuSection $section = null;
 
     /**
      * @var array<Page>
@@ -35,7 +39,14 @@ final class Module
             $page->view($view);
         }
 
-        $page->index();
+        $page->isIndex();
+
+        return $this;
+    }
+
+    public function onSection(MenuSection $section): self
+    {
+        $this->section = $section;
 
         return $this;
     }
@@ -50,6 +61,16 @@ final class Module
     public function getController(): ?string
     {
         return $this->controller;
+    }
+
+    public function getOnSection(): ?MenuSection
+    {
+        return $this->section;
+    }
+
+    public function getPrefixUrl(): string
+    {
+        return implode('/', [$this->section?->getSlug(), $this->getSlug()]);
     }
 
     public function translateTitle(): self
@@ -82,9 +103,15 @@ final class Module
         return $this->pages;
     }
 
-    public function getFirstPage(): ?Page
+    public function getPageIndex(): ?Page
     {
-        return $this->pages['index'] ?? $this->pages[0] ?? null;
+        foreach($this->getPages() as $page) {
+            if($page->getIsIndex()) {
+                return $page;
+            }
+        }
+
+        return null;
     }
 
     public static function current(): ?string
@@ -113,50 +140,18 @@ final class Module
      * @param  array<mixed>  $data
      */
     public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
-    {        
+    {
+        $module_title = ($this->translate_title) ? Utils::translate($this->title) : $this->getTitle();
+
+        if($this->section)
+        {
+            Breadcrumb::add(new Breadcrumb($this->section->getTitle()));
+        }
+
+        Breadcrumb::add(new Breadcrumb(new Breadcrumb($module_title)));
+        
         return $this->getPage(Page::current())?->render($view, array_merge($data, [
-            'module_title' => ($this->translate_title) ? Utils::translate($this->title) : $this->getTitle(),
+            'module_title' => $module_title,
         ]));
     }
-
-    // public function getAction()
-    // {
-    // 	return $this->method ? [$this->controller, $this->method] : $this->controller;
-    // }
-
-    // public function getView(): ?string
-    // {
-    // 	return $this->view;
-    // }
-
-    // public function render(string $file = null, array $data = [])
-    // {
-    // 	$file = $file ?? $this->getView() ?? 'laraguard::blank';
-
-    // 	$data['home_url'] = $data['my_account_url'];
-
-    // 	$data['page_title'] = $this->getTitle();
-
-    // 	return view($file, $data);
-    // }
-
-    // public function getController(): string
-    // {
-    // 	return $this->controller;
-    // }
-
-    // public function getMethod(): string
-    // {
-    // 	return $this->method;
-    // }
-
-    // public function hasController(): bool
-    // {
-    // 	return isset($this->controller);
-    // }
-
-    // public function getRouteName(string $panel_slug): string
-    // {
-    // 	return 'my-account.'.$panel_slug.'.page.'.$this->getSlug();
-    // }
 }

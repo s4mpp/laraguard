@@ -7,9 +7,9 @@
 		@csrf
 
 		<div>
-			<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{ $panel->getFieldUsername()->getTitle() }}</label>
+			<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{ $panel->auth()->getFieldUsername()->getTitle() }}</label>
 			<div class="mt-2">
-			  <input name="{{ $panel->getFieldUsername()->getField() }}" type="text" required value="{{ old($panel->getFieldUsername()->getField()) }}" class="
+			  <input name="{{ $panel->auth()->getFieldUsername()->getField() }}" type="text" required value="{{ old($panel->auth()->getFieldUsername()->getField()) }}" class="
 				block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm 
 				px-3
 				ring-none
@@ -51,7 +51,7 @@
 			</div> --}}
 
 			<div class="text-sm leading-6">
-				<a  tabindex="-1"  href="{{ route($panel->getRouteName('recovery_password')) }}" class="font-semibold text-gray-600 hover:text-gray-500">{{ __('laraguard::login.lost_your_password') }}</a>
+				<a  tabindex="-1"  href="{{ route($panel->getRouteName('recovery_password')) }}" class="font-semibold text-gray-600 hover:text-gray-500">{{ __('laraguard::login.lost_your_password') }}?</a>
 			</div>
 		</div>
 

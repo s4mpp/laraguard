@@ -1,5 +1,7 @@
 @extends('laraguard::html')
 
+@section('title', $page_title)
+
 @section('body')
 	<div class="min-h-full"  x-data="{ menuDropdownOpen: false }">
 		<nav class="bg-gray-800">
@@ -35,8 +37,7 @@
 							<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
 						</svg>
 					</button>
-				</div>
-				 --}}
+				</div> --}}
 				
 				
 				<div class="sm:ml-4 sm:block">
@@ -142,7 +143,33 @@
 
 		  <header class="bg-white shadow">
 			<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-			  <h1 class="text-3xl font-bold tracking-tight text-gray-900">{{ $page_title }}</h1>
+
+				<div>
+					<div class="flex" aria-label="Breadcrumb">
+						<div class="flex items-center space-x-2">
+							<div class="text-gray-400 ">
+								{{-- <a href="#" class="text-gray-400 hover:text-gray-500"> --}}
+									<svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+										<path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
+									</svg>
+									<span class="sr-only">Home</span>
+								{{-- </a> --}}
+							</div>
+
+							@foreach($breadcrumbs as $breadcrumb)
+								<div class="flex items-center">
+									<svg class="h-5 w-5 mt-1 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+										<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+									</svg>
+									
+									<span class="ml-2  text-sm font-medium text-gray-500">{{ $breadcrumb }}</span>
+								</div>
+							@endforeach
+						</div>
+					</div>
+				</div>
+
+				<h1 class="text-3xl mt-1 font-bold tracking-tight text-gray-900">{{ $page_title }}</h1>
 			</div>
 		  </header>
 
@@ -151,7 +178,5 @@
 				@yield('content')
 			</div>
 		  </main>
- 	  	
-		{{-- <x-notification /> --}}
 	</div>
 @endsection

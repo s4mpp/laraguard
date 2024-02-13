@@ -3,32 +3,30 @@
 namespace S4mpp\Laraguard\Tests\Feature;
 
 use S4mpp\Laraguard\Tests\TestCase;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Workbench\Database\Factories\UserFactory;
-use Workbench\Database\Factories\CustomerFactory;
+use Illuminate\Support\Facades\{Auth, Hash};
+use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 
-class PageTest extends TestCase
+final class PageTest extends TestCase
 {
-	public static function routeIndexProvider()
-	{
-		return [
-			'my account' => ['/restricted-area/my-account', 200],
-			'module controller' => ['/restricted-area/orders', 200],
-			'non existent page' => ['/restricted-area/xxx', 404],
-		];
-	}
+    public static function routeIndexProvider()
+    {
+        return [
+            'my account' => ['/restricted-area/my-account', 200],
+            'module controller' => ['/restricted-area/section-1/orders', 200],
+            'non existent page' => ['/restricted-area/xxx', 404],
+            'no index' => ['/restricted-area/no-index', 404],
+        ];
+    }
 
-	/**
-	 *
-	 * @dataProvider routeIndexProvider
-	 */
-	public function test_route_page(string $route, int $expected_status_code)
-	{
-		$user = UserFactory::new()->create();
+    /**
+     * @dataProvider routeIndexProvider
+     */
+    public function test_route_page(string $route, int $expected_status_code): void
+    {
+        $user = UserFactory::new()->create();
 
-		$response = $this->actingAs($user)->get($route);
+        $response = $this->actingAs($user)->get($route);
 
-		$response->assertStatus($expected_status_code);
-	}
+        $response->assertStatus($expected_status_code);
+    }
 }

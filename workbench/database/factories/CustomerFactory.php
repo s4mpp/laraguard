@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  *
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<TModel>
  */
-class CustomerFactory extends Factory
+final class CustomerFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.

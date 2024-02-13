@@ -8,8 +8,7 @@ final class Utils
 {
     public static function getSegmentRouteName(int $path_step, ?string $current_route = null): ?string
     {
-        if (!$current_route)
-        {
+        if (! $current_route) {
             /** @phpstan-ignore-next-line  */
             $current_route = request()?->route()?->getAction('as');
         }
@@ -24,16 +23,14 @@ final class Utils
      */
     public static function translate(string $key, array $replace = []): string
     {
-        if (!Lang::has($key))
-        {
+        if (! Lang::has($key)) {
             return $key;
         }
 
         $str_translated = Lang::get($key, $replace);
 
-        if (is_array($str_translated))
-        {
-            return 'TRANSLATION ARRAY: ' . json_encode($str_translated);
+        if (is_array($str_translated)) {
+            return 'TRANSLATION ARRAY: '.json_encode($str_translated);
         }
 
         return $str_translated;
