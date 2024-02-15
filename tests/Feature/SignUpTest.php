@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Tests\Feature;
 
+use Exception;
 use S4mpp\Laraguard\Tests\TestCase;
 
 final class SignUpTest extends TestCase
@@ -36,6 +37,18 @@ final class SignUpTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertRedirect('/customer-area/signup/user-registered');
+    }
+
+    public function test_action_register_on_panel_with_model_invalid(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Invalid model');
+
+        $response = $this->withoutExceptionHandling()->post('/guest-area/signup', [
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' => fake()->password(),
+        ]);
     }
 
     public function test_action_register_on_panel_not_allowed(): void

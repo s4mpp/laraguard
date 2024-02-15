@@ -37,6 +37,8 @@ final class WorkbenchServiceProvider extends ServiceProvider
         $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class)->addIndex();
 
         Laraguard::panel('My account', 'customer-area', 'customer')->allowAutoRegister();
+
+        Laraguard::panel('Guest area', 'guest-area', 'guest')->allowAutoRegister(); // Force invalid for tests
     }
 
     /**
@@ -54,9 +56,19 @@ final class WorkbenchServiceProvider extends ServiceProvider
             'model' => User::class,
         ]);
 
+        Config::set('auth.providers.guests', [
+            'driver' => 'eloquent',
+            'model' => null,
+        ]);
+
         Config::set('auth.guards.customer', [
             'driver' => 'session',
             'provider' => 'customers',
+        ]);
+
+        Config::set('auth.guards.guest', [
+            'driver' => 'session',
+            'provider' => 'guests',
         ]);
 
         Config::set('auth.passwords.customer', [

@@ -80,7 +80,7 @@ final class PanelTest extends TestCase
     {
         $panel = Laraguard::getPanel('web');
 
-        $panel->menu()->generate($panel->getModules());
+        $panel->generateMenu();
 
         $menu = $panel->menu()->getLinks();
 

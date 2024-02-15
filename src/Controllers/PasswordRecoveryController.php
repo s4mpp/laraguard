@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
+use S4mpp\Laraguard\Utils;
 use Illuminate\Routing\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\{RedirectResponse, Request};
@@ -28,13 +29,13 @@ final class PasswordRecoveryController extends Controller
                 ->getProvider()
                 ->retrieveByCredentials(['email' => $request->email ?? null]);
 
-            throw_if(! $user, __('laraguard::password_recovery.account_not_found'));
+            throw_if(! $user, Utils::translate('laraguard::password_recovery.account_not_found'));
 
             $status = $request->get('laraguard_panel')->auth()->sendLinkResetPassword($user);
 
-            throw_if(! is_string($status), __('laraguard::password_recovery.fail_to_send_email'));
+            throw_if(! is_string($status), Utils::translate('laraguard::password_recovery.fail_to_send_email'));
 
-            return back()->with('message', __($status));
+            return back()->with('message', Utils::translate($status));
         } catch (\Exception $e) {
             return back()->withErrors($e->getMessage())->withInput();
         }

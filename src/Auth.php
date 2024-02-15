@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard;
 
+use Closure;
 use Illuminate\Foundation\Auth\User;
 use S4mpp\Laraguard\Helpers\Credential;
 use Illuminate\Contracts\Auth\PasswordBroker;
@@ -12,7 +13,7 @@ final class Auth
 {
     private Credential $credential_fields;
 
-    public function __construct(private string $guard_name, private $callback_get_route_name)
+    public function __construct(private string $guard_name, private Closure $callback_get_route_name)
     {
         $this->credential_fields = new Credential('E-mail', 'email');
     }
@@ -45,13 +46,20 @@ final class Auth
         return LaravelAuth::guard($this->guard_name)->check();
     }
 
-    public function check(User $user, ?string $password = null): bool
+    public function checkPassword(User $user, ?string $password = null): bool
     {
-        $key = 'password:'.$this->guard_name.'.'.$user->id;
+        $id = (isset($user->id))? $user->id : rand();
+
+        $key = 'password:'.$this->guard_name.'.'.$id;
 
         throw_if(! App::environment('testing') && RateLimiter::tooManyAttempts($key, 3), Utils::translate('laraguard::auth.tries_password_exceeded'));
 
         RateLimiter::hit($key);
+
+        if(!isset($user->password))
+        {
+            return false;
+        }
 
         throw_if(! Hash::check($password ?? '', $user->password), Utils::translate('laraguard::auth.invalid_password'));
 
@@ -71,6 +79,11 @@ final class Auth
 
     public function sendLinkResetPassword(User $user): mixed
     {
+        if(!isset($user->email) || !isset($user->password))
+        {
+            return false;
+        }
+
         return Password::broker($this->guard_name)->sendResetLink(['email' => $user->email], function ($user, $token) {
             $url = route(call_user_func($this->callback_get_route_name, 'change_password'), ['token' => $token, 'email' => $user->email]);
 
@@ -82,6 +95,11 @@ final class Auth
 
     public function resetPassword(User $user, string $token, string $new_password): mixed
     {
+        if(!isset($user->email))
+        {
+            return false;
+        }
+
         return Password::broker($this->guard_name)->reset([
             'email' => $user->email,
             'token' => $token,

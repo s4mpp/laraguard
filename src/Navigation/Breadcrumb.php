@@ -4,6 +4,9 @@ namespace S4mpp\Laraguard\Navigation;
 
 final class Breadcrumb
 {
+    /**
+     * @var array<Breadcrumb>
+     */
     private static array $breadcrumbs = [];
 
     public function __construct(private string $title, private ?string $url = null)
@@ -24,8 +27,16 @@ final class Breadcrumb
         return $this->title;
     }
 
+    /**
+     * @return array<Breadcrumb>
+     */
     public static function getBreadcrumbs(): array
     {
         return self::$breadcrumbs;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
     }
 }

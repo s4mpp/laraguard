@@ -19,10 +19,6 @@ final class Panel
     {
         $panel = Laraguard::getPanel(BasePanel::current());
 
-        if (! $panel) {
-            abort(404);
-        }
-
         $request->attributes->add([
             'laraguard_panel' => $panel,
         ]);

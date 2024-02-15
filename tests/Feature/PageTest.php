@@ -15,6 +15,7 @@ final class PageTest extends TestCase
             'module controller' => ['/restricted-area/section-1/orders', 200],
             'non existent page' => ['/restricted-area/xxx', 404],
             'no index' => ['/restricted-area/no-index', 404],
+            'non existent panel' => ['/another-thing', 404],
         ];
     }
 

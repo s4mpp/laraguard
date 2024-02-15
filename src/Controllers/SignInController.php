@@ -32,16 +32,15 @@ final class SignInController extends Controller
             $field => Str::lower($field_username->getTitle()),
         ])->validate();
 
-        try {
-            $username = $validated_input[$field] ?? null;
+        $username = $validated_input[$field] ?? null;
 
+        try {
             $model = $request->get('laraguard_panel')->getModel();
 
             if (! $model) {
                 throw new \Exception('Invalid model');
             }
 
-            /** @phpstan-ignore-next-line  */
             $user = $model->where([$field => $username])->first();
 
             throw_if(! $user, Utils::translate('laraguard::auth.account_not_found'));

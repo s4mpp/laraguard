@@ -9,7 +9,6 @@ final class Utils
     public static function getSegmentRouteName(int $path_step, ?string $current_route = null): ?string
     {
         if (! $current_route) {
-            /** @phpstan-ignore-next-line  */
             $current_route = request()?->route()?->getAction('as');
         }
 

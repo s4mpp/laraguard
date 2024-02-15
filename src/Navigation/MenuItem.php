@@ -12,6 +12,9 @@ final class MenuItem
 
     private bool $is_active = false;
 
+    /**
+     * @var array<MenuItem>
+     */
     private array $sub_menu_items = [];
 
     private ?string $route = null;
@@ -57,50 +60,18 @@ final class MenuItem
         return $this;
     }
 
+    /**
+     * @return array<MenuItem>
+     */
     public function getSubMenuItems(): array
     {
         return $this->sub_menu_items;
     }
 
-    // use Slugable, Ordenable, Titleable;
-
-    // private $is_active = false;
-
-    // private ?string $route = null;
-
-    // private $target = null;
-
-    // public function __construct(private string $title)
-    // {
-    // // 	$this->createSlug($title);
-
-    // // 	$this->route('admin.'.$this->slug);
-
-    // }
-
-    // public function route(string $route)
-    // {
-    // 	$this->route = $route;
-
-    // 	return $this;
-    // }
-
-    // public function target(array | string $target)
-    // {
-    // 	$this->target = $target;
-
-    // 	return $this;
-    // }
-
     public function activate(): void
     {
         $this->is_active = true;
     }
-
-    // public function getTarget(): array | string
-    // {
-    // 	return $this->target;
-    // }
 
     public function isActive(): bool
     {
@@ -113,9 +84,4 @@ final class MenuItem
 
         return $route && (mb_strpos($current_route, $route) !== false);
     }
-
-    // public function getRoute()
-    // {
-    // 	return $this->route;
-    // }
 }

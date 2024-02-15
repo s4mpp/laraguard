@@ -4,11 +4,22 @@ namespace S4mpp\Laraguard\Tests\Unit;
 
 use Workbench\App\Models\User;
 use S4mpp\Laraguard\Tests\TestCase;
+use Illuminate\Support\Facades\Config;
 use S4mpp\Laraguard\Helpers\Credential;
 use Workbench\Database\Factories\UserFactory;
 
 final class CredentialTest extends TestCase
 {
+    public static function environmentProvider()
+    {
+        return [
+            'Production' => ['production', null],
+            'Local' => ['local', '12345678'],
+            'Staging' => ['stage', '12345678'],
+            'Testing' => ['testing', '12345678'],
+        ];
+    }
+
     public function test_create_instance(): void
     {
         $new_instance = new Credential();
@@ -43,10 +54,19 @@ final class CredentialTest extends TestCase
         $this->assertEquals('taylor1@mail.com', $email);
     }
 
-    public function test_generate_password(): void
+    /**
+     * @dataProvider environmentProvider
+     */
+    public function test_generate_password(string $environment, $expected = null): void
     {
+        Config::set('app.env', $environment);
+
         $password = Credential::generatePassword();
 
         $this->assertIsString($password);
+
+        if ($expected) {
+            $this->assertEquals($expected, $password);
+        }
     }
 }

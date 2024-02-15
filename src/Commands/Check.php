@@ -26,7 +26,7 @@ final class Check extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         foreach (Laraguard::getPanels() as $panel) {
             $this->line('Panel: '.$panel->getTitle());
@@ -39,13 +39,19 @@ final class Check extends Command
 
             $model = $panel->getModel();
 
-            $name_model = get_class($model) ?? null;
+            if ($model) {
+                $name_model = get_class($model);
 
-            $model ? $this->info('Model '.$name_model.' OK') : $this->error('Model '.$name_model.' NOT FOUND');
+                $this->info('Model '.$name_model.' OK');
 
-            method_exists($model, 'notify') ? $this->info('Notification Model OK') : $this->error('Notification Model NOT FOUND');
+                method_exists($model, 'notify') ? $this->info('Notification Model OK') : $this->error('Notification Model NOT FOUND');
 
-            is_subclass_of($model, User::class) ? $this->info('Authentication Model OK') : $this->error('Authentication Model NOT FOUND');
+                is_a($model, User::class) ? $this->info('Authentication Model OK') : $this->error('Authentication Model NOT FOUND');
+            } else {
+                $this->error('Model NOT FOUND');
+                $this->error('Notification Model NOT FOUND');
+                $this->error('Authentication Model NOT FOUND');
+            }
 
             $this->newLine();
         }

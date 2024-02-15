@@ -81,6 +81,9 @@ final class Page
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getMiddlewares(): array
     {
         return $this->middlewares;

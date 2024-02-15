@@ -49,10 +49,17 @@ final class PersonalDataController extends Controller
                 throw new \Exception('Account not found');
             }
 
-            $panel->auth()->check($user, $validated_data['current_password']);
+            $panel->auth()->checkPassword($user, $validated_data['current_password']);
+            
+            if(isset($user->name))
+            {
+                $user->name = $validated_data['name'];
+            }
 
-            $user->name = $validated_data['name'];
-            $user->email = $validated_data['email'];
+            if(isset($user->email))
+            {
+                $user->email = $validated_data['email'];
+            }
 
             $user->save();
 
@@ -79,9 +86,12 @@ final class PersonalDataController extends Controller
                 throw new \Exception('Account not found');
             }
 
-            $panel->auth()->check($user, $validated_data['current_password']);
+            $panel->auth()->checkPassword($user, $validated_data['current_password']);
 
-            $user->password = Hash::make($validated_data['password']);
+            if(isset($user->password))
+            {
+                $user->password = Hash::make($validated_data['password']);
+            }
 
             $user->save();
 

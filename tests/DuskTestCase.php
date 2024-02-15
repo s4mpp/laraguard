@@ -17,7 +17,7 @@ abstract class DuskTestCase extends TestCase
     {
         parent::setUp();
 
-        // Options::withoutUI();
+        Options::withoutUI();
 
         foreach (static::$browsers as $browser) {
             $browser->driver->manage()->deleteAllCookies();

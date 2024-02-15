@@ -4,9 +4,10 @@ namespace S4mpp\Laraguard\Commands;
 
 use S4mpp\Laraguard\Laraguard;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use S4mpp\Laraguard\Helpers\{Credential, User};
+use Illuminate\Support\Facades\{Hash, Validator};
+
+use function PHPUnit\Framework\throwException;
 
 final class MakeUser extends Command
 {
@@ -27,21 +28,43 @@ final class MakeUser extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         try {
             $guard = $this->option('guard');
 
+            if(!is_string($guard))
+            {
+                throw new \Exception('Invalid guard name');
+            }
+
             $panel = Laraguard::getPanel($guard);
 
-            throw_if(!$panel, 'Invalid guard/panel');
+            throw_if(! $panel, 'Invalid guard/panel');
 
-            $model = $panel->getModel();
+            $model = $panel?->getModel();
+
+            if(!$model)
+            {
+                throw new \Exception('Invalid model');
+            }
 
             $name = $this->option('name') ?? 'User';
 
-            $email = $this->option('email') ?? Credential::suggestEmail($model, $name);
-        
+            if(!is_string($name))
+            {
+                throw new \Exception('Invalid name');
+            }
+
+            $email = $this->option('email');
+            
+            if(!is_string($email) && !is_null($email))
+            {
+                throw new \Exception('Invalid email');
+            }
+
+            $email = $email ?? Credential::suggestEmail($model, $name);
+
             $validator = Validator::make([
                 'name' => $name,
                 'email' => $email,
@@ -55,6 +78,7 @@ final class MakeUser extends Command
             $password = Credential::generatePassword();
 
             $user = new $model;
+
             $user->name = $name;
             $user->email = $email;
             $user->password = Hash::make($password);
@@ -68,9 +92,10 @@ final class MakeUser extends Command
             $this->info('Password: '.$password);
             $this->info('URL: '.route($panel->getRouteName('login')));
 
-            return 0;
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
+
+        return 0;
     }
 }

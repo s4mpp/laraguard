@@ -3,7 +3,7 @@
 namespace S4mpp\Laraguard\Base;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 use S4mpp\Laraguard\Navigation\{MenuItem, Page};
 use S4mpp\Laraguard\Navigation\{Menu, MenuSection};
 use S4mpp\Laraguard\Controllers\PersonalDataController;
@@ -89,13 +89,15 @@ final class Panel
         return $this->allow_auto_register;
     }
 
-    public function getModel(): ?Model
+    public function getModel(): ?User
     {
         $model_name = Auth::guard($this->getGuardName())->getProvider()->getModel();
 
-        $model = new $model_name();
+        if (! $model_name) {
+            return null;
+        }
 
-        return (is_subclass_of($model, Model::class)) ? $model : null;
+        return new $model_name();
     }
 
     public function addModule(string $title, ?string $slug = null): Module
@@ -143,7 +145,7 @@ final class Panel
      */
     public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
     {
-        $this->menu->generate($this->getModules());
+        $this->generateMenu();
 
         $this->menu->activate(request()?->route()?->getAction('as'));
 
@@ -156,6 +158,9 @@ final class Panel
         ]));
     }
 
+    /**
+     * @param  array<Module>  $modules
+     */
     public function addSection(string $title, string $slug, array $modules): self
     {
         $section = new MenuSection($title, $slug);
@@ -167,5 +172,32 @@ final class Panel
         }
 
         return $this;
+    }
+
+    public function generateMenu(): void
+    {
+        foreach ($this->modules as $module) {
+            if (! $module->canShowInMenu()) {
+                continue;
+            }
+
+            $page_index = $module->getPageIndex();
+
+            if ($section = $module->getOnSection()) {
+                $item_section = $this->items[$section->getSlug()] ?? null;
+
+                if (! $item_section) {
+                    $item_section = $this->menu->addItem($this->menu->createItem($section->getTitle(), $section->getSlug()));
+                }
+
+                $menu_item = $this->menu->createItem($module->getTitle(), $module->getSlug(), $page_index?->getSlug());
+
+                $item_section->addSubMenu($menu_item);
+
+                continue;
+            }
+
+            $this->menu->addItem($this->menu->createItem($module->getTitle(), $module->getSlug(), $page_index?->getSlug()));
+        }
     }
 }

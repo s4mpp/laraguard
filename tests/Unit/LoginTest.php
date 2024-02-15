@@ -71,7 +71,7 @@ final class LoginTest extends TestCase
 
         $panel = new Panel('', '', $guard_name);
 
-        $test = $panel->auth()->check($user, 'p455w9rd');
+        $test = $panel->auth()->checkPassword($user, 'p455w9rd');
 
         $this->assertTrue($test);
     }
@@ -87,7 +87,7 @@ final class LoginTest extends TestCase
 
         $panel = new Panel('', '', $guard_name);
 
-        $test = $panel->auth()->check($user, 'xxxxxx123');
+        $test = $panel->auth()->checkPassword($user, 'xxxxxx123');
 
         $this->assertNull($test);
     }

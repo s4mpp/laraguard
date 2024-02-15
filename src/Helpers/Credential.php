@@ -4,6 +4,7 @@ namespace S4mpp\Laraguard\Helpers;
 
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Config;
 
 final class Credential
 {
@@ -21,7 +22,7 @@ final class Credential
         return $this->title;
     }
 
-    public static function suggestEmail(User $model, string $name)
+    public static function suggestEmail(User $model, string $name): string
     {
         $email_test = $suggested_email = mb_strtolower($name);
 
@@ -44,12 +45,12 @@ final class Credential
         return $suggested_email.'@mail.com';
     }
 
-    public static function generatePassword()
+    public static function generatePassword(): string
     {
-        if (app()->environment('local')) {
+        if (Config::get('app.env') != 'production') {
             return '12345678';
         }
 
-        return Str::password();
+        return Str::password(12, symbols: false);
     }
 }

@@ -18,7 +18,7 @@ final class PasswordResetController extends Controller
         $user = Password::broker($request->get('laraguard_panel')->getGuardName())->getUser(['email' => $request->get('email')]);
 
         if (! $user || ! Password::tokenExists($user, $token)) {
-            return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(__('laraguard::password_recovery.invalid_token'));
+            return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(Utils::translate('laraguard::password_recovery.invalid_token'));
         }
 
         $panel = $request->get('laraguard_panel');
@@ -31,13 +31,13 @@ final class PasswordResetController extends Controller
         $user = Password::broker($request->get('laraguard_panel')->getGuardName())->getUser(['email' => $request->get('email')]);
 
         if (! $user || ! Password::tokenExists($user, $request->token ?? '')) {
-            return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(__('laraguard::password_recovery.invalid_token'));
+            return to_route($request->get('laraguard_panel')->getRouteName('recovery_password'))->withErrors(Utils::translate('laraguard::password_recovery.invalid_token'));
         }
 
         $status = $request->get('laraguard_panel')->auth()->resetPassword($user, $request->token ?? '', $request->password ?? '');
 
         return $status === PasswordBroker::PASSWORD_RESET
-            ? to_route($request->get('laraguard_panel')->getRouteName('login'))->with('message', __($status))->withInput(['email' => $user->email])
+            ? to_route($request->get('laraguard_panel')->getRouteName('login'))->with('message', Utils::translate($status))->withInput(['email' => $user->email])
             : back()->withErrors(Utils::translate('passwords.user'));
     }
 }

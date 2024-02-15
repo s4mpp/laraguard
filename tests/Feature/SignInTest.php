@@ -53,6 +53,21 @@ final class SignInTest extends TestCase
         $this->assertNull(Auth::guard($another_guard)->user());
     }
 
+    public function test_login_action_on_panel_with_invalid_model(): void
+    {
+        $response = $this->post('/guest-area/signin', [
+            'email' => fake()->email(),
+            'password' => '213456789',
+        ]);
+
+        $response->assertSessionHasErrorsIn('default');
+
+        $response->assertStatus(302);
+        $response->assertRedirectContains('/guest-area/signin');
+
+        $this->assertNull(Auth::guard('guest')->user());
+    }
+
     /**
      * @dataProvider guardProvider
      */

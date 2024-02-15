@@ -13,7 +13,7 @@ final class LaraguardTest extends TestCase
         $all_panels = Laraguard::getPanels();
 
         $this->assertIsArray($all_panels);
-        $this->assertCount(2, $all_panels);
+        $this->assertCount(3, $all_panels);
     }
 
     public function test_create_panel(): void
@@ -21,7 +21,7 @@ final class LaraguardTest extends TestCase
         $creation = Laraguard::panel('New panel', 'new-panel', 'guard');
 
         $this->assertInstanceOf(Panel::class, $creation);
-        $this->assertCount(3, Laraguard::getPanels());
+        $this->assertCount(4, Laraguard::getPanels());
 
         $this->assertSame('New panel', $creation->getTitle());
         $this->assertSame('guard', $creation->getGuardName());
