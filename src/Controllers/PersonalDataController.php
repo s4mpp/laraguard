@@ -39,11 +39,11 @@ final class PersonalDataController extends Controller
         $validated_data = $request->validate([
             'current_password' => ['required', 'string'],
             'name' => ['required', 'string'],
-            'email' => ['required', 'string', 'email', Rule::unique($model->getTable())->ignore(Auth::id())],
+            'email' => ['required', 'string', 'email', Rule::unique($model->getTable())->ignore(Auth::guard($panel->getGuardName())->id())],
         ]);
 
         try {
-            $user = Auth::user();
+            $user = Auth::guard($panel->getGuardName())->user();
 
             if (! $user) {
                 throw new \Exception('Account not found');
@@ -80,7 +80,7 @@ final class PersonalDataController extends Controller
         ]);
 
         try {
-            $user = Auth::user();
+            $user = Auth::guard($panel->getGuardName())->user();
 
             if (! $user) {
                 throw new \Exception('Account not found');

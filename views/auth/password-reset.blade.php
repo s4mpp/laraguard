@@ -1,4 +1,4 @@
-@extends('laraguard::auth.main')
+@extends($panel->layout()->getAuthFile())
 
 @section('title', __('laraguard::password.reset'))
 

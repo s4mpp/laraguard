@@ -3,8 +3,10 @@
 namespace S4mpp\Laraguard\Base;
 
 use Illuminate\Contracts\View\View;
+use S4mpp\Laraguard\Helpers\Layout;
 use Illuminate\Foundation\Auth\User;
 use S4mpp\Laraguard\Navigation\{MenuItem, Page};
+use S4mpp\Laraguard\Helpers\View as LaraguardView;
 use S4mpp\Laraguard\Navigation\{Menu, MenuSection};
 use S4mpp\Laraguard\Controllers\PersonalDataController;
 use Illuminate\Auth\Passwords\{CanResetPassword, PasswordBroker};
@@ -23,6 +25,8 @@ final class Panel
     private LaraguardAuth $auth;
 
     private Menu $menu;
+
+    private Layout $layout;
 
     /**
      * @var array<MenuSection>
@@ -45,6 +49,8 @@ final class Panel
         $this->auth = new LaraguardAuth($guard_name, $callback_get_route_name);
 
         $this->menu = new Menu($callback_get_route_name);
+
+        $this->layout = new Layout();
     }
 
     public function auth(): LaraguardAuth
@@ -55,6 +61,11 @@ final class Panel
     public function menu(): Menu
     {
         return $this->menu;
+    }
+
+    public function layout(): Layout
+    {
+        return $this->layout;
     }
 
     public function getTitle(): string

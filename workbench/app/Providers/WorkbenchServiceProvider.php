@@ -36,7 +36,12 @@ final class WorkbenchServiceProvider extends ServiceProvider
         $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class)->addIndex();
         $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class)->addIndex();
 
-        Laraguard::panel('My account', 'customer-area', 'customer')->allowAutoRegister();
+        $my_account = Laraguard::panel('My account', 'customer-area', 'customer')->allowAutoRegister();
+
+        $my_account->layout()
+            ->setHtmlFile('custom.html')
+            ->setAuthFile('custom.auth')
+            ->setLayoutFile('custom.layout');
 
         Laraguard::panel('Guest area', 'guest-area', 'guest')->allowAutoRegister(); // Force invalid for tests
     }

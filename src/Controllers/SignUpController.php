@@ -12,6 +12,9 @@ final class SignUpController extends Controller
 {
     public function index(Request $request): View|\Illuminate\Contracts\View\Factory
     {
+        dump(app_path());
+        
+
         return view('laraguard::auth.register', ['panel' => $request->get('laraguard_panel'), 'panel_title' => $request->get('laraguard_panel')->getTitle(), 'page_title' => 'Cadastro']);
     }
 

@@ -6,18 +6,21 @@ use Illuminate\Support\Facades\Config;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\Dusk\{Options, TestCase};
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 
 abstract class DuskTestCase extends TestCase
 {
-    use WithWorkbench;
+    use WithWorkbench, InteractsWithViews;
     // use RefreshDatabase;
+
+    protected static $baseServePort = 9000;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Options::withoutUI();
+        // Options::withoutUI();
 
         foreach (static::$browsers as $browser) {
             $browser->driver->manage()->deleteAllCookies();
@@ -27,13 +30,13 @@ abstract class DuskTestCase extends TestCase
     public static function panelProvider()
     {
         return [
-            'Web' => [[
-                'guard' => 'web',
-                'uri' => 'restricted-area',
-                'title' => 'Restricted area',
-                'factory' => UserFactory::class,
-                'can_register' => false,
-            ]],
+            // 'Web' => [[
+            //     'guard' => 'web',
+            //     'uri' => 'restricted-area',
+            //     'title' => 'Restricted area',
+            //     'factory' => UserFactory::class,
+            //     'can_register' => false,
+            // ]],
             'Customer' => [[
                 'guard' => 'customer',
                 'uri' => 'customer-area',

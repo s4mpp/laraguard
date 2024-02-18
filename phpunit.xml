@@ -24,5 +24,7 @@
     <php>
         <env name="MASTER_PASSWORD" value="12345678" force="true" />
         <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_DEBUG" value="true"/>
     </php>
 </phpunit>
