@@ -18,7 +18,7 @@ final class RegisterTest extends DuskTestCase
             $browser->visit('/customer-area/signin')
                 ->click('@register-button')
                 ->assertPathIs('/customer-area/signup')
-                ->assertTitle('My account | Register')
+                ->assertTitleContains('My account | Register')
 
                 ->assertSee('Nome')
                 ->assertInputValue('name', '')

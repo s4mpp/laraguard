@@ -9,9 +9,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 
+use function Orchestra\Testbench\workbench_path;
+
 abstract class DuskTestCase extends TestCase
 {
-    use WithWorkbench, InteractsWithViews;
+    use WithWorkbench;
     // use RefreshDatabase;
 
     protected static $baseServePort = 9000;
@@ -20,7 +22,7 @@ abstract class DuskTestCase extends TestCase
     {
         parent::setUp();
 
-        // Options::withoutUI();
+        Options::withoutUI();
 
         foreach (static::$browsers as $browser) {
             $browser->driver->manage()->deleteAllCookies();
@@ -30,13 +32,13 @@ abstract class DuskTestCase extends TestCase
     public static function panelProvider()
     {
         return [
-            // 'Web' => [[
-            //     'guard' => 'web',
-            //     'uri' => 'restricted-area',
-            //     'title' => 'Restricted area',
-            //     'factory' => UserFactory::class,
-            //     'can_register' => false,
-            // ]],
+            'Web' => [[
+                'guard' => 'web',
+                'uri' => 'restricted-area',
+                'title' => 'Restricted area',
+                'factory' => UserFactory::class,
+                'can_register' => false,
+            ]],
             'Customer' => [[
                 'guard' => 'customer',
                 'uri' => 'customer-area',
@@ -55,5 +57,7 @@ abstract class DuskTestCase extends TestCase
             'database' => database_path('database.sqlite'),
             'prefix' => '',
         ]);
+
+        Config::push('view.paths', __DIR__.'/../workbench/resources/views');
     }
 }

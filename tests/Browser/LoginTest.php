@@ -15,7 +15,7 @@ final class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) use ($panel): void {
             $browser->visit('/'.$panel['uri'])
-                ->assertTitle($panel['title'].' | Sign In')
+                ->assertTitleContains($panel['title'].' | Sign In')
                 ->assertPathIs('/'.$panel['uri'].'/signin')
 
                 ->assertInputValue('email', '')

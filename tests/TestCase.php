@@ -11,7 +11,7 @@ use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 
 abstract class TestCase extends BaseTestCase
 {
-    use InteractsWithViews;
+    // use InteractsWithViews;
     use RefreshDatabase;
     use WithWorkbench;
 

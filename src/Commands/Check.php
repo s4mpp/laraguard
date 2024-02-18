@@ -33,7 +33,7 @@ final class Check extends Command
             $this->line(Str::repeat('=', 32));
             $this->line('Panel: '.$panel->getTitle());
             $this->line(Str::repeat('=', 32));
-            
+
             $guard = $panel->getGuardName();
 
             Config::has('auth.guards.'.$guard) ? $this->info('Guard '.$guard.' OK') : $this->error('Guard '.$guard.' NOT FOUND');

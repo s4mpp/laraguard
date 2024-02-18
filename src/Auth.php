@@ -48,7 +48,7 @@ final class Auth
 
     public function checkPassword(User $user, ?string $password = null): bool
     {
-        $id = (isset($user->id))? $user->id : rand();
+        $id = (isset($user->id)) ? $user->id : rand();
 
         $key = 'password:'.$this->guard_name.'.'.$id;
 
@@ -56,8 +56,7 @@ final class Auth
 
         RateLimiter::hit($key);
 
-        if(!isset($user->password))
-        {
+        if (! isset($user->password)) {
             return false;
         }
 
@@ -79,8 +78,7 @@ final class Auth
 
     public function sendLinkResetPassword(User $user): mixed
     {
-        if(!isset($user->email) || !isset($user->password))
-        {
+        if (! isset($user->email) || ! isset($user->password)) {
             return false;
         }
 
@@ -95,8 +93,7 @@ final class Auth
 
     public function resetPassword(User $user, string $token, string $new_password): mixed
     {
-        if(!isset($user->email))
-        {
+        if (! isset($user->email)) {
             return false;
         }
 

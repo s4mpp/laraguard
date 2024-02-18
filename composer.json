@@ -57,6 +57,10 @@
             "@prepare",
             "@dusk:install-chromedriver"
         ],
-        "dusk:install-chromedriver": "@php vendor/bin/dusk-updater detect --auto-update --ansi"
+        "dusk:install-chromedriver": "@php vendor/bin/dusk-updater detect --auto-update --ansi",
+        "lint": [
+            "@php vendor/bin/pint",
+            "@php vendor/bin/phpstan analyse"
+        ]
     }
 }

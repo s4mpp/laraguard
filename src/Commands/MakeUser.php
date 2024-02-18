@@ -7,8 +7,6 @@ use Illuminate\Console\Command;
 use S4mpp\Laraguard\Helpers\{Credential, User};
 use Illuminate\Support\Facades\{Hash, Validator};
 
-use function PHPUnit\Framework\throwException;
-
 final class MakeUser extends Command
 {
     /**
@@ -33,8 +31,7 @@ final class MakeUser extends Command
         try {
             $guard = $this->option('guard');
 
-            if(!is_string($guard))
-            {
+            if (! is_string($guard)) {
                 throw new \Exception('Invalid guard name');
             }
 
@@ -44,26 +41,23 @@ final class MakeUser extends Command
 
             $model = $panel?->getModel();
 
-            if(!$model)
-            {
+            if (! $model) {
                 throw new \Exception('Invalid model');
             }
 
             $name = $this->option('name') ?? 'User';
 
-            if(!is_string($name))
-            {
+            if (! is_string($name)) {
                 throw new \Exception('Invalid name');
             }
 
             $email = $this->option('email');
-            
-            if(!is_string($email) && !is_null($email))
-            {
+
+            if (! is_string($email) && ! is_null($email)) {
                 throw new \Exception('Invalid email');
             }
 
-            $email = $email ?? Credential::suggestEmail($model, $name);
+            $email ??= Credential::suggestEmail($model, $name);
 
             $validator = Validator::make([
                 'name' => $name,
@@ -91,7 +85,6 @@ final class MakeUser extends Command
             $this->info('E-mail: '.$email);
             $this->info('Password: '.$password);
             $this->info('URL: '.route($panel->getRouteName('login')));
-
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }

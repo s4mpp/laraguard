@@ -50,7 +50,7 @@ final class Menu
         return $item;
     }
 
-    public function createItem(string $module_title, string $module_slug, string $page_slug = null): MenuItem
+    public function createItem(string $module_title, string $module_slug, ?string $page_slug = null): MenuItem
     {
         $menu_item = new MenuItem($module_title, $module_slug);
 

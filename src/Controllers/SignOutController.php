@@ -4,7 +4,6 @@ namespace S4mpp\Laraguard\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\{RedirectResponse, Request};
-use S4mpp\Laraguard\Controllers\{BaseController, LaraguardController};
 
 final class SignOutController extends Controller
 {

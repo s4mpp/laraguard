@@ -3,12 +3,11 @@
 namespace S4mpp\Laraguard\Base;
 
 use Illuminate\Contracts\View\View;
-use S4mpp\Laraguard\Helpers\Layout;
 use Illuminate\Foundation\Auth\User;
 use S4mpp\Laraguard\Navigation\{MenuItem, Page};
-use S4mpp\Laraguard\Helpers\View as LaraguardView;
 use S4mpp\Laraguard\Navigation\{Menu, MenuSection};
 use S4mpp\Laraguard\Controllers\PersonalDataController;
+use S4mpp\Laraguard\Helpers\{Layout, View as LaraguardView};
 use Illuminate\Auth\Passwords\{CanResetPassword, PasswordBroker};
 use Illuminate\Support\Facades\{App, Auth, Hash, Password, RateLimiter, Session};
 use S4mpp\Laraguard\{Auth as LaraguardAuth, Laraguard, Password as LaraguardPassword, Utils};

@@ -50,14 +50,12 @@ final class PersonalDataController extends Controller
             }
 
             $panel->auth()->checkPassword($user, $validated_data['current_password']);
-            
-            if(isset($user->name))
-            {
+
+            if (isset($user->name)) {
                 $user->name = $validated_data['name'];
             }
 
-            if(isset($user->email))
-            {
+            if (isset($user->email)) {
                 $user->email = $validated_data['email'];
             }
 
@@ -88,8 +86,7 @@ final class PersonalDataController extends Controller
 
             $panel->auth()->checkPassword($user, $validated_data['current_password']);
 
-            if(isset($user->password))
-            {
+            if (isset($user->password)) {
                 $user->password = Hash::make($validated_data['password']);
             }
 

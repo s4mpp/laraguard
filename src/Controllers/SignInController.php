@@ -3,11 +3,11 @@
 namespace S4mpp\Laraguard\Controllers;
 
 use Illuminate\Support\Str;
+use S4mpp\Laraguard\{Utils};
 use Illuminate\Routing\Controller;
 use Illuminate\Contracts\View\View;
-use S4mpp\Laraguard\{Laraguard, Utils};
+use Illuminate\Support\Facades\{Validator};
 use Illuminate\Http\{RedirectResponse, Request};
-use Illuminate\Support\Facades\{Auth, Validator};
 
 final class SignInController extends Controller
 {
