@@ -20,6 +20,14 @@
             <directory>src</directory>
         </include>
     </source>
+    <coverage disableCodeCoverageIgnore="false">
+    <report >
+      <html 
+        outputDirectory="coverage-result" 
+        lowUpperBound="30" 
+        highLowerBound="60" />
+    </report>
+  </coverage>
 
     <php>
         <env name="MASTER_PASSWORD" value="12345678" force="true" />

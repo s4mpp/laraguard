@@ -1,1 +1,1 @@
-@extends($panel->layout()->getLayoutFile())
+@extends($panel->layout()->getBodyFile())

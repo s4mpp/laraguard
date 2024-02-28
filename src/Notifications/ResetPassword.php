@@ -2,7 +2,6 @@
 
 namespace S4mpp\Laraguard\Notifications;
 
-use S4mpp\Laraguard\Utils;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -35,12 +34,12 @@ final class ResetPassword extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(Utils::translate('laraguard::password.mail.subject'))
-            ->line(Utils::translate('laraguard::password.mail.text'))
-            ->action(Utils::translate('laraguard::password.mail.action'), $this->url)
-            ->line(Utils::translate('laraguard::password.mail.expiration', [
+            ->subject(__('laraguard::password.mail.subject'))
+            ->line(__('laraguard::password.mail.text'))
+            ->action(__('laraguard::password.mail.action'), $this->url)
+            ->line(__('laraguard::password.mail.expiration', [
                 'count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire'),
             ]))
-            ->line(Utils::translate('laraguard::password.mail.notice'));
+            ->line(__('laraguard::password.mail.notice'));
     }
 }

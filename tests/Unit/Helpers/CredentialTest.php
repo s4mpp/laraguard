@@ -1,6 +1,6 @@
 <?php
 
-namespace S4mpp\Laraguard\Tests\Unit;
+namespace S4mpp\Laraguard\Tests\Unit\Helpers;
 
 use Workbench\App\Models\User;
 use S4mpp\Laraguard\Tests\TestCase;
@@ -26,14 +26,16 @@ final class CredentialTest extends TestCase
 
         $this->assertSame('E-mail', $new_instance->getTitle());
         $this->assertSame('email', $new_instance->getField());
+        $this->assertSame('email', $new_instance->getType());
     }
 
     public function test_create_instance_with_parameters(): void
     {
-        $new_instance = new Credential('Nome', 'field');
+        $new_instance = new Credential('User', 'username', 'text');
 
-        $this->assertSame('Nome', $new_instance->getTitle());
-        $this->assertSame('field', $new_instance->getField());
+        $this->assertSame('User', $new_instance->getTitle());
+        $this->assertSame('username', $new_instance->getField());
+        $this->assertSame('text', $new_instance->getType());
     }
 
     public function test_suggest_email(): void

@@ -1,0 +1,19 @@
+{
+  "name": "laraguard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx tailwindcss -i ./style/input.css -o ./vendor/orchestra/testbench-core/laravel/public/vendor/laraguard/style.css --watch",
+    "build": "npx tailwindcss -i ./style/input.css -o ./style/dist.css --minify "
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}

@@ -15,6 +15,10 @@ trait TitleSluggable
 
     public function setSlug(?string $slug = null): void
     {
+        if ($slug && ! preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
+            throw new \Exception('Invalid slug regex ('.$slug.')');
+        }
+
         $this->slug = $slug ? $slug : Str::slug($this->title);
     }
 

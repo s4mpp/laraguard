@@ -2,9 +2,11 @@
 
 namespace S4mpp\Laraguard;
 
-use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\App;
+use S4mpp\Laraguard\Helpers\Device;
+use Illuminate\Support\Facades\RateLimiter;
 
-final class Utils
+abstract class Utils
 {
     public static function getSegmentRouteName(int $path_step, ?string $current_route = null): ?string
     {
@@ -17,21 +19,14 @@ final class Utils
         return $path_steps[$path_step] ?? null;
     }
 
-    /**
-     * @param  array<mixed>  $replace
-     */
-    public static function translate(string $key, array $replace = []): string
+    public static function rateLimiter(string $key = 'rate-limiter'): void
     {
-        if (! Lang::has($key)) {
-            return $key;
-        }
+        $ip = Device::ip();
 
-        $str_translated = Lang::get($key, $replace);
+        $identifier = $key.':'.$ip;
 
-        if (is_array($str_translated)) {
-            return 'TRANSLATION ARRAY: '.json_encode($str_translated);
-        }
+        throw_if(! App::environment('testing') && RateLimiter::tooManyAttempts($identifier, 3), __('laraguard::auth.tries_password_exceeded'));
 
-        return $str_translated;
+        RateLimiter::hit($identifier);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Tests\Feature;
 
+use Exception;
 use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Support\Facades\Hash;
 
@@ -81,4 +82,5 @@ final class ChangePersonalDataTest extends TestCase
             'email' => $old_data['email'],
         ]);
     }
+
 }

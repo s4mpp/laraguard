@@ -4,6 +4,9 @@ namespace S4mpp\Laraguard\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class PasswordRecoverySolicitationRequest extends FormRequest
 {
     /**

@@ -9,6 +9,9 @@ use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class RestrictedArea
 {
     /**

@@ -2,13 +2,18 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-use Illuminate\Support\Str;
-use S4mpp\Laraguard\{Utils};
+use S4mpp\Laraguard\Utils;
 use Illuminate\Routing\Controller;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\{Validator};
+use S4mpp\Laraguard\Requests\SignInRequest;
 use Illuminate\Http\{RedirectResponse, Request};
+use S4mpp\Laraguard\Concerns\Auth as LaraguardAuth;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class SignInController extends Controller
 {
     public function index(Request $request): View|\Illuminate\Contracts\View\Factory
@@ -18,42 +23,33 @@ final class SignInController extends Controller
         return view('laraguard::auth.login', ['panel' => $panel]);
     }
 
-    public function attempt(Request $request): RedirectResponse
+    public function attempt(SignInRequest $request): RedirectResponse
     {
-        $field_username = $request->get('laraguard_panel')->auth()->getCredentialFields();
-
+        
+        $panel = $request->get('laraguard_panel');
+        
+        $field_username = $panel->getCredential();
+        
         $field = $field_username->getField();
-
-        $validated_input = Validator::make($request->only([$field, 'password']), [
-            $field => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ], [], [
-            'password' => __('laraguard::login.password'),
-            $field => Str::lower($field_username->getTitle()),
-        ])->validate();
-
-        $username = $validated_input[$field] ?? null;
-
+        
         try {
-            $model = $request->get('laraguard_panel')->getModel();
+            Utils::rateLimiter();
+            
+            $model = $panel->getModel();
 
-            if (! $model) {
-                throw new \Exception('Invalid model');
-            }
+            $user = $model?->where([$field => $request->get('username')])->first();
 
-            $user = $model->where([$field => $username])->first();
+            throw_if(! $user, __('laraguard::auth.account_not_found'));
 
-            throw_if(! $user, Utils::translate('laraguard::auth.account_not_found'));
+            throw_if(! LaraguardAuth::tryLogin($panel, $user, $request->get('password')), __('laraguard::auth.invalid_credentials'));
 
-            throw_if(! $request->get('laraguard_panel')->auth()->tryLogin($user, $validated_input['password']), Utils::translate('laraguard::auth.invalid_credentials'));
+            throw_if(! Auth::guard($panel->getGuardName())->check(), __('laraguard::auth.login_failed'));
 
-            throw_if(! $request->get('laraguard_panel')->auth()->checkIfIsUserIsLogged(), Utils::translate('laraguard::auth.login_failed'));
-
-            return to_route($request->get('laraguard_panel')->getRouteName('my-account', 'index'));
+            return to_route($panel->getRouteName($panel->getStartModule()->getSlug(), 'index'));
         } catch (\Exception $e) {
-            return to_route($request->get('laraguard_panel')->getRouteName('login'))
+            return to_route($panel->getRouteName('login'))
                 ->withErrors($e->getMessage())
-                ->withInput([$field => $username]);
+                ->withInput(['username' => $request->get('username')]);
         }
     }
 }

@@ -8,13 +8,18 @@ use Illuminate\Support\Facades\Config;
 
 final class Credential
 {
-    public function __construct(private string $title = 'E-mail', private string $field = 'email')
+    public function __construct(private string $title = 'E-mail', private string $field = 'email', private string $type = 'email')
     {
     }
 
     public function getField(): string
     {
         return $this->field;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 
     public function getTitle(): string

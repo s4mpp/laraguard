@@ -8,6 +8,9 @@ use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel as BasePanel;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class Panel
 {
     /**

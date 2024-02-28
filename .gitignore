@@ -5,3 +5,4 @@ vendor
 coverage-result
 .env
 .editorconfig
+node_modules

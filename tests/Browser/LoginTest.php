@@ -18,7 +18,7 @@ final class LoginTest extends DuskTestCase
                 ->assertTitleContains($panel['title'].' | Sign In')
                 ->assertPathIs('/'.$panel['uri'].'/signin')
 
-                ->assertInputValue('email', '')
+                ->assertInputValue('username', '')
                 ->assertInputValue('password', '')
                 ->assertButtonEnabled('Login')
 
@@ -47,10 +47,10 @@ final class LoginTest extends DuskTestCase
             $user = $factory::new()->create(['password' => Hash::make($password)]);
 
             $browser->visit('/'.$panel['uri'])
-                ->type('email', $user->email)
+                ->type('username', $user->email)
                 ->type('password', $password)
                 ->press('@login')
-                ->assertPathIs('/'.$panel['uri'].'/my-account');
+                ->assertPathIs('/'.$panel['uri'].'/'.$panel['redirect_to']);
         });
     }
 
@@ -65,12 +65,12 @@ final class LoginTest extends DuskTestCase
             $user = $factory::new()->create(['password' => Hash::make('123456789')]);
 
             $browser->visit('/'.$panel['uri'])
-                ->type('email', $user->email)
+                ->type('username', $user->email)
                 ->type('password', 'another-password')
                 ->press('@login')
                 ->assertPathIs('/'.$panel['uri'].'/signin')
                 ->assertSee('Invalid credentials. Please try again')
-                ->assertInputValue('email', $user->email)
+                ->assertInputValue('username', $user->email)
                 ->assertInputValue('password', '');
         });
     }
@@ -82,12 +82,12 @@ final class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) use ($panel): void {
             $browser->visit('/'.$panel['uri'])
-                ->type('email', 'email@email.com')
+                ->type('username', 'email@email.com')
                 ->type('password', '1234')
                 ->press('@login')
                 ->assertPathIs('/'.$panel['uri'].'/signin')
                 ->assertSee('Account not found. Please try again')
-                ->assertInputValue('email', 'email@email.com')
+                ->assertInputValue('username', 'email@email.com')
                 ->assertInputValue('password', '');
         });
     }
@@ -101,9 +101,9 @@ final class LoginTest extends DuskTestCase
             $browser->visit('/'.$panel['uri'])->script("document.querySelector('form').noValidate = true");
 
             $browser->press('@login')
-                ->assertSee('The e-mail field is required.')
+                ->assertSee('The E-mail field is required.')
                 ->assertSee('The Password field is required.')
-                ->assertInputValue('email', '')
+                ->assertInputValue('username', '')
                 ->assertInputValue('password', '');
         });
     }

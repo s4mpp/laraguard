@@ -2,15 +2,19 @@
 
 namespace S4mpp\Laraguard\Base;
 
+use S4mpp\Laraguard\Utils;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\User;
+use S4mpp\Laraguard\Concerns\Password;
+use S4mpp\Laraguard\Helpers\Credential;
 use S4mpp\Laraguard\Navigation\{MenuItem, Page};
+use S4mpp\Laraguard\Concerns\Auth as LaraguardAuth;
 use S4mpp\Laraguard\Navigation\{Menu, MenuSection};
 use S4mpp\Laraguard\Controllers\PersonalDataController;
 use S4mpp\Laraguard\Helpers\{Layout, View as LaraguardView};
 use Illuminate\Auth\Passwords\{CanResetPassword, PasswordBroker};
-use Illuminate\Support\Facades\{App, Auth, Hash, Password, RateLimiter, Session};
-use S4mpp\Laraguard\{Auth as LaraguardAuth, Laraguard, Password as LaraguardPassword, Utils};
+use Illuminate\Support\Facades\{App, Auth, Hash, RateLimiter, Session};
+use S4mpp\Laraguard\{Laraguard, Password as LaraguardPassword, PasswordReset};
 
 final class Panel
 {
@@ -21,11 +25,11 @@ final class Panel
      */
     private array $modules = [];
 
-    private LaraguardAuth $auth;
-
     private Menu $menu;
 
     private Layout $layout;
+
+    private Credential $credential;
 
     /**
      * @var array<MenuSection>
@@ -43,18 +47,11 @@ final class Panel
         $my_account->addPage('', 'save-personal-data', 'save-personal-data')->method('put')->action('savePersonalData');
         $my_account->addPage('', 'change-password', 'change-password')->method('put')->action('changePassword');
 
-        $callback_get_route_name = fn (...$params) => $this->getRouteName(...$params);
-
-        $this->auth = new LaraguardAuth($guard_name, $callback_get_route_name);
-
-        $this->menu = new Menu($callback_get_route_name);
+        $this->menu = new Menu(fn (...$params) => $this->getRouteName(...$params));
 
         $this->layout = new Layout();
-    }
 
-    public function auth(): LaraguardAuth
-    {
-        return $this->auth;
+        $this->credential = new Credential();
     }
 
     public function menu(): Menu
@@ -65,6 +62,11 @@ final class Panel
     public function layout(): Layout
     {
         return $this->layout;
+    }
+
+    public function getCredential(): Credential
+    {
+        return $this->credential;
     }
 
     public function getTitle(): string
@@ -148,6 +150,13 @@ final class Panel
     public function getModule(?string $module_name = null): ?Module
     {
         return $this->modules[$module_name] ?? null;
+    }
+
+    public function getStartModule(): Module
+    {
+        $module_starter = array_filter($this->modules, fn ($item) => $item->isStarter());
+
+        return (!empty($module_starter)) ? array_shift($module_starter) : $this->modules['my-account'];
     }
 
     /**

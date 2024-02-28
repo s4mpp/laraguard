@@ -11,20 +11,6 @@
 				<div class="sm:mx-auto sm:w-full sm:max-w-md">
 					<h2 class="mb-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">@yield('title')</h2>
 				</div>
-
-				@session('message')
-					<div class="rounded-md bg-green-50 p-4">
-						<p class="text-sm font-medium text-green-800">{{ $value }}</p>
-					</div>
-				@endsession
-
-				@if(isset($errors) && $errors->any())
-					<div class="rounded-md bg-red-50 p-4">
-						@foreach ($errors->all() as $error)
-							<p class="text-sm font-medium text-red-800">{!! nl2br($error) !!}</p>
-						@endforeach
-					</div>
-				@endif
  		
 				@yield('content')
 		  </div>

@@ -33,21 +33,21 @@ final class SignInTest extends TestCase
     /**
      * @dataProvider guardProvider
      */
-    public function test_login_action($guard_name, $uri, $factory, $another_guard): void
+    public function test_login_action($guard_name, $uri, $factory, $another_guard, $title, $redirect_to): void
     {
         $user = $factory::new()->create([
             'password' => Hash::make($this->password),
         ]);
 
         $response = $this->post('/'.$uri.'/signin', [
-            'email' => $user->email,
+            'username' => $user->email,
             'password' => $this->password,
         ]);
 
         $response->assertSessionHasNoErrors();
 
         $response->assertStatus(302);
-        $response->assertRedirectContains('my-account');
+        $response->assertRedirectContains($uri.'/'.$redirect_to);
 
         $this->assertAuthenticatedAs($user, $guard_name);
         $this->assertNull(Auth::guard($another_guard)->user());
@@ -56,7 +56,7 @@ final class SignInTest extends TestCase
     public function test_login_action_on_panel_with_invalid_model(): void
     {
         $response = $this->post('/guest-area/signin', [
-            'email' => fake()->email(),
+            'username' => fake()->email(),
             'password' => '213456789',
         ]);
 
@@ -78,7 +78,7 @@ final class SignInTest extends TestCase
         ]);
 
         $response = $this->post('/'.$guard_name.'/xxxxx', [
-            'email' => $user->email,
+            'username' => $user->email,
             'password' => $this->password,
         ]);
 
@@ -98,7 +98,7 @@ final class SignInTest extends TestCase
         ]);
 
         $response = $this->actingAs($user, $guard_name)->post('/'.$another_guard_url.'/signin', [
-            'email' => $user->email,
+            'username' => $user->email,
             'password' => $this->password,
         ]);
 
@@ -137,7 +137,7 @@ final class SignInTest extends TestCase
 
         $this->get('/'.$uri.'/signin');
         $response = $this->post('/'.$uri.'/signin', [
-            'email' => $user->email,
+            'username' => $user->email,
             'password' => 'rand123',
         ]);
 
@@ -156,13 +156,13 @@ final class SignInTest extends TestCase
     {
         $this->get('/'.$uri.'/signin');
         $response = $this->post('/'.$uri.'/signin', [
-            'email' => null,
+            'username' => null,
             'password' => null,
         ]);
 
         $response->assertStatus(302);
         $response->assertRedirect('/'.$uri.'/signin');
-        $response->assertSessionHasErrorsIn('default', ['email', 'password']);
+        $response->assertSessionHasErrorsIn('default', ['username', 'password']);
 
         $this->assertNull(Auth::guard($guard_name)->user());
         $this->assertNull(Auth::guard($another_guard)->user());

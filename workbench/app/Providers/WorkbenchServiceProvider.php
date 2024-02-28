@@ -6,6 +6,8 @@ use S4mpp\Laraguard\Laraguard;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Workbench\App\Models\{Customer, User};
+use Workbench\App\Controllers\InvokeLayoutController;
+use Workbench\App\Controllers\InvokeLayoutDefaultController;
 use Workbench\App\Controllers\{ExtractController, TeamController, WithdrawalController};
 
 final class WorkbenchServiceProvider extends ServiceProvider
@@ -17,26 +19,26 @@ final class WorkbenchServiceProvider extends ServiceProvider
     {
         $restricted_area = Laraguard::panel('Restricted area', 'restricted-area'); // web
 
-        $restricted_area->addModule('Dashboard', 'home')->addIndex();
+        $restricted_area->addModule('Dashboard', 'home')->starter()->addIndex();
 
         $restricted_area->addModule('No Index', 'no-index');
 
-        $events = $restricted_area->addModule('Events', 'events');
-        $events->addPage('List', 'list')->isIndex();
+        $module = $restricted_area->addModule('Module', 'module');
+        $module->addPage('Page', 'page')->isIndex();
 
-        $finances_module = $restricted_area->addModule('Finances', 'finances')->addIndex();
-        $finances_module->addPage('Report');
+        $finances_module = $restricted_area->addModule('Module 2', 'module-2')->addIndex();
+        $finances_module->addPage('Page');
 
-        $restricted_area->addSection('Section 1', 'section-1', [
-            $restricted_area->addModule('Orders', 'orders')->addIndex('index-example'),
+        $restricted_area->addSection('Section', 'section', [
+            $restricted_area->addModule('Subsection 1', 'subsection-1')->addIndex('index-example'),
 
-            $restricted_area->addModule('Team')->controller(TeamController::class)->addIndex(),
+            $restricted_area->addModule('Subsection 2', 'subsection-2')->addIndex(),
         ]);
 
-        $restricted_area->addModule('Extract', 'extract')->controller(ExtractController::class)->addIndex();
-        $restricted_area->addModule('Withdrawal')->controller(WithdrawalController::class)->addIndex();
+        $restricted_area->addModule('Invoke layout default')->controller(InvokeLayoutDefaultController::class)->addIndex();
+        $restricted_area->addModule('Invoke layout')->controller(InvokeLayoutController::class)->addIndex();
 
-        $my_account = Laraguard::panel('My account', 'customer-area', 'customer')->allowAutoRegister();
+        $my_account = Laraguard::panel('Customer area', 'customer-area', 'customer')->allowAutoRegister();
 
         $my_account->layout()
             ->setHtmlFile('custom.html')
@@ -45,6 +47,15 @@ final class WorkbenchServiceProvider extends ServiceProvider
 
         Laraguard::panel('Guest area', 'guest-area', 'guest')->allowAutoRegister(); // Force invalid for tests
     }
+
+    
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * Bootstrap services.

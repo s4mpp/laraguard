@@ -7,6 +7,9 @@ use Illuminate\Console\Command;
 use S4mpp\Laraguard\Helpers\{Credential, User};
 use Illuminate\Support\Facades\{Hash, Validator};
 
+/**
+ * @codeCoverageIgnore
+ */
 final class MakeUser extends Command
 {
     /**

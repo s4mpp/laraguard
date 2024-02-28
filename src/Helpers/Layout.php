@@ -21,7 +21,7 @@ final class Layout
         return $this->auth;
     }
 
-    public function getLayoutFile(): string
+    public function getBodyFile(): string
     {
         return $this->layout;
     }

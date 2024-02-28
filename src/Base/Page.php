@@ -129,11 +129,7 @@ final class Page
 
         $data['page_title'] = $title;
 
-        // $data['breadcrumbs'][] = new Breadcrumb($title);
-
-        Breadcrumb::add(new Breadcrumb($title ?? ''));
-
-        $data['breadcrumbs'] = Breadcrumb::getBreadcrumbs();
+        $data['breadcrumbs'][] = new Breadcrumb($title ?? '');
 
         return view($file, $data);
     }

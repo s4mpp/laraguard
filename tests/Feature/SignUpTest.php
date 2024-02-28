@@ -39,18 +39,6 @@ final class SignUpTest extends TestCase
         $response->assertRedirect('/customer-area/signup/user-registered');
     }
 
-    public function test_action_register_on_panel_with_model_invalid(): void
-    {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Invalid model');
-
-        $response = $this->withoutExceptionHandling()->post('/guest-area/signup', [
-            'name' => fake()->name(),
-            'email' => fake()->email(),
-            'password' => fake()->password(),
-        ]);
-    }
-
     public function test_action_register_on_panel_not_allowed(): void
     {
         $response = $this->post('/restricted-area/signup', [

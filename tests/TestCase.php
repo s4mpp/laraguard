@@ -18,8 +18,8 @@ abstract class TestCase extends BaseTestCase
     public static function guardProvider()
     {
         return [
-            'Web' => ['web', 'restricted-area', UserFactory::class, 'customer', 'customer-area'],
-            'Customer' => ['customer',  'customer-area', CustomerFactory::class, 'web', 'restricted-area'],
+            'Web' => ['web', 'restricted-area', UserFactory::class, 'customer', 'customer-area', 'home'],
+            'Customer' => ['customer',  'customer-area', CustomerFactory::class, 'web', 'restricted-area', 'my-account'],
         ];
     }
 

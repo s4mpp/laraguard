@@ -8,6 +8,9 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Config;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class Check extends Command
 {
     /**

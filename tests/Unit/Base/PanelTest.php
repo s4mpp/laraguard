@@ -32,13 +32,13 @@ final class PanelTest extends TestCase
 
     public function test_get_name_fields(): void
     {
-        $field_username = $this->panel->auth()->getCredentialFields();
+        $credential = $this->panel->getCredential();
 
-        $this->assertInstanceOf(Credential::class, $field_username);
+        $this->assertInstanceOf(Credential::class, $credential);
 
-        $this->assertSame('E-mail', $field_username->getTitle());
+        $this->assertSame('E-mail', $credential->getTitle());
 
-        $this->assertSame('email', $field_username->getField());
+        $this->assertSame('email', $credential->getField());
     }
 
     public function test_get_route_name(): void
@@ -69,11 +69,11 @@ final class PanelTest extends TestCase
     {
         $panel = Laraguard::getPanel('web');
 
-        $section = $panel->getMenuSection('section-1');
+        $section = $panel->getMenuSection('section');
 
         $this->assertInstanceOf(MenuSection::class, $section);
-        $this->assertSame('Section 1', $section->getTitle());
-        $this->assertSame('section-1', $section->getSlug());
+        $this->assertSame('Section', $section->getTitle());
+        $this->assertSame('section', $section->getSlug());
     }
 
     public function test_get_menu(): void

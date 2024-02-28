@@ -6,10 +6,7 @@ use Illuminate\Support\Facades\Config;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\Dusk\{Options, TestCase};
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Workbench\Database\Factories\{CustomerFactory, UserFactory};
-
-use function Orchestra\Testbench\workbench_path;
 
 abstract class DuskTestCase extends TestCase
 {
@@ -38,13 +35,15 @@ abstract class DuskTestCase extends TestCase
                 'title' => 'Restricted area',
                 'factory' => UserFactory::class,
                 'can_register' => false,
+                'redirect_to' => 'home',
             ]],
             'Customer' => [[
                 'guard' => 'customer',
                 'uri' => 'customer-area',
-                'title' => 'My account',
+                'title' => 'Customer area',
                 'factory' => CustomerFactory::class,
                 'can_register' => true,
+                'redirect_to' => 'my-account',
             ]],
         ];
     }

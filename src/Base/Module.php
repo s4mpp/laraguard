@@ -20,6 +20,8 @@ final class Module
 
     private ?MenuSection $section = null;
 
+    private bool $is_starter = false;
+
     /**
      * @var array<Page>
      */
@@ -28,6 +30,18 @@ final class Module
     public function __construct(private string $title, ?string $slug = null)
     {
         $this->setSlug($slug);
+    }
+
+    public function starter(): self
+    {
+        $this->is_starter = true;
+
+        return $this;
+    }
+
+    public function isStarter(): bool
+    {
+        return $this->is_starter;
     }
 
     public function addIndex(?string $view = null): self
@@ -140,13 +154,15 @@ final class Module
      */
     public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
     {
-        $module_title = ($this->translate_title) ? Utils::translate($this->title) : $this->getTitle();
+        $module_title = ($this->translate_title) ? __($this->title) : $this->getTitle();
+
+        $data['breadcrumbs'] = [];
 
         if ($this->section) {
-            Breadcrumb::add(new Breadcrumb($this->section->getTitle()));
+            $breadcrumbs[] = new Breadcrumb($this->section->getTitle());
         }
 
-        Breadcrumb::add(new Breadcrumb(new Breadcrumb($module_title)));
+        $breadcrumbs[] = new Breadcrumb($module_title);
 
         return $this->getPage(Page::current())?->render($view, array_merge($data, [
             'module_title' => $module_title,

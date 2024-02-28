@@ -12,13 +12,13 @@ final class RegisterTest extends DuskTestCase
     /**
      * @dataProvider panelProvider
      */
-    public function test_register_screen($panel): void
+    public function test_register_screen(): void
     {
         $this->browse(function (Browser $browser): void {
             $browser->visit('/customer-area/signin')
                 ->click('@register-button')
                 ->assertPathIs('/customer-area/signup')
-                ->assertTitleContains('My account | Register')
+                ->assertTitleContains('Customer area | Register')
 
                 ->assertSee('Nome')
                 ->assertInputValue('name', '')

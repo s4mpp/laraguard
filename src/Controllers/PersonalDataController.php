@@ -2,13 +2,18 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
+use S4mpp\Laraguard\Utils;
 use S4mpp\Laraguard\Laraguard;
-use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\{Auth, Hash};
 use Illuminate\Http\{RedirectResponse, Request};
+use S4mpp\Laraguard\Requests\PersonalDataRequest;
+use S4mpp\Laraguard\Requests\ChangePasswordRequest;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class PersonalDataController extends Controller
 {
     public function __invoke(Request $request): null|View|\Illuminate\Contracts\View\Factory
@@ -26,75 +31,53 @@ final class PersonalDataController extends Controller
         ]);
     }
 
-    public function savePersonalData(Request $request): RedirectResponse
+    public function savePersonalData(PersonalDataRequest $request): RedirectResponse
     {
+        Utils::rateLimiter();
+
         $panel = $request->get('laraguard_panel');
-
-        $model = $panel->getModel();
-
-        if (! $model) {
-            throw new \Exception('Invalid model');
-        }
-
-        $validated_data = $request->validate([
-            'current_password' => ['required', 'string'],
-            'name' => ['required', 'string'],
-            'email' => ['required', 'string', 'email', Rule::unique($model->getTable())->ignore(Auth::guard($panel->getGuardName())->id())],
-        ]);
 
         try {
             $user = Auth::guard($panel->getGuardName())->user();
 
-            if (! $user) {
-                throw new \Exception('Account not found');
-            }
-
-            $panel->auth()->checkPassword($user, $validated_data['current_password']);
+            throw_if(! Hash::check($request->get('current_password'), $user?->password), __('laraguard::auth.invalid_password'));
 
             if (isset($user->name)) {
-                $user->name = $validated_data['name'];
+                $user->name = $request->get('name');
             }
 
             if (isset($user->email)) {
-                $user->email = $validated_data['email'];
+                $user->email = $request->get('email');
             }
 
             $user->save();
 
-            return back()->with('message', 'Personal data saved');
+            return back()->with('message-personal-data-saved', 'Personal data saved');
         } catch (\Exception $e) {
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors($e->getMessage(), 'error-personal-data');
         }
     }
 
-    public function changePassword(Request $request): RedirectResponse
+    public function changePassword(ChangePasswordRequest $request): RedirectResponse
     {
         $panel = $request->get('laraguard_panel');
-
-        $validated_data = $request->validate([
-            'current_password' => ['required', 'string'],
-            'password' => ['required', 'min:6', 'string', 'confirmed'],
-            'password_confirmation' => ['required', 'min:6', 'string'],
-        ]);
-
+        
         try {
+            Utils::rateLimiter();
+            
             $user = Auth::guard($panel->getGuardName())->user();
 
-            if (! $user) {
-                throw new \Exception('Account not found');
-            }
-
-            $panel->auth()->checkPassword($user, $validated_data['current_password']);
+            throw_if(! Hash::check($request->get('current_password'), $user?->password), __('laraguard::auth.invalid_password'));
 
             if (isset($user->password)) {
-                $user->password = Hash::make($validated_data['password']);
+                $user->password = Hash::make($request->get('password'));
             }
 
             $user->save();
 
-            return back()->with('message', 'Password has been changed');
+            return back()->with('message-password-changed', 'Password has been changed');
         } catch (\Exception $e) {
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors($e->getMessage(), 'error-password');
         }
     }
 }

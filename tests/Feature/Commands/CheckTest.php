@@ -10,7 +10,7 @@ final class CheckTest extends TestCase
     {
         $this->artisan('laraguard:check')
             ->expectsOutputToContain('Panel: Restricted area')
-            ->expectsOutputToContain('Panel: My account')
+            ->expectsOutputToContain('Panel: Customer area')
             ->assertSuccessful();
     }
 }

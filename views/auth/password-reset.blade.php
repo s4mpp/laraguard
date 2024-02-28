@@ -19,42 +19,11 @@
 
 		<div class="space-y-6">
 
-			<div>
-				<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{ __('laraguard::password.type_new_password') }}:</label>
-				<div class="mt-2">
-				  <input name="password" type="password" required class="
-					block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm 
-					px-3
-					ring-none
-					placeholder:text-gray-400 
-					outline-none
-					ring-1 ring-inset ring-gray-300
-					focus:ring-gray-600
-					focus:ring-2 focus:ring-inset
-					transition ease-linear duration-200
-					sm:text-sm sm:leading-6">
-				</div>
-			</div>
-			<div>
-				<label for="email" class="block text-sm font-medium leading-6 text-gray-900">{{ __('laraguard::password.repeat_new_password') }}:</label>
-				<div class="mt-2">
-				  <input name="password_confirmation" type="password" required class="
-					block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm 
-					px-3
-					ring-none
-					placeholder:text-gray-400 
-					outline-none
-					ring-1 ring-inset ring-gray-300
-					focus:ring-gray-600
-					focus:ring-2 focus:ring-inset
-					transition ease-linear duration-200
-					sm:text-sm sm:leading-6">
-				</div>
-			</div>
+			<x-element::form.input required type="password" name="password" title="{{ __('laraguard::password.type_new_password') }}" />
 
-			<div>
-				<button type="submit" class="ease-linear transition  flex w-full justify-center rounded-md bg-gray-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">{{  __('laraguard::password.change')  }}</button>
-			</div>
+			<x-element::form.input required type="password" name="password_confirmation" title="{{ __('laraguard::password.repeat_new_password') }}" />
+
+			<x-element::button full type="submit">{{  __('laraguard::password.change')  }}</x-element::button>
 		</div>
 
 		<p class="mt-10 text-center text-sm text-gray-500">

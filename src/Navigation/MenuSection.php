@@ -10,6 +10,6 @@ final class MenuSection
 
     public function __construct(private string $title, ?string $slug = null)
     {
-        $this->slug = $slug;
+        $this->setSlug($slug);
     }
 }
