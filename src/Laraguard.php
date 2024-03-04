@@ -29,9 +29,9 @@ final class Laraguard
         return self::$panels;
     }
 
-    public static function getPanel(?string $guard_name = null): ?Panel
+    public static function getPanel(?string $panel_name = null): ?Panel
     {
-        return self::$panels[$guard_name] ?? null;
+        return self::$panels[$panel_name] ?? null;
     }
 
     /**

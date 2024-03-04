@@ -11,7 +11,10 @@ foreach ($panels as $panel) {
     Route::prefix($panel->getPrefix())->middleware([
         Panel::class,
         Illuminate\Session\Middleware\StartSession::class,
+        Illuminate\Cookie\Middleware\EncryptCookies::class,
         Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+        Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
     ])->group(function () use ($panel): void {
         Route::get('/', StartController::class)->name($panel->getRouteName('start'));
 
