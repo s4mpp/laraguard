@@ -2,31 +2,32 @@
 
 namespace S4mpp\Laraguard\Middleware;
 
-use Closure;
 use Illuminate\Http\Request;
 use S4mpp\Laraguard\Laraguard;
 use S4mpp\Laraguard\Base\Panel;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Auth\Middleware\Authenticate;
 
 /**
  * @codeCoverageIgnore
  */
-final class RestrictedArea
+final class RestrictedArea extends Authenticate
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
+    protected function redirectTo(Request $request): ?string
+    {
+        return $request->expectsJson() ? null : $this->getRoutePanel($request);
+    }
+
+    private function getRoutePanel($request)
     {
         $panel = Laraguard::getPanel(Panel::current());
 
-        if ($panel && ! Auth::guard($panel->getGuardName())->check()) {
-            return to_route($panel->getRouteName('login'))->withErrors('You are not logged in');
+        if ($panel) {
+
+            $route_login = $panel->getRouteName('login');
+
+            return route($route_login);
         }
 
-        return $next($request);
+        return null;
     }
 }

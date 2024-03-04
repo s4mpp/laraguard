@@ -8,14 +8,8 @@ use S4mpp\Laraguard\Controllers\{ChangePasswordController, ModuleController, Pas
 $panels = Laraguard::getPanels();
 
 foreach ($panels as $panel) {
-    Route::prefix($panel->getPrefix())->middleware([
-        Panel::class,
-        Illuminate\Session\Middleware\StartSession::class,
-        Illuminate\Cookie\Middleware\EncryptCookies::class,
-        Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-        Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-    ])->group(function () use ($panel): void {
+    Route::prefix($panel->getPrefix())->middleware(['web', Panel::class])->group(function () use ($panel): void {
+
         Route::get('/', StartController::class)->name($panel->getRouteName('start'));
 
         Route::prefix('/signin')->controller(SignInController::class)->group(function () use ($panel): void {
@@ -44,7 +38,7 @@ foreach ($panels as $panel) {
             });
         });
 
-        Route::middleware(RestrictedArea::class)->group(function () use ($panel): void {
+        Route::middleware('restricted-area:'.$panel->getGuardName())->group(function () use ($panel): void {
             foreach ($panel->getModules() as $module) {
                 Route::prefix($module->getPrefixUrl())->group(function () use ($module, $panel): void {
                     $controller = $module->getController();
