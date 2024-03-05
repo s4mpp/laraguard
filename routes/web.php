@@ -8,7 +8,17 @@ use S4mpp\Laraguard\Controllers\{ChangePasswordController, ModuleController, Pas
 $panels = Laraguard::getPanels();
 
 foreach ($panels as $panel) {
-    Route::prefix($panel->getPrefix())->middleware(['web', Panel::class])->group(function () use ($panel): void {
+
+    if($subdomain = $panel->getSubdomain())
+    {
+        $route = Route::domain($panel->getSubdomain());
+    }
+    else
+    {
+        $route = Route::prefix($panel->getPrefix());
+    }
+    
+    $route->middleware(['web', Panel::class])->group(function () use ($panel): void {
 
         Route::get('/', StartController::class)->name($panel->getRouteName('start'));
 

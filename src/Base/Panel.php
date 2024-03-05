@@ -31,6 +31,8 @@ final class Panel
 
     private Credential $credential;
 
+    private ?string $subdomain = null;
+
     /**
      * @var array<MenuSection>
      */
@@ -119,6 +121,18 @@ final class Panel
         $this->modules[$module->getSlug()] = $module;
 
         return $module;
+    }
+
+    public function subdomain(string $subdomain): self
+    {
+        $this->subdomain = $subdomain;
+
+        return $this;
+    }
+
+    public function getSubdomain(): ?string
+    {
+        return $this->subdomain;
     }
 
     /**
