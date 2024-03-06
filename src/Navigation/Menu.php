@@ -3,6 +3,7 @@
 namespace S4mpp\Laraguard\Navigation;
 
 use Closure;
+use S4mpp\Laraguard\Base\Module;
 
 final class Menu
 {
@@ -23,34 +24,62 @@ final class Menu
         return $this->items;
     }
 
-    public function activate(string $current_route): void
+    public function activate(string $module, string $section = null): void
     {
-        foreach ($this->items as $item) {
-            if ($item->checkActiveByRoute($current_route)) {
-                $item->activate();
+        $items = $this->items;
 
-                break;
+        if($section)
+        {
+            $menu_section = $this->items[$section] ?? null;
+
+            $menu_section?->activate();
+
+            $items = $menu_section?->getSubMenuItems();
+        }
+        
+        $module = $items[$module] ?? null;
+        
+        $module?->activate();
+    }
+
+    /**
+     * @param array<Module> $modules
+     */
+    public function generate(array $modules): void
+    {
+        foreach ($modules as $module) {
+            if (! $module->canShowInMenu()) {
+                continue;
             }
 
-            foreach ($item->getSubMenuItems() as $sub_item) {
-                if ($sub_item->checkActiveByRoute($current_route)) {
-                    $sub_item->activate();
-                    $item->activate();
+            $page_index = $module->getPageIndex();
 
-                    break;
+            if ($section = $module->getOnSection()) {
+                $item_section = $this->items[$section->getSlug()] ?? null;
+
+                if (! $item_section) {
+                    $item_section = $this->addItem($this->createItem($section->getTitle(), $section->getSlug()));
                 }
+
+                $menu_item = $this->createItem($module->getTitle(), $module->getSlug(), $page_index?->getSlug());
+
+                $item_section->addSubMenu($menu_item);
+
+                continue;
             }
+
+            $this->addItem($this->createItem($module->getTitle(), $module->getSlug(), $page_index?->getSlug()));
         }
     }
 
-    public function addItem(MenuItem $item): MenuItem
+    private function addItem(MenuItem $item): MenuItem
     {
         $this->items[$item->getSlug()] = $item;
 
         return $item;
     }
 
-    public function createItem(string $module_title, string $module_slug, ?string $page_slug = null): MenuItem
+    private function createItem(string $module_title, string $module_slug, ?string $page_slug = null): MenuItem
     {
         $menu_item = new MenuItem($module_title, $module_slug);
 

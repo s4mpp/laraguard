@@ -2,7 +2,7 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-use S4mpp\Laraguard\Utils;
+use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Routing\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;

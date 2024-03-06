@@ -20,12 +20,12 @@
             <directory>src</directory>
         </include>
     </source>
-    <coverage disableCodeCoverageIgnore="false">
+    <coverage disableCodeCoverageIgnore="true">
     <report >
       <html 
         outputDirectory="coverage-result" 
-        lowUpperBound="30" 
-        highLowerBound="60" />
+        lowUpperBound="45" 
+        highLowerBound="90" />
     </report>
   </coverage>
 

@@ -2,10 +2,12 @@
 
 namespace S4mpp\Laraguard\Base;
 
-use S4mpp\Laraguard\Utils;
+use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Route;
 use S4mpp\Laraguard\Concerns\Password;
+use Illuminate\Support\Facades\Request;
 use S4mpp\Laraguard\Helpers\Credential;
 use S4mpp\Laraguard\Navigation\{MenuItem, Page};
 use S4mpp\Laraguard\Concerns\Auth as LaraguardAuth;
@@ -107,11 +109,10 @@ final class Panel
     {
         $model_name = Auth::guard($this->getGuardName())->getProvider()->getModel();
 
-        if (! $model_name) {
-            return null;
-        }
+        /** @var User $model */
+        $model = ($model_name) ? new $model_name() : null;
 
-        return new $model_name();
+        return $model;
     }
 
     public function addModule(string $title, ?string $slug = null): Module
@@ -156,11 +157,6 @@ final class Panel
         return $this->menu_sections[$slug] ?? null;
     }
 
-    public static function current(): ?string
-    {
-        return Utils::getSegmentRouteName(1);
-    }
-
     public function getModule(?string $module_name = null): ?Module
     {
         return $this->modules[$module_name] ?? null;
@@ -171,24 +167,6 @@ final class Panel
         $module_starter = array_filter($this->modules, fn ($item) => $item->isStarter());
 
         return (!empty($module_starter)) ? array_shift($module_starter) : $this->modules['my-account'];
-    }
-
-    /**
-     * @param  array<mixed>  $data
-     */
-    public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
-    {
-        $this->generateMenu();
-
-        $this->menu->activate(request()?->route()?->getAction('as'));
-
-        return $this->getModule(Module::current())?->getLayout($view, array_merge($data, [
-            'panel' => $this,
-            'guard_name' => $this->getGuardName(),
-            'menu' => $this->menu->getLinks(),
-            'my_account_url' => route($this->getRouteName('my-account', 'index')),
-            'logout_url' => route($this->getRouteName('signout')),
-        ]));
     }
 
     /**
@@ -207,30 +185,27 @@ final class Panel
         return $this;
     }
 
-    public function generateMenu(): void
+    /**
+     * @codeCoverageIgnore
+     */
+    public static function current(): ?string
     {
-        foreach ($this->modules as $module) {
-            if (! $module->canShowInMenu()) {
-                continue;
-            }
+        return Utils::getSegmentRouteName(1);
+    }
 
-            $page_index = $module->getPageIndex();
-
-            if ($section = $module->getOnSection()) {
-                $item_section = $this->items[$section->getSlug()] ?? null;
-
-                if (! $item_section) {
-                    $item_section = $this->menu->addItem($this->menu->createItem($section->getTitle(), $section->getSlug()));
-                }
-
-                $menu_item = $this->menu->createItem($module->getTitle(), $module->getSlug(), $page_index?->getSlug());
-
-                $item_section->addSubMenu($menu_item);
-
-                continue;
-            }
-
-            $this->menu->addItem($this->menu->createItem($module->getTitle(), $module->getSlug(), $page_index?->getSlug()));
-        }
+    /**
+     * @codeCoverageIgnore
+     * @param  array<mixed>  $data
+     */
+    public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
+    {
+        $this->menu->generate($this->modules);
+        
+        return $this->getModule(Module::current())?->getLayout($view, $this->menu, array_merge($data, [
+            'panel' => $this,
+            'guard_name' => $this->getGuardName(),
+            'my_account_url' => route($this->getRouteName('my-account', 'index')),
+            'logout_url' => route($this->getRouteName('signout')),
+        ]));
     }
 }

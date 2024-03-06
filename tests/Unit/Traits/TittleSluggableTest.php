@@ -3,7 +3,7 @@
 namespace S4mpp\Laraguard\Tests\Unit\Traits;
 
 use Exception;
-use S4mpp\Laraguard\Utils;
+use S4mpp\Laraguard\Helpers\Utils;
 use S4mpp\Laraguard\Base\Page;
 use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;

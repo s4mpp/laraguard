@@ -1,8 +1,11 @@
 <?php
 
-namespace S4mpp\Laraguard\Tests\Unit;
+namespace S4mpp\Laraguard\Tests\Unit\Helpers;
 
-use S4mpp\Laraguard\Utils;
+use Exception;
+use Illuminate\Support\Facades\RateLimiter;
+use RuntimeException;
+use S4mpp\Laraguard\Helpers\Utils;
 use S4mpp\Laraguard\Tests\TestCase;
 
 final class UtilsTest extends TestCase
@@ -25,5 +28,16 @@ final class UtilsTest extends TestCase
         $route_segment = Utils::getSegmentRouteName($segment_number, $route_name);
 
         $this->assertEquals($expected_result, $route_segment);
+    }
+
+    public function test_rate_limiter()
+    {
+        $this->expectException(RuntimeException::class);
+
+        Utils::rateLimiter();
+        Utils::rateLimiter();
+        Utils::rateLimiter();
+        
+        Utils::rateLimiter(); // ->exception
     }
 }

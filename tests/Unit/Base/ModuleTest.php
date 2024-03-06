@@ -2,7 +2,9 @@
 
 namespace S4mpp\Laraguard\Tests\Unit;
 
+use Illuminate\View\View;
 use S4mpp\Laraguard\Tests\TestCase;
+use S4mpp\Laraguard\Navigation\Menu;
 use S4mpp\Laraguard\Base\{Module, Page, Panel};
 
 final class ModuleTest extends TestCase
@@ -45,5 +47,14 @@ final class ModuleTest extends TestCase
         $module = new Module('', '');
 
         $this->assertTrue($module->canShowInMenu());
+    }
+
+    public function test_is_starter(): void
+    {
+        $module = new Module('', '');
+
+        $module->starter();
+
+        $this->assertTrue($module->isStarter());
     }
 }

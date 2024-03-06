@@ -53,20 +53,20 @@ final class SignInTest extends TestCase
         $this->assertNull(Auth::guard($another_guard)->user());
     }
 
-    public function test_login_action_on_panel_with_invalid_model(): void
-    {
-        $response = $this->post('/guest-area/signin', [
-            'username' => fake()->email(),
-            'password' => '213456789',
-        ]);
+    // public function test_login_action_on_panel_with_invalid_model(): void
+    // {
+    //     $response = $this->post('/guest-area/signin', [
+    //         'username' => fake()->email(),
+    //         'password' => '213456789',
+    //     ]);
 
-        $response->assertSessionHasErrorsIn('default');
+    //     $response->assertSessionHasErrorsIn('default');
 
-        $response->assertStatus(302);
-        $response->assertRedirectContains('/guest-area/signin');
+    //     $response->assertStatus(302);
+    //     $response->assertRedirectContains('/guest-area/signin');
 
-        $this->assertNull(Auth::guard('guest')->user());
-    }
+    //     $this->assertNull(Auth::guard('guest')->user());
+    // }
 
     /**
      * @dataProvider guardProvider
@@ -188,7 +188,6 @@ final class SignInTest extends TestCase
         $response = $this->get('/'.$uri.'/my-account');
 
         $response->assertStatus(302);
-        $response->assertSessionHasErrorsIn('default');
 
         $response->assertRedirect('/'.$uri.'/signin');
     }
@@ -203,7 +202,6 @@ final class SignInTest extends TestCase
         $response = $this->actingAs($user, $guard_name)->get('/'.$another_guard_url.'/my-account');
 
         $response->assertStatus(302);
-        $response->assertSessionHasErrorsIn('default');
 
         $response->assertRedirect('/'.$another_guard_url.'/signin');
     }

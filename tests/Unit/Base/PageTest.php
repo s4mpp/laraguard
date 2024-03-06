@@ -4,6 +4,7 @@ namespace S4mpp\Laraguard\Tests\Unit;
 
 use Illuminate\View\View;
 use S4mpp\Laraguard\Tests\TestCase;
+use S4mpp\Laraguard\Navigation\Menu;
 use S4mpp\Laraguard\Base\{Module, Page, Panel};
 
 final class PageTest extends TestCase
@@ -75,7 +76,7 @@ final class PageTest extends TestCase
     {
         $page = new Page('', '');
 
-        $render = $page->render(null, [
+        $render = $page->render(null, new Menu(), [
             'my_account_url' => null,
             'module_title' => null,
         ]);

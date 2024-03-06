@@ -14,10 +14,10 @@ final class RestrictedArea extends Authenticate
 {
     protected function redirectTo(Request $request): ?string
     {
-        return $request->expectsJson() ? null : $this->getRoutePanel($request);
+        return $request->expectsJson() ? null : $this->getRoutePanel();
     }
 
-    private function getRoutePanel($request)
+    private function getRoutePanel(): ?string
     {
         $panel = Laraguard::getPanel(Panel::current());
 

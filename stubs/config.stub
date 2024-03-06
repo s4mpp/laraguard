@@ -1,0 +1,16 @@
+<?php
+
+return [
+	'routes' => [
+		'signin' => 'signin',
+		'signup' => [
+			'index' => 'signup',
+			'user-registered' => 'user-registered',
+		],
+		'password-recovery' => [
+			'index' => 'password-recovery',
+			'change' => 'change',
+		],
+		'signout' => 'signout'
+	]
+];

@@ -9,6 +9,7 @@ use Workbench\App\Models\{Customer, User};
 use Workbench\App\Controllers\InvokeLayoutController;
 use Workbench\App\Controllers\InvokeLayoutDefaultController;
 use Workbench\App\Controllers\{ExtractController, TeamController, WithdrawalController};
+use Workbench\App\MIddleware\ExampleMiddleware;
 
 final class WorkbenchServiceProvider extends ServiceProvider
 {
@@ -23,11 +24,14 @@ final class WorkbenchServiceProvider extends ServiceProvider
 
         $restricted_area->addModule('No Index', 'no-index');
 
-        $module = $restricted_area->addModule('Module', 'module');
+        $module = $restricted_area->addModule('Module A', 'module');
         $module->addPage('Page', 'page')->isIndex();
+
+        $module = $restricted_area->addModule('Module B', 'moduleb')->middleware(ExampleMiddleware::class)->addIndex();
 
         $finances_module = $restricted_area->addModule('Module 2', 'module-2')->addIndex();
         $finances_module->addPage('Page');
+        $finances_module->addPage('Page with middleware')->middleware(ExampleMiddleware::class);
 
         $restricted_area->addSection('Section', 'section', [
             $restricted_area->addModule('Subsection 1', 'subsection-1')->addIndex('index-example'),
@@ -48,14 +52,6 @@ final class WorkbenchServiceProvider extends ServiceProvider
         Laraguard::panel('Guest area', 'guest-area', 'guest')->allowAutoRegister(); // Force invalid for tests
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
 
     /**
      * Bootstrap services.

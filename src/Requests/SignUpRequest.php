@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Requests;
 
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -26,7 +27,10 @@ final class SignUpRequest extends FormRequest
      */
     public function rules(): array
     {
-        $model = $this->get('laraguard_panel')->getModel();
+        /** @var Panel $panel */
+        $panel = $this->get('laraguard_panel');
+        
+        $model = $panel->getModel();
 
         return [
             'name' => ['required', 'string'],

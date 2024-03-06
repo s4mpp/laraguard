@@ -2,9 +2,11 @@
 
 namespace S4mpp\Laraguard\Providers;
 
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
-use S4mpp\Laraguard\Commands\{Check, MakeUser};
 use S4mpp\Laraguard\Middleware\RestrictedArea;
+use S4mpp\Laraguard\Commands\{Check, MakeUser};
 
 /**
  * @codeCoverageIgnore
@@ -19,13 +21,15 @@ final class LaraguardServiceProvider extends ServiceProvider
 
         $this->loadTranslationsFrom(__DIR__.'/../../lang', 'laraguard');
 
-        app('router')->aliasMiddleware('restricted-area', RestrictedArea::class);
-
         if ($this->app->runningInConsole()) {
             $this->commands([
                 MakeUser::class,
                 Check::class,
             ]);
+
+            $this->publishes([
+                __DIR__.'/../../stubs/config.stub' => config_path('laraguard.php'),
+            ], 'laraguard-config');
 
             $this->publishes([
                 __DIR__.'/../../style/dist.css' => public_path('vendor/laraguard/style.css'),

@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Requests;
 
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -37,13 +38,17 @@ final class SignInRequest extends FormRequest
      */
     public function attributes(): array
     {
+        /** @var Panel $panel */
         $panel = $this->get('laraguard_panel');
-
+        
         $credential = $panel->getCredential();
+
+        /** @var string $password_rules */
+        $password_rules = __('laraguard::login.password');
 
         return [
             'username' => $credential->getTitle(),
-            'password' => __('laraguard::login.password'),
+            'password' => $password_rules,
         ];
     }
 }

@@ -31,15 +31,6 @@ final class MenuItemTest extends TestCase
         $this->assertTrue($menu->isActive());
     }
 
-    public function test_check_activation(): void
-    {
-        $menu = new MenuItem('', '');
-
-        $test = $menu->checkActiveByRoute('test');
-
-        $this->assertFalse($test);
-    }
-
     public function test_action_menu(): void
     {
         $menu = new MenuItem('', '');

@@ -29,14 +29,14 @@ abstract class Auth
         return $attempt;
     }
 
-    public static function logout(Panel $panel): bool
+    public static function logout(string $guard_name): bool
     {
-        LaravelAuth::guard($panel->getGuardName())->logout();
+        LaravelAuth::guard($guard_name)->logout();
 
         Session::invalidate();
 
         Session::regenerateToken();
 
-        return ! LaravelAuth::guard($panel->getGuardName())->check();
+        return ! LaravelAuth::guard($guard_name)->check();
     }
 }

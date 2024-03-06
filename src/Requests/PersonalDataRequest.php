@@ -3,6 +3,7 @@
 namespace S4mpp\Laraguard\Requests;
 
 use Illuminate\Validation\Rule;
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -30,14 +31,17 @@ final class PersonalDataRequest extends FormRequest
      */
     public function rules(): array
     {
+        /** @var Panel $panel */
         $panel = $this->get('laraguard_panel');
+        
+        $model = $panel->getModel();
 
-        $model = $this->get('laraguard_panel')->getModel();
+        $table = $model?->getTable() ?? '';
 
         return [
             'current_password' => ['required', 'string'],
             'name' => ['required', 'string'],
-            'email' => ['required', 'string', 'email', Rule::unique($model->getTable())->ignore(Auth::guard($panel->getGuardName())->id())],
+            'email' => ['required', 'string', 'email', Rule::unique($table)->ignore(Auth::guard($panel->getGuardName())->id())],
         ];
     }
 }

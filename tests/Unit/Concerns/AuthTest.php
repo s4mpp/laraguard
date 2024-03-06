@@ -97,7 +97,7 @@ final class AuthTest extends TestCase
 
         Auth::guard($guard_name)->login($user);
 
-        ConcernsAuth::logout($panel);
+        ConcernsAuth::logout($panel->getGuardName());
 
         $this->assertNull(Auth::guard($guard_name)->user());
     }
@@ -109,7 +109,7 @@ final class AuthTest extends TestCase
     {
         $panel = new Panel('', '', $guard_name);
 
-        $logout = ConcernsAuth::logout($panel);
+        $logout = ConcernsAuth::logout($panel->getGuardName());
 
         $this->assertTrue($logout);
 

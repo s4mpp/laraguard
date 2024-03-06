@@ -7,53 +7,29 @@ use S4mpp\Laraguard\Base\Panel;
 use S4mpp\Laraguard\Tests\TestCase;
 use S4mpp\Laraguard\Helpers\Credential;
 use S4mpp\Laraguard\Navigation\{MenuItem, MenuSection};
+use Workbench\App\Models\User;
 
 final class PanelTest extends TestCase
 {
-    private $panel;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->panel = new Panel('Panel title', 'panel-prefix', 'administrator');
-    }
-
     public function test_create_instance(): void
     {
-        $this->assertCount(1, $this->panel->getModules());
+        $panel = new Panel('Panel title', 'panel-prefix', 'administrator');
 
-        $this->assertSame('Panel title', $this->panel->getTitle());
-        $this->assertSame('administrator', $this->panel->getGuardName());
-        $this->assertSame('panel-prefix', $this->panel->getPrefix());
+        $credential = $panel->getCredential();
 
-        $this->assertFalse($this->panel->hasAutoRegister());
-    }
+        $this->assertCount(1, $panel->getModules());
+        $this->assertFalse($panel->hasAutoRegister());
+        $this->assertSame('lg.administrator.login', $panel->getRouteName('login'));
 
-    public function test_get_name_fields(): void
-    {
-        $credential = $this->panel->getCredential();
+        $this->assertSame('Panel title', $panel->getTitle());
+        $this->assertSame('administrator', $panel->getGuardName());
+        $this->assertSame('panel-prefix', $panel->getPrefix());
 
         $this->assertInstanceOf(Credential::class, $credential);
-
         $this->assertSame('E-mail', $credential->getTitle());
-
         $this->assertSame('email', $credential->getField());
     }
 
-    public function test_get_route_name(): void
-    {
-        $this->assertSame('lg.administrator.login', $this->panel->getRouteName('login'));
-    }
-
-    public function test_set_auto_register(): void
-    {
-        $current_panel = $this->panel->allowAutoRegister();
-
-        $this->assertInstanceOf(Panel::class, $current_panel);
-
-        $this->assertTrue($this->panel->hasAutoRegister());
-    }
 
     public function test_get_menu_sections(): void
     {
@@ -80,7 +56,7 @@ final class PanelTest extends TestCase
     {
         $panel = Laraguard::getPanel('web');
 
-        $panel->generateMenu();
+        $panel->menu()->generate($panel->getModules());
 
         $menu = $panel->menu()->getLinks();
 
@@ -89,10 +65,47 @@ final class PanelTest extends TestCase
         $this->assertContainsOnlyInstancesOf(MenuItem::class, $menu);
     }
 
+    public function test_get_start_module(): void
+    {
+        $panel = Laraguard::getPanel('web');
+
+        $start_module = $panel->getStartModule();
+
+        $this->assertSame('home', $start_module->getSlug());
+    }
+
+    public function test_set_auto_register(): void
+    {
+        $panel = new Panel('', '', '');
+
+        $panel = $panel->allowAutoRegister();
+
+        $this->assertTrue($panel->hasAutoRegister());
+    }
+
     public function test_get_module(): void
     {
         $panel = new Panel('', '', '');
 
         $this->assertNull($panel->getModule(null));
+    }
+
+    public function test_get_subdomain(): void
+    {
+        $panel = new Panel('', '', '');
+
+        $panel->subdomain('subdomain.example.com');
+
+        $this->assertSame('subdomain.example.com', $panel->getSubdomain());
+    }
+
+
+    public function test_get_model()
+    {
+        $panel = new Panel('', '', 'web');
+
+        $model = $panel->getModel();
+
+        $this->assertInstanceOf(User::class, $model);
     }
 }

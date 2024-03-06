@@ -3,6 +3,7 @@
 namespace S4mpp\Laraguard\Tests;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\RateLimiter;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\Dusk\{Options, TestCase};
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,6 +21,8 @@ abstract class DuskTestCase extends TestCase
         parent::setUp();
 
         Options::withoutUI();
+
+        RateLimiter::clear('rl:127.0.0.1');
 
         foreach (static::$browsers as $browser) {
             $browser->driver->manage()->deleteAllCookies();

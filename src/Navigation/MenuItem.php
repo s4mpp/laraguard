@@ -55,7 +55,7 @@ final class MenuItem
 
     public function addSubMenu(MenuItem $item): self
     {
-        $this->sub_menu_items[] = $item;
+        $this->sub_menu_items[$item->getSlug()] = $item;
 
         return $this;
     }
@@ -76,12 +76,5 @@ final class MenuItem
     public function isActive(): bool
     {
         return $this->is_active;
-    }
-
-    public function checkActiveByRoute(string $current_route): bool
-    {
-        $route = $this->getRoute();
-
-        return $route && (mb_strpos($current_route, $route) !== false);
     }
 }

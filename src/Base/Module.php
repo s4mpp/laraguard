@@ -2,15 +2,17 @@
 
 namespace S4mpp\Laraguard\Base;
 
-use S4mpp\Laraguard\Utils;
 use Illuminate\Support\Str;
+use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
+use S4mpp\Laraguard\Navigation\Menu;
+use S4mpp\Laraguard\Traits\HasMiddleware;
 use S4mpp\Laraguard\Traits\TitleSluggable;
 use S4mpp\Laraguard\Navigation\{Breadcrumb, MenuSection};
 
 final class Module
 {
-    use TitleSluggable;
+    use TitleSluggable, HasMiddleware;
 
     private ?string $controller = null;
 
@@ -127,10 +129,7 @@ final class Module
         return null;
     }
 
-    public static function current(): ?string
-    {
-        return Utils::getSegmentRouteName(2);
-    }
+
 
     public function getPage(?string $page_name = null): ?Page
     {
@@ -150,21 +149,36 @@ final class Module
     }
 
     /**
+     * @codeCoverageIgnore
+     */
+    public static function current(): ?string
+    {
+        return Utils::getSegmentRouteName(2);
+    }
+
+    /**
+     * @codeCoverageIgnore
      * @param  array<mixed>  $data
      */
-    public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
+    public function getLayout(?string $view = null, Menu $menu, array $data = []): null|View|\Illuminate\Contracts\View\Factory
     {
-        $module_title = ($this->translate_title) ? __($this->title) : $this->getTitle();
-
         $data['breadcrumbs'] = [];
-
+        
         if ($this->section) {
             $breadcrumbs[] = new Breadcrumb($this->section->getTitle());
         }
+        
+        /** @var string $module_title */
+        $module_title = ($this->translate_title) ? __($this->title) : $this->getTitle();
 
-        $breadcrumbs[] = new Breadcrumb($module_title);
+        if($module_title)
+        {
+            $breadcrumbs[] = new Breadcrumb($module_title);
+        }
 
-        return $this->getPage(Page::current())?->render($view, array_merge($data, [
+        $menu->activate($this->getSlug(), $this->section?->getSlug());
+
+        return $this->getPage(Page::current())?->render($view, $menu, array_merge($data, [
             'module_title' => $module_title,
         ]));
     }

@@ -2,9 +2,10 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
-use Illuminate\Http\{RedirectResponse, Request};
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\{RedirectResponse, Request};
 
 /**
  * @codeCoverageIgnore
@@ -13,6 +14,7 @@ final class StartController extends Controller
 {
     public function __invoke(Request $request): RedirectResponse
     {
+        /** @var Panel $panel */
         $panel = $request->get('laraguard_panel');
 
         if (! Auth::guard($panel->getGuardName())->check()) {

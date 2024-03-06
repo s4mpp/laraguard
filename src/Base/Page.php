@@ -2,14 +2,16 @@
 
 namespace S4mpp\Laraguard\Base;
 
-use S4mpp\Laraguard\Utils;
+use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
+use S4mpp\Laraguard\Navigation\Menu;
+use S4mpp\Laraguard\Traits\HasMiddleware;
 use S4mpp\Laraguard\Navigation\Breadcrumb;
 use S4mpp\Laraguard\Traits\TitleSluggable;
 
 final class Page
 {
-    use TitleSluggable;
+    use TitleSluggable, HasMiddleware;
 
     private ?string $method = 'GET';
 
@@ -20,11 +22,6 @@ final class Page
     private ?string $uri = null;
 
     private bool $is_index = false;
-
-    /**
-     * @var array<string>
-     */
-    private array $middlewares = [];
 
     public function __construct(private string $title, ?string $slug = null)
     {
@@ -71,29 +68,6 @@ final class Page
         return $this->is_index;
     }
 
-    /**
-     * @param  array<mixed>  $middlewares
-     */
-    public function middleware(array $middlewares): self
-    {
-        $this->middlewares = $middlewares;
-
-        return $this;
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function getMiddlewares(): array
-    {
-        return $this->middlewares;
-    }
-
-    public static function current(): ?string
-    {
-        return Utils::getSegmentRouteName(3);
-    }
-
     public function getAction(): ?string
     {
         return $this->action;
@@ -115,9 +89,17 @@ final class Page
     }
 
     /**
+     * @codeCoverageIgnore
+     */
+    public static function current(): ?string
+    {
+        return Utils::getSegmentRouteName(3);
+    }
+
+    /**
      * @param  array<mixed>  $data
      */
-    public function render(?string $file = null, array $data = []): View|\Illuminate\Contracts\View\Factory
+    public function render(?string $file = null, Menu $menu, array $data = []): View|\Illuminate\Contracts\View\Factory
     {
         $file ??= $this->getView();
 
@@ -130,6 +112,8 @@ final class Page
         $data['page_title'] = $title;
 
         $data['breadcrumbs'][] = new Breadcrumb($title ?? '');
+
+        $data['menu'] = $menu->getLinks();
 
         return view($file, $data);
     }
