@@ -19,9 +19,6 @@ workbench:
     commands: true
     components: false
     views: true
-  build: 
-    - asset-publish
-  assets: 
-    - element-assets
-    - laraguard-assets
+  build: []
+  assets: []
   sync: []

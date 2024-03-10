@@ -5,7 +5,7 @@
 @section('content')
 
 	<x-element::message.flash />
-	<x-element::message.error all />
+	<x-element::message.error />
 
 	<form class="space-y-6" method="POST" action="{{ route($panel->getRouteName('attempt_login')) }}" x-data="{loading:false}" x-on:submit="loading=true">
 		@csrf

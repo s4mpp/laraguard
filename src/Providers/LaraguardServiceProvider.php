@@ -30,10 +30,6 @@ final class LaraguardServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../../stubs/config.stub' => config_path('laraguard.php'),
             ], 'laraguard-config');
-
-            $this->publishes([
-                __DIR__.'/../../style/dist.css' => public_path('vendor/laraguard/style.css'),
-            ], 'laraguard-assets');
         }
     }
 }

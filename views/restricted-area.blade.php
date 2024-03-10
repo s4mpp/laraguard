@@ -13,13 +13,32 @@
 	
 				   </div>
 				  <div class="hidden sm:ml-10 sm:block">
-					<div class="flex space-x-4">
+					<div class="flex items-center">
 						@foreach($menu as $n => $menu_item)
-							<a @class([
-								'rounded-md px-3 py-2 text-sm font-medium transition-colors ease-in',
-								'text-white hover:bg-gray-700' => !$menu_item->isActive(),
-								'bg-gray-900 text-white' => $menu_item->isActive()
-							]) href="{{ $menu_item->getAction() }}">{{ $menu_item->getTitle() }}</a>
+							@if(!$menu_item->hasSubmenu())
+								<a @class([
+									'rounded-md px-3 py-2 text-sm font-medium transition-colors ease-in',
+									'text-white hover:bg-gray-700' => !$menu_item->isActive(),
+									'bg-gray-900 text-white' => $menu_item->isActive()
+								]) href="{{ $menu_item->getAction() }}">{{ $menu_item->getTitle() }}</a>
+							@else
+								<x-element::dropdown>
+									<x-slot:button>
+										<a @class([
+											'rounded-md px-3 py-2 text-sm font-medium transition-colors ease-in',
+											'text-white hover:bg-gray-700' => !$menu_item->isActive(),
+											'bg-gray-900 text-white' => $menu_item->isActive()
+										]) x-on:click="toggleDropdown()" href="#">
+											<span class="inline-flex">{{ $menu_item->getTitle() }} <x-element::icon class=" w-5 h-5" name="chevron-down" solid mini /></span>
+										</a>
+									</x-slot:button>
+									<x-slot:body>
+										@foreach($menu_item->getSubMenuItems() as $sub_menu_item)
+											<x-element::dropdown.link class="whitespace-nowrap" href="{{ $sub_menu_item->getAction() }}">{{ $sub_menu_item->getTitle() }}</x-element::dropdown.link>
+										@endforeach
+									</x-slot:body>
+								</x-element::dropdown>
+							@endif
 						@endforeach
 					</div>
 				  </div>

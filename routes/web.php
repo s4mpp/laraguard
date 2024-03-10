@@ -24,14 +24,7 @@ $panels = Laraguard::getPanels();
 
 foreach ($panels as $panel) {
 
-    if($subdomain = $panel->getSubdomain())
-    {
-        $route = Route::domain($panel->getSubdomain());
-    }
-    else
-    {
-        $route = Route::prefix($panel->getPrefix());
-    }
+    $route = ($subdomain = $panel->getSubdomain()) ? Route::domain($subdomain) : Route::prefix($panel->getPrefix());
     
     $route->middleware(['web', Panel::class])->group(function () use ($panel, $uris): void {
 
@@ -65,7 +58,10 @@ foreach ($panels as $panel) {
 
         Route::middleware('restricted-area:'.$panel->getGuardName())->group(function () use ($panel, $uris): void {
             foreach ($panel->getModules() as $module) {
-                Route::prefix($module->getPrefixUrl())->group(function () use ($module, $panel): void {
+                                
+                Route::prefix($module->getPrefixUrl())
+                    ->middleware($module->getMiddlewares())
+                    ->group(function () use ($module, $panel): void {
                     $controller = $module->getController();
 
                     foreach ($module->getPages() as $i => $page) {
