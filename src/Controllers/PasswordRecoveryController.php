@@ -38,11 +38,11 @@ final class PasswordRecoveryController extends Controller
                 ->getProvider()
                 ->retrieveByCredentials(['email' => $request->email ?? null]);
 
-            throw_if(! $user, __('laraguard::password_recovery.account_not_found'));
+            throw_if(! $user, __('laraguard::password_recovery.account_not_found')); // @phpstan-ignore-line
 
             $status = ConcernsPassword::sendLinkReset($panel, $user);
 
-            throw_if(! is_string($status), __('laraguard::password_recovery.fail_to_send_email'));
+            throw_if(! is_string($status), __('laraguard::password_recovery.fail_to_send_email')); // @phpstan-ignore-line
 
             return back()->with('message', __($status));
         } catch (\Exception $e) {

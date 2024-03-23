@@ -6,4 +6,3 @@ parameters:
 		- '#Access to an undefined property Illuminate\\Foundation\\Auth\\User::\$[a-z]#'
 		- '#Call to an undefined method Illuminate\\Contracts\\Auth\\[\a-zA-z\]::[a-zA-z]#'
 		- '#Call to an undefined static method Illuminate\\Foundation\\Auth\\User::where#'
-		- '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$[a-z]#'

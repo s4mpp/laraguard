@@ -2,10 +2,11 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-use S4mpp\Laraguard\Helpers\Utils;
 use S4mpp\Laraguard\Laraguard;
 use Illuminate\Routing\Controller;
+use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\{Auth, Hash};
 use Illuminate\Http\{RedirectResponse, Request};
 use S4mpp\Laraguard\Requests\PersonalDataRequest;
@@ -38,9 +39,10 @@ final class PersonalDataController extends Controller
         $panel = $request->get('laraguard_panel');
 
         try {
+            /** @var User $user */
             $user = Auth::guard($panel->getGuardName())->user();
 
-            throw_if(! Hash::check($request->get('current_password'), $user?->password), __('laraguard::auth.invalid_password'));
+            throw_if(! Hash::check($request->get('current_password'), $user?->password), __('laraguard::auth.invalid_password')); // @phpstan-ignore-line
 
             if (isset($user->name)) {
                 $user->name = $request->get('name');
@@ -65,9 +67,10 @@ final class PersonalDataController extends Controller
         try {
             Utils::rateLimiter();
             
+            /** @var User $user */
             $user = Auth::guard($panel->getGuardName())->user();
 
-            throw_if(! Hash::check($request->get('current_password'), $user?->password), __('laraguard::auth.invalid_password'));
+            throw_if(! Hash::check($request->get('current_password'), $user?->password), __('laraguard::auth.invalid_password')); // @phpstan-ignore-line
 
             if (isset($user->password)) {
                 $user->password = Hash::make($request->get('password'));

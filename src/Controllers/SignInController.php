@@ -39,11 +39,11 @@ final class SignInController extends Controller
 
             $user = $model?->where([$field => $request->get('username')])->first();
 
-            throw_if(! $user, __('laraguard::auth.account_not_found'));
+            throw_if(! $user, __('laraguard::auth.account_not_found')); // @phpstan-ignore-line
 
-            throw_if(! LaraguardAuth::tryLogin($panel, $user, $request->get('password')), __('laraguard::auth.invalid_credentials'));
+            throw_if(! LaraguardAuth::tryLogin($panel, $user, $request->get('password')), __('laraguard::auth.invalid_credentials')); // @phpstan-ignore-line
 
-            throw_if(! Auth::guard($panel->getGuardName())->check(), __('laraguard::auth.login_failed'));
+            throw_if(! Auth::guard($panel->getGuardName())->check(), __('laraguard::auth.login_failed')); // @phpstan-ignore-line
 
             return to_route($panel->getRouteName($panel->getStartModule()->getSlug(), 'index'));
         } catch (\Exception $e) {

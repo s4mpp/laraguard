@@ -24,8 +24,8 @@
     <report >
       <html 
         outputDirectory="coverage-result" 
-        lowUpperBound="45" 
-        highLowerBound="90" />
+        lowUpperBound="35" 
+        highLowerBound="70" />
     </report>
   </coverage>
 

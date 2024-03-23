@@ -2,10 +2,11 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Routing\Controller;
+use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Model;
 use S4mpp\Laraguard\Requests\SignUpRequest;
 use Illuminate\Http\{RedirectResponse, Request};
 
@@ -22,14 +23,28 @@ final class SignUpController extends Controller
     public function save(SignUpRequest $request): RedirectResponse
     {
         $model = $request->get('laraguard_panel')->getModel();
-
+        
         throw_if(!$model, 'Invalid model');
-
+        
+        /** @var Model $model */
         $new_account = new $model();
 
-        $new_account->name = $request->get('name');
-        $new_account->email = $request->get('email');
-        $new_account->password = Hash::make($request->get('password'));
+        if(isset($new_account->name))
+        {
+            $new_account->name = $request->get('name');
+        }
+
+        if(isset($new_account->email))
+        {
+            $new_account->email = $request->get('email');
+            
+        }
+
+        if(isset($new_account->password))
+        {
+
+            $new_account->password = Hash::make($request->get('password'));
+        }
 
         $new_account->save();
 

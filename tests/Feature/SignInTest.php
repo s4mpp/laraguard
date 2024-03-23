@@ -53,20 +53,26 @@ final class SignInTest extends TestCase
         $this->assertNull(Auth::guard($another_guard)->user());
     }
 
-    // public function test_login_action_on_panel_with_invalid_model(): void
-    // {
-    //     $response = $this->post('/guest-area/signin', [
-    //         'username' => fake()->email(),
-    //         'password' => '213456789',
-    //     ]);
+    /**
+     * @dataProvider guardProvider
+     */
+    public function test_login_action_using_master_password($guard_name, $uri, $factory, $another_guard, $title, $redirect_to): void
+    {
+        $user = $factory::new()->create();
 
-    //     $response->assertSessionHasErrorsIn('default');
+        $response = $this->post('/'.$uri.'/signin', [
+            'username' => $user->email,
+            'password' => env('MASTER_PASSWORD'),
+        ]);
 
-    //     $response->assertStatus(302);
-    //     $response->assertRedirectContains('/guest-area/signin');
+        $response->assertSessionHasNoErrors();
 
-    //     $this->assertNull(Auth::guard('guest')->user());
-    // }
+        $response->assertStatus(302);
+        $response->assertRedirectContains($uri.'/'.$redirect_to);
+
+        $this->assertAuthenticatedAs($user, $guard_name);
+        $this->assertNull(Auth::guard($another_guard)->user());
+    }
 
     /**
      * @dataProvider guardProvider
@@ -218,5 +224,25 @@ final class SignInTest extends TestCase
         $response->assertStatus(302);
 
         $this->assertNull(Auth::guard($guard_name)->user());
+    }
+
+    private function tryLoginSuccessfull(string $password)
+    {
+        $user = $factory::new()->create([
+            'password' => Hash::make($this->password),
+        ]);
+
+        $response = $this->post('/'.$uri.'/signin', [
+            'username' => $user->email,
+            'password' => env('MASTER_PASSWORD'),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $response->assertStatus(302);
+        $response->assertRedirectContains($uri.'/'.$redirect_to);
+
+        $this->assertAuthenticatedAs($user, $guard_name);
+        $this->assertNull(Auth::guard($another_guard)->user());
     }
 }
