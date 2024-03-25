@@ -19,6 +19,8 @@ final class Module
 
     private bool|Closure $hide_in_menu = false;
 
+    private bool $translate_title = false;
+
     private ?MenuSection $section = null;
 
     private bool $is_starter = false;
@@ -87,6 +89,13 @@ final class Module
         return implode('/', [$this->section?->getSlug(), $this->getSlug()]);
     }
 
+    public function translateTitle(): self
+    {
+        $this->translate_title = true;
+
+        return $this;
+    }
+
     public function addPage(string $title, ?string $uri = null, ?string $slug = null): Page
     {
         $slug_title = Str::slug($title);
@@ -130,6 +139,8 @@ final class Module
 
     public function hideInMenu(bool|Closure $value = true): self
     {
+        
+
         $this->hide_in_menu = $value;
 
         return $this;
@@ -139,10 +150,14 @@ final class Module
     {
         if(is_callable($this->hide_in_menu))
         {
-            return call_user_func($this->hide_in_menu);
+            $hide_in_menu = call_user_func($this->hide_in_menu);
+        }
+        else
+        {
+            $hide_in_menu = $this->hide_in_menu;
         }
 
-        return !$this->hide_in_menu;
+        return !$hide_in_menu;
     }
 
     /**
@@ -157,7 +172,7 @@ final class Module
      * @codeCoverageIgnore
      * @param  array<mixed>  $data
      */
-    public function getLayout(?string $view = null, Menu $menu = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
+    public function getLayout(?string $view = null, Menu $menu, array $data = []): null|View|\Illuminate\Contracts\View\Factory
     {
         $data['breadcrumbs'] = [];
         
@@ -165,14 +180,15 @@ final class Module
             $breadcrumbs[] = new Breadcrumb($this->section->getTitle());
         }
         
-        $module_title = $this->getTitle();
+        /** @var string $module_title */
+        $module_title = ($this->translate_title) ? __($this->title) : $this->getTitle();
 
         if($module_title)
         {
             $breadcrumbs[] = new Breadcrumb($module_title);
         }
 
-        $menu?->activate($this->getSlug(), $this->section?->getSlug());
+        $menu->activate($this->getSlug(), $this->section?->getSlug());
 
         return $this->getPage(Page::current())?->render($view, $menu, array_merge($data, [
             'module_title' => $module_title,
