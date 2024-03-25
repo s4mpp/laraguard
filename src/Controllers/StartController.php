@@ -21,6 +21,6 @@ final class StartController extends Controller
             return to_route($panel->getRouteName('login'));
         }
 
-        return to_route($panel->getRouteName('my-account', 'index'));
+        return to_route($panel->getRouteName($panel->getStartModule()->getSlug(), 'index'));
     }
 }

@@ -31,16 +31,16 @@ final class LaraguardTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_get_panel($guard, $prefix): void
+    public function test_get_panel($panel): void
     {
-        $panel = Laraguard::getPanel($guard);
+        $p = Laraguard::getPanel($panel['guard_name']);
 
-        $this->assertInstanceOf(Panel::class, $panel);
+        $this->assertInstanceOf(Panel::class, $p);
 
-        $this->assertSame($guard, $panel->getGuardName());
-        $this->assertSame($prefix, $panel->getPrefix());
+        $this->assertSame($panel['guard_name'], $p->getGuardName());
+        $this->assertSame($panel['prefix'], $p->getPrefix());
     }
 
     public function test_render_layout(): void

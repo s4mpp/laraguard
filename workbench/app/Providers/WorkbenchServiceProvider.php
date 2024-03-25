@@ -18,7 +18,7 @@ final class WorkbenchServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $restricted_area = Laraguard::panel('Restricted area', 'restricted-area'); // web
+        $restricted_area = Laraguard::panel('Área Restrita', 'area-restrita'); // web
 
         $restricted_area->addModule('Dashboard', 'home')->starter()->addIndex();
 
@@ -42,7 +42,7 @@ final class WorkbenchServiceProvider extends ServiceProvider
         $restricted_area->addModule('Invoke layout default')->controller(InvokeLayoutDefaultController::class)->addIndex();
         $restricted_area->addModule('Invoke layout')->controller(InvokeLayoutController::class)->addIndex();
 
-        $my_account = Laraguard::panel('Customer area', 'customer-area', 'customer')->allowAutoRegister();
+        $my_account = Laraguard::panel('Área do cliente', 'area-do-cliente', 'customer')->allowAutoRegister();
 
         $my_account->layout()
             ->setHtmlFile('custom.html')

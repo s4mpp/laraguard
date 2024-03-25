@@ -10,10 +10,10 @@ final class SignUpTest extends TestCase
     public static function routeIndexProvider()
     {
         return [
-            'web' => ['/restricted-area/signup', 404],
-            'web user registered' => ['/restricted-area/signup/user-registered', 404],
-            'customer' => ['/customer-area/signup', 200],
-            'customer user registered' => ['/customer-area/signup/user-registered', 200],
+            'web' => ['/area-restrita/cadastro', 404],
+            'web user registered' => ['/area-restrita/cadastro/finalizado', 404],
+            'customer' => ['/area-do-cliente/cadastro', 200],
+            'customer user registered' => ['/area-do-cliente/cadastro/finalizado', 200],
         ];
     }
 
@@ -29,19 +29,19 @@ final class SignUpTest extends TestCase
 
     public function test_action_register(): void
     {
-        $response = $this->post('/customer-area/signup', [
+        $response = $this->post('/area-do-cliente/cadastro', [
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' => fake()->password(),
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect('/customer-area/signup/user-registered');
+        $response->assertRedirect('/area-do-cliente/cadastro/finalizado');
     }
 
     public function test_action_register_on_panel_not_allowed(): void
     {
-        $response = $this->post('/restricted-area/signup', [
+        $response = $this->post('/area-restrita/signup', [
             'name' => fake()->name(),
             'email' => fake()->email(),
             'password' => fake()->password(),

@@ -40,16 +40,16 @@ final class Panel
      */
     private array $menu_sections = [];
 
+
     public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
     {
-        $my_account = $this->addModule('laraguard::my_account.title', 'my-account')
-            ->translateTitle()
+        $my_account = $this->addModule('Minha conta', 'minha-conta')
             ->controller(PersonalDataController::class)
             ->addIndex()
             ->hideInMenu();
 
-        $my_account->addPage('', 'save-personal-data', 'save-personal-data')->method('put')->action('savePersonalData');
-        $my_account->addPage('', 'change-password', 'change-password')->method('put')->action('changePassword');
+        $my_account->addPage('', 'salvar-dados-pessoais', 'save-personal-data')->method('put')->action('savePersonalData');
+        $my_account->addPage('', 'alterar-senha', 'change-password')->method('put')->action('changePassword');
 
         $this->menu = new Menu(fn (...$params) => $this->getRouteName(...$params));
 
@@ -166,7 +166,7 @@ final class Panel
     {
         $module_starter = array_filter($this->modules, fn ($item) => $item->isStarter());
 
-        return (!empty($module_starter)) ? array_shift($module_starter) : $this->modules['my-account'];
+        return (!empty($module_starter)) ? array_shift($module_starter) : $this->modules['minha-conta'];
     }
 
     /**
@@ -204,7 +204,7 @@ final class Panel
         return $this->getModule(Module::current())?->getLayout($view, $this->menu, array_merge($data, [
             'panel' => $this,
             'guard_name' => $this->getGuardName(),
-            'my_account_url' => route($this->getRouteName('my-account', 'index')),
+            'my_account_url' => route($this->getRouteName('minha-conta', 'index')),
             'logout_url' => route($this->getRouteName('signout')),
         ]));
     }

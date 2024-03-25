@@ -16,19 +16,20 @@ final class PasswordTest extends TestCase
 {
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_update_password($guard_name, $uri, $factory): void
+    public function test_update_password($panel): void
     {
         $new_password = 'pa55word';
 
+        $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $panel = new Panel('', '', $guard_name);
+        $p = new Panel('', '', $panel['guard_name']);
 
-        $token = PasswordFacade::broker($guard_name)->createToken($user);
+        $token = PasswordFacade::broker($panel['guard_name'])->createToken($user);
 
-        $status = Password::reset($panel, $user, $token, $new_password);
+        $status = Password::reset($p, $user, $token, $new_password);
 
         $user->refresh();
 
@@ -42,19 +43,20 @@ final class PasswordTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_update_password_with_invalid_token($guard_name, $uri, $factory): void
+    public function test_update_password_with_invalid_token($panel): void
     {
         $original_password = 'passw0rd';
 
         $new_password = 'pa55word';
 
+        $factory = $panel['factory'];
         $user = $factory::new(['password' => Hash::make($original_password)])->create();
 
-        $panel = new Panel('', '', $guard_name);
+        $p = new Panel('', '', $panel['guard_name']);
 
-        $status = Password::reset($panel, $user, rand(), $new_password);
+        $status = Password::reset($p, $user, rand(), $new_password);
 
         $user->refresh();
 
@@ -64,17 +66,18 @@ final class PasswordTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_send_link($guard_name, $uri, $factory): void
+    public function test_send_link($panel): void
     {
         Notification::fake();
 
+        $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $panel = new Panel('', '', $guard_name);
+        $p = new Panel('', '', $panel['guard_name']);
 
-        $status = Password::sendLinkReset($panel, $user);
+        $status = Password::sendLinkReset($p, $user);
 
         $this->assertSame($status, PasswordBroker::RESET_LINK_SENT);
 
@@ -86,17 +89,18 @@ final class PasswordTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_send_link_user_inexistent($guard_name, $uri, $factory): void
+    public function test_send_link_user_inexistent($panel): void
     {
         Notification::fake();
 
+        $factory = $panel['factory'];
         $user = $factory::new()->make();
 
-        $panel = new Panel('', '', $guard_name);
+        $p = new Panel('', '', $panel['guard_name']);
 
-        $status = Password::sendLinkReset($panel, $user);
+        $status = Password::sendLinkReset($p, $user);
 
         $this->assertSame($status, PasswordBroker::INVALID_USER);
 
@@ -113,8 +117,8 @@ final class PasswordTest extends TestCase
 
         $mail = $notification->toMail(new \stdClass);
 
-        $this->assertEquals('Reset Password', $mail->subject);
+        $this->assertEquals('Recuperação de senha', $mail->subject);
         $this->assertStringContainsString('https://example.com', $mail->actionUrl);
-        $this->assertStringContainsString('Reset password', $mail->actionText);
+        $this->assertStringContainsString('Redefinir senha', $mail->actionText);
     }
 }

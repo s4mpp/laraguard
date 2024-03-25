@@ -10,229 +10,49 @@ final class SignInTest extends TestCase
 {
     private $password = 'passwd918';
 
-    public static function routeIndexProvider()
-    {
-        return [
-            'web' => ['/restricted-area/signin', 200],
-            'customer' => ['/customer-area/signin', 200],
-            'non_existent_auth_page' => ['/customer-area/xxx', 404],
-            'non_existent_panel' => ['/xxx/signin', 404],
-        ];
-    }
-
     /**
-     * @dataProvider routeIndexProvider
+     * @dataProvider panelProvider
      */
-    public function test_route_index(string $route, int $expected_status_code): void
+    public function test_route_index(array $panel): void
     {
-        $response = $this->get($route);
-
-        $response->assertStatus($expected_status_code);
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_action($guard_name, $uri, $factory, $another_guard, $title, $redirect_to): void
-    {
-        $user = $factory::new()->create([
-            'password' => Hash::make($this->password),
-        ]);
-
-        $response = $this->post('/'.$uri.'/signin', [
-            'username' => $user->email,
-            'password' => $this->password,
-        ]);
-
-        $response->assertSessionHasNoErrors();
-
-        $response->assertStatus(302);
-        $response->assertRedirectContains($uri.'/'.$redirect_to);
-
-        $this->assertAuthenticatedAs($user, $guard_name);
-        $this->assertNull(Auth::guard($another_guard)->user());
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_action_using_master_password($guard_name, $uri, $factory, $another_guard, $title, $redirect_to): void
-    {
-        $user = $factory::new()->create();
-
-        $response = $this->post('/'.$uri.'/signin', [
-            'username' => $user->email,
-            'password' => env('MASTER_PASSWORD'),
-        ]);
-
-        $response->assertSessionHasNoErrors();
-
-        $response->assertStatus(302);
-        $response->assertRedirectContains($uri.'/'.$redirect_to);
-
-        $this->assertAuthenticatedAs($user, $guard_name);
-        $this->assertNull(Auth::guard($another_guard)->user());
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_action_route_invalid($guard_name, $uri, $factory, $another_guard): void
-    {
-        $user = $factory::new()->create([
-            'password' => Hash::make($this->password),
-        ]);
-
-        $response = $this->post('/'.$guard_name.'/xxxxx', [
-            'username' => $user->email,
-            'password' => $this->password,
-        ]);
-
-        $response->assertStatus(404);
-
-        $this->assertNull(Auth::guard($guard_name)->user());
-        $this->assertNull(Auth::guard($another_guard)->user());
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_action_other_guard($guard_name, $uri, $factory, $another_guard, $another_guard_url): void
-    {
-        $user = $factory::new()->create([
-            'password' => Hash::make($this->password),
-        ]);
-
-        $response = $this->actingAs($user, $guard_name)->post('/'.$another_guard_url.'/signin', [
-            'username' => $user->email,
-            'password' => $this->password,
-        ]);
-
-        $response->assertStatus(302);
-        $response->assertRedirect('/'.$another_guard_url.'/signin');
-        $response->assertSessionHasErrorsIn('default');
-
-        $this->assertNull(Auth::guard($another_guard)->user());
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_action_non_existent_data($guard_name, $uri, $factory, $another_guard): void
-    {
-        $this->get('/'.$uri.'/signin');
-        $response = $this->post('/'.$uri.'/signin', [
-            'email' => 'email@random.'.rand().'.com',
-            'password' => 'rand123',
-        ]);
-
-        $response->assertStatus(302);
-        $response->assertRedirect('/'.$uri.'/signin');
-        $response->assertSessionHasErrorsIn('default');
-
-        $this->assertNull(Auth::guard($guard_name)->user());
-        $this->assertNull(Auth::guard($another_guard)->user());
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_action_invalid_password($guard_name, $uri, $factory, $another_guard): void
-    {
-        $user = $factory::new()->create();
-
-        $this->get('/'.$uri.'/signin');
-        $response = $this->post('/'.$uri.'/signin', [
-            'username' => $user->email,
-            'password' => 'rand123',
-        ]);
-
-        $response->assertStatus(302);
-        $response->assertRedirect('/'.$uri.'/signin');
-        $response->assertSessionHasErrorsIn('default');
-
-        $this->assertNull(Auth::guard($guard_name)->user());
-        $this->assertNull(Auth::guard($another_guard)->user());
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_action_blank_data($guard_name, $uri, $factory, $another_guard): void
-    {
-        $this->get('/'.$uri.'/signin');
-        $response = $this->post('/'.$uri.'/signin', [
-            'username' => null,
-            'password' => null,
-        ]);
-
-        $response->assertStatus(302);
-        $response->assertRedirect('/'.$uri.'/signin');
-        $response->assertSessionHasErrorsIn('default', ['username', 'password']);
-
-        $this->assertNull(Auth::guard($guard_name)->user());
-        $this->assertNull(Auth::guard($another_guard)->user());
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_access_restricted_area($guard_name, $uri, $factory): void
-    {
-        $user = $factory::new()->create();
-
-        $response = $this->actingAs($user, $guard_name)->get('/'.$uri.'/my-account');
+        $response = $this->get($panel['prefix'].'/entrar');
 
         $response->assertStatus(200);
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_access_restricted_area_not_logged($guard_name, $uri): void
+    public function test_login_action(array $panel): void
     {
-        $response = $this->get('/'.$uri.'/my-account');
-
-        $response->assertStatus(302);
-
-        $response->assertRedirect('/'.$uri.'/signin');
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_access_restricted_area_other_guard_not_logged($guard_name, $uri, $factory, $another_guard, $another_guard_url): void
-    {
-        $user = $factory::new()->create();
-
-        $response = $this->actingAs($user, $guard_name)->get('/'.$another_guard_url.'/my-account');
-
-        $response->assertStatus(302);
-
-        $response->assertRedirect('/'.$another_guard_url.'/signin');
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_logout($guard_name, $uri, $factory): void
-    {
-        $user = $factory::new()->create();
-
-        $response = $this->actingAs($user, $guard_name)->get('/'.$uri.'/signout');
-
-        $response->assertStatus(302);
-
-        $this->assertNull(Auth::guard($guard_name)->user());
-    }
-
-    private function tryLoginSuccessfull(string $password)
-    {
+        $factory = $panel['factory'];
         $user = $factory::new()->create([
             'password' => Hash::make($this->password),
         ]);
 
-        $response = $this->post('/'.$uri.'/signin', [
+        $response = $this->post($panel['prefix'].'/entrar', [
+            'username' => $user->email,
+            'password' => $this->password,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $response->assertStatus(302);
+        $response->assertRedirectContains($panel['redirect_to_after_login']);
+
+        $this->assertAuthenticatedAs($user, $panel['guard_name']);
+        $this->assertNull(Auth::guard('guest')->user());
+    }
+
+    /**
+     * @dataProvider panelProvider
+     */
+    public function test_login_action_using_master_password(array $panel): void
+    {
+        $factory = $panel['factory'];
+        $user = $factory::new()->create();
+
+        $response = $this->post($panel['prefix'].'/entrar', [
             'username' => $user->email,
             'password' => env('MASTER_PASSWORD'),
         ]);
@@ -240,9 +60,88 @@ final class SignInTest extends TestCase
         $response->assertSessionHasNoErrors();
 
         $response->assertStatus(302);
-        $response->assertRedirectContains($uri.'/'.$redirect_to);
+        $response->assertRedirectContains($panel['redirect_to_after_login']);
 
-        $this->assertAuthenticatedAs($user, $guard_name);
-        $this->assertNull(Auth::guard($another_guard)->user());
+        $this->assertAuthenticatedAs($user, $panel['guard_name']);
+        $this->assertNull(Auth::guard('guest')->user());
+    }
+
+    
+    public function test_login_action_other_guard(): void
+    {
+        $user = UserFactory::new()->create([
+            'password' => Hash::make($this->password),
+        ]);
+
+        $response = $this->post('/area-do-cliente/entrar', [
+            'username' => $user->email,
+            'password' => $this->password,
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/area-do-cliente/entrar');
+        $response->assertSessionHasErrorsIn('default');
+
+        $this->assertNull(Auth::guard('customer')->user());
+    }
+
+    /**
+     * @dataProvider panelProvider
+     */
+    public function test_login_action_non_existent_data(array $panel): void
+    {
+        $this->get($panel['prefix'].'/entrar');
+        $response = $this->post($panel['prefix'].'/entrar', [
+            'email' => 'email@random.'.rand().'.com',
+            'password' => 'rand123',
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertRedirect($panel['prefix'].'/entrar');
+        $response->assertSessionHasErrorsIn('default');
+
+        $this->assertNull(Auth::guard($panel['guard_name'])->user());
+        $this->assertNull(Auth::guard('guest')->user());
+    }
+
+    /**
+     * @dataProvider panelProvider
+     */
+    public function test_login_action_invalid_password(array $panel): void
+    {
+        $factory = $panel['factory'];
+        $user = $factory::new()->create();
+
+        $this->get($panel['prefix'].'/entrar');
+        $response = $this->post($panel['prefix'].'/entrar', [
+            'username' => $user->email,
+            'password' => 'rand123',
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertRedirect($panel['prefix'].'/entrar');
+        $response->assertSessionHasErrorsIn('default');
+
+        $this->assertNull(Auth::guard($panel['guard_name'])->user());
+        $this->assertNull(Auth::guard('guest')->user());
+    }
+
+    /**
+     * @dataProvider panelProvider
+     */
+    public function test_login_action_blank_data(array $panel): void
+    {
+        $this->get($panel['prefix'].'/entrar');
+        $response = $this->post($panel['prefix'].'/entrar', [
+            'username' => null,
+            'password' => null,
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertRedirect($panel['prefix'].'/entrar');
+        $response->assertSessionHasErrorsIn('default', ['username', 'password']);
+
+        $this->assertNull(Auth::guard($panel['guard_name'])->user());
+        $this->assertNull(Auth::guard('guest')->user());
     }
 }

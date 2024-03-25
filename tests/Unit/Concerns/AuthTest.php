@@ -14,105 +14,105 @@ final class AuthTest extends TestCase
     private string $password = 'passwd';
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_login($guard_name, $uri, $factory): void
+    public function test_login($panel): void
     {
+        $factory = $panel['factory'];
         $user = $factory::new()->create([
             'password' => Hash::make($this->password),
         ]);
 
-        $panel = new Panel('', '', $guard_name);
+        $p = new Panel('', '', $panel['guard_name']);
 
-        $try = ConcernsAuth::tryLogin($panel, $user, $this->password);
-
-        $this->assertTrue($try);
-
-        $this->assertAuthenticatedAs($user, $guard_name);
-    }
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_master_password($guard_name, $uri, $factory): void
-    {
-        $user = $factory::new()->create();
-
-        $panel = new Panel('', '', $guard_name);
-
-        $try = ConcernsAuth::tryLogin($panel, $user, '12345678');
+        $try = ConcernsAuth::tryLogin($p, $user, $this->password);
 
         $this->assertTrue($try);
 
-        $this->assertAuthenticatedAs($user, $guard_name);
+        $this->assertAuthenticatedAs($user, $panel['guard_name']);
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_login_invalid_password($guard_name, $uri, $factory): void
+    public function test_login_master_password($panel): void
     {
+        $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $panel = new Panel('', '', $guard_name);
+        $p = new Panel('', '', $panel['guard_name']);
 
-        $try = ConcernsAuth::tryLogin($panel, $user, 'another_password');
+        $try = ConcernsAuth::tryLogin($p, $user, '12345678');
+
+        $this->assertTrue($try);
+
+        $this->assertAuthenticatedAs($user, $panel['guard_name']);
+    }
+
+    /**
+     * @dataProvider panelProvider
+     */
+    public function test_login_invalid_password($panel): void
+    {
+        $factory = $panel['factory'];
+        $user = $factory::new()->create();
+
+        $p = new Panel('', '', $panel['guard_name']);
+
+        $try = ConcernsAuth::tryLogin($p, $user, 'another_password');
 
         $this->assertFalse($try);
 
-        $this->assertNull(Auth::guard($guard_name)->user());
+        $this->assertNull(Auth::guard($panel['guard_name'])->user());
     }
 
     
-
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_login_in_another_guard($guard_name, $uri, $factory, $another_guard): void
+    public function test_login_in_another_guard(): void
     {
         $password = 'passwd';
 
-        $user = $factory::new()->create([
+        $user = UserFactory::new()->create([
             'password' => Hash::make($password),
         ]);
 
-        $panel = new Panel('', '', $another_guard);
+        $p = new Panel('', '', 'customer');
 
-        $try = ConcernsAuth::tryLogin($panel, $user, $password);
+        $try = ConcernsAuth::tryLogin($p, $user, $password);
 
         $this->assertFalse($try);
 
-        $this->assertNull(Auth::guard($another_guard)->user());
-        $this->assertNull(Auth::guard($guard_name)->user());
+        $this->assertNull(Auth::guard('customer')->user());
+        $this->assertNull(Auth::guard('web')->user());
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_logout($guard_name, $uri, $factory): void
+    public function test_logout($panel): void
     {
+        $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $panel = new Panel('', '', $guard_name);
+        $p = new Panel('', '', $panel['guard_name']);
 
-        Auth::guard($guard_name)->login($user);
+        Auth::guard($panel['guard_name'])->login($user);
 
-        ConcernsAuth::logout($panel->getGuardName());
+        ConcernsAuth::logout($p->getGuardName());
 
-        $this->assertNull(Auth::guard($guard_name)->user());
+        $this->assertNull(Auth::guard($panel['guard_name'])->user());
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_logout_when_not_logged($guard_name, $uri, $factory): void
+    public function test_logout_when_not_logged($panel): void
     {
-        $panel = new Panel('', '', $guard_name);
+        $p = new Panel('', '', $panel['guard_name']);
 
-        $logout = ConcernsAuth::logout($panel->getGuardName());
+        $logout = ConcernsAuth::logout($p->getGuardName());
 
         $this->assertTrue($logout);
 
-        $this->assertNull(Auth::guard($guard_name)->user());
+        $this->assertNull(Auth::guard($panel['guard_name'])->user());
     }
 }

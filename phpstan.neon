@@ -1,8 +1,11 @@
+includes:
+	- phpstan-baseline.neon
+
 parameters:
 	level: 9
+	universalObjectCratesClasses:
+		- Illuminate\Foundation\Auth\User
+		- Illuminate\Database\Eloquent\Model
 	paths:
 		- src
 	ignoreErrors:
-		- '#Access to an undefined property Illuminate\\Foundation\\Auth\\User::\$[a-z]#'
-		- '#Call to an undefined method Illuminate\\Contracts\\Auth\\[\a-zA-z\]::[a-zA-z]#'
-		- '#Call to an undefined static method Illuminate\\Foundation\\Auth\\User::where#'

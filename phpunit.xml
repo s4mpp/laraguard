@@ -20,7 +20,7 @@
             <directory>src</directory>
         </include>
     </source>
-    <coverage disableCodeCoverageIgnore="true">
+    <coverage disableCodeCoverageIgnore="false">
     <report >
       <html 
         outputDirectory="coverage-result" 

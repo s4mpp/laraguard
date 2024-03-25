@@ -4,6 +4,7 @@ namespace S4mpp\Laraguard\Tests;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\RateLimiter;
+use S4mpp\Laraguard\Tests\InteractsWithPanels;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\Dusk\{Options, TestCase};
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -11,8 +12,7 @@ use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 
 abstract class DuskTestCase extends TestCase
 {
-    use WithWorkbench;
-    // use RefreshDatabase;
+    use WithWorkbench, InteractsWithPanels;
 
     protected static $baseServePort = 9000;
 
@@ -27,28 +27,6 @@ abstract class DuskTestCase extends TestCase
         foreach (static::$browsers as $browser) {
             $browser->driver->manage()->deleteAllCookies();
         }
-    }
-
-    public static function panelProvider()
-    {
-        return [
-            'Web' => [[
-                'guard' => 'web',
-                'uri' => 'restricted-area',
-                'title' => 'Restricted area',
-                'factory' => UserFactory::class,
-                'can_register' => false,
-                'redirect_to' => 'home',
-            ]],
-            'Customer' => [[
-                'guard' => 'customer',
-                'uri' => 'customer-area',
-                'title' => 'Customer area',
-                'factory' => CustomerFactory::class,
-                'can_register' => true,
-                'redirect_to' => 'my-account',
-            ]],
-        ];
     }
 
     protected function defineEnvironment($app): void

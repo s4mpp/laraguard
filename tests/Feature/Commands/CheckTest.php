@@ -9,8 +9,9 @@ final class CheckTest extends TestCase
     public function test_check(): void
     {
         $this->artisan('laraguard:check')
-            ->expectsOutputToContain('Panel: Restricted area')
-            ->expectsOutputToContain('Panel: Customer area')
+            ->expectsOutputToContain('Panel: Área Restrita')
+            ->expectsOutputToContain('Panel: Área do cliente')
+            ->expectsOutputToContain('Panel: Guest area')
             ->assertSuccessful();
     }
 }

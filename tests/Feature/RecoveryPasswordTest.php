@@ -10,33 +10,34 @@ use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 final class RecoveryPasswordTest extends TestCase
 {
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_route_index($guard_name, $uri): void
+    public function test_route_index($panel): void
     {
-        $response = $this->get('/'.$uri.'/password-recovery');
+        $response = $this->get($panel['prefix'].'/recuperacao-de-senha');
 
         $response->assertStatus(200);
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_send_email($guard_name, $uri, $factory): void
+    public function test_send_email($panel): void
     {
         Notification::fake();
 
+        $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $this->get('/'.$uri.'/password-recovery');
-        $response = $this->post('/'.$uri.'/password-recovery', [
+        $this->get($panel['prefix'].'/recuperacao-de-senha');
+        $response = $this->post($panel['prefix'].'/recuperacao-de-senha', [
             'email' => $user->email,
         ]);
 
         $response->assertSessionHasNoErrors();
 
         $response->assertStatus(302);
-        $response->assertRedirect('/'.$uri.'/password-recovery');
+        $response->assertRedirect($panel['prefix'].'/recuperacao-de-senha');
 
         Notification::assertSentTo([$user], ResetPassword::class);
 
@@ -46,23 +47,23 @@ final class RecoveryPasswordTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_request_email_non_existing($guard_name, $uri, $factory): void
+    public function test_request_email_non_existing($panel): void
     {
         Notification::fake();
 
         $email = 'random.'.rand().'.email.com';
 
-        $this->get('/'.$uri.'/password-recovery');
-        $response = $this->post('/'.$uri.'/password-recovery', [
+        $this->get($panel['prefix'].'/recuperacao-de-senha');
+        $response = $this->post($panel['prefix'].'/recuperacao-de-senha', [
             'email' => $email,
         ]);
 
         $response->assertSessionHasErrorsIn('default');
 
         $response->assertStatus(302);
-        $response->assertRedirect('/'.$uri.'/password-recovery');
+        $response->assertRedirect($panel['prefix'].'/recuperacao-de-senha');
 
         Notification::assertNothingSent();
 
@@ -72,23 +73,23 @@ final class RecoveryPasswordTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_request_email_of_another_guard($guard_name, $uri, $factory, $another_guard, $another_guard_url): void
+    public function test_request_email_of_another_guard($panel): void
     {
         Notification::fake();
 
-        $user = $factory::new()->create();
+        $user = UserFactory::new()->create();
 
-        $this->get('/'.$another_guard_url.'/password-recovery');
-        $response = $this->post('/'.$another_guard_url.'/password-recovery', [
+        $this->get('/area-do-cliente/recuperacao-de-senha');
+        $response = $this->post('/area-do-cliente/recuperacao-de-senha', [
             'email' => $user->email,
         ]);
 
         $response->assertSessionHasErrorsIn('default');
 
         $response->assertStatus(302);
-        $response->assertRedirect('/'.$another_guard_url.'/password-recovery');
+        $response->assertRedirect('/area-do-cliente/recuperacao-de-senha');
 
         Notification::assertNothingSent();
 

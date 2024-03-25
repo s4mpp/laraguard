@@ -2,8 +2,9 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
-use S4mpp\Laraguard\Helpers\Utils;
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
+use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\{RedirectResponse, Request};
 use Illuminate\Support\Facades\{Auth, Password};
@@ -19,9 +20,11 @@ final class PasswordRecoveryController extends Controller
 {
     public function index(Request $request): View|\Illuminate\Contracts\View\Factory
     {
-        $panel_title = $request->get('laraguard_panel')->getTitle();
-
+        /** @var Panel $panel */
         $panel = $request->get('laraguard_panel');
+
+        $panel_title = $panel->getTitle();
+
 
         return view('laraguard::auth.password-recovery', compact('panel'));
     }
@@ -32,18 +35,20 @@ final class PasswordRecoveryController extends Controller
         try {
             Utils::rateLimiter();
             
+            /** @var Panel $panel */
             $panel = $request->get('laraguard_panel');
 
-            $user = Auth::guard($request->get('laraguard_panel')->getGuardName())
+            $user = Auth::guard($panel->getGuardName())
                 ->getProvider()
                 ->retrieveByCredentials(['email' => $request->email ?? null]);
 
-            throw_if(! $user, __('laraguard::password_recovery.account_not_found')); // @phpstan-ignore-line
+            throw_if(! $user, 'Conta não encontrada'); 
 
             $status = ConcernsPassword::sendLinkReset($panel, $user);
 
-            throw_if(! is_string($status), __('laraguard::password_recovery.fail_to_send_email')); // @phpstan-ignore-line
+            throw_if(! is_string($status), 'Falha ao enviar o e-mail'); 
 
+            /** @var string $status */
             return back()->with('message', __($status));
         } catch (\Exception $e) {
             return back()->withErrors($e->getMessage())->withInput();

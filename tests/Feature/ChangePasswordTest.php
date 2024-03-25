@@ -8,19 +8,20 @@ use Illuminate\Support\Facades\Hash;
 final class ChangePasswordTest extends TestCase
 {
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_change_password($guard_name, $uri, $factory): void
+    public function test_change_password($panel): void
     {
         $current_password = 'pa55word';
         $new_password = 'p4ssword';
 
+        $factory = $panel['factory'];
         $user = $factory::new([
             'password' => Hash::make($current_password),
         ])->create();
 
-        $this->get('/'.$uri.'/my-account');
-        $response = $this->actingAs($user, $guard_name)->put('/'.$uri.'/my-account/change-password', [
+        $this->get($panel['prefix'].'/minha-conta');
+        $response = $this->actingAs($user, $panel['guard_name'])->put($panel['prefix'].'/minha-conta/alterar-senha', [
             'current_password' => $current_password,
             'password' => $new_password,
             'password_confirmation' => $new_password,
@@ -28,7 +29,7 @@ final class ChangePasswordTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect('/'.$uri.'/my-account');
+        $response->assertRedirect($panel['prefix'].'/minha-conta');
 
         $user->refresh();
 
@@ -37,19 +38,20 @@ final class ChangePasswordTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_change_password_with_invalid_current_password($guard_name, $uri, $factory): void
+    public function test_change_password_with_invalid_current_password($panel): void
     {
         $current_password = '94ssword';
         $new_password = 'p455word';
 
+        $factory = $panel['factory'];
         $user = $factory::new([
             'password' => Hash::make($current_password),
         ])->create();
 
-        $this->get('/'.$uri.'/my-account');
-        $response = $this->actingAs($user, $guard_name)->put('/'.$uri.'/my-account/change-password', [
+        $this->get($panel['prefix'].'/minha-conta');
+        $response = $this->actingAs($user, $panel['guard_name'])->put($panel['prefix'].'/minha-conta/alterar-senha', [
             'current_password' => 'anotherpass123',
             'password' => $new_password,
             'password_confirmation' => $new_password,
@@ -57,7 +59,7 @@ final class ChangePasswordTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors();
-        $response->assertRedirect('/'.$uri.'/my-account');
+        $response->assertRedirect($panel['prefix'].'/minha-conta');
 
         $user->refresh();
 

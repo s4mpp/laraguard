@@ -15,10 +15,10 @@ final class RegisterTest extends DuskTestCase
     public function test_register_screen(): void
     {
         $this->browse(function (Browser $browser): void {
-            $browser->visit('/customer-area/signin')
+            $browser->visit('/area-do-cliente/entrar')
                 ->click('@register-button')
-                ->assertPathIs('/customer-area/signup')
-                ->assertTitleContains('Customer area | Register')
+                ->assertPathIs('/area-do-cliente/cadastro')
+                ->assertTitleContains('Área do cliente | Register')
 
                 ->assertSee('Nome')
                 ->assertInputValue('name', '')
@@ -42,15 +42,15 @@ final class RegisterTest extends DuskTestCase
 
             $user = CustomerFactory::new()->make();
 
-            $browser->visit('/customer-area/signup')
+            $browser->visit('/area-do-cliente/cadastro')
                 ->type('name', $user->name)
                 ->type('email', $user->email)
                 ->type('password', $password)
                 ->press('@register')
-                ->assertPathIs('/customer-area/signup/user-registered')
+                ->assertPathIs('/area-do-cliente/cadastro/finalizado')
                 ->assertSeeLink('Clique aqui para acessar')
                 ->press('@click-to-access')
-                ->assertPathIs('/customer-area/signin');
+                ->assertPathIs('/area-do-cliente/entrar');
         });
     }
 }

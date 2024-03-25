@@ -2,6 +2,7 @@
 
 namespace S4mpp\Laraguard\Controllers;
 
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
 use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
@@ -17,42 +18,42 @@ final class SignUpController extends Controller
 {
     public function index(Request $request): View|\Illuminate\Contracts\View\Factory
     {
-        return view('laraguard::auth.register', ['panel' => $request->get('laraguard_panel'), 'panel_title' => $request->get('laraguard_panel')->getTitle(), 'page_title' => 'Cadastro']);
+        /** @var Panel $panel */
+        $panel = $request->get('laraguard_panel');
+
+        return view('laraguard::auth.register', ['panel' => $panel, 'panel_title' => $panel->getTitle(), 'page_title' => 'Cadastro']);
     }
 
     public function save(SignUpRequest $request): RedirectResponse
     {
-        $model = $request->get('laraguard_panel')->getModel();
+        /** @var Panel $panel */
+        $panel = $request->get('laraguard_panel');
+
+        $model = $panel->getModel();
         
         throw_if(!$model, 'Invalid model');
         
         /** @var Model $model */
         $new_account = new $model();
 
-        if(isset($new_account->name))
-        {
-            $new_account->name = $request->get('name');
-        }
+        $new_account->name = $request->get('name');
+        $new_account->email = $request->get('email');
+        
+        /** @var string $password */
+        $password = $request->get('password');
 
-        if(isset($new_account->email))
-        {
-            $new_account->email = $request->get('email');
-            
-        }
-
-        if(isset($new_account->password))
-        {
-
-            $new_account->password = Hash::make($request->get('password'));
-        }
+        $new_account->password = Hash::make($password);
 
         $new_account->save();
 
-        return to_route($request->get('laraguard_panel')->getRouteName('user_registered'));
+        return to_route($panel->getRouteName('user_registered'));
     }
 
     public function finish(Request $request): View|\Illuminate\Contracts\View\Factory
     {
-        return view('laraguard::auth.register-finished', ['panel' => $request->get('laraguard_panel'), 'panel_title' => $request->get('laraguard_panel')->getTitle(), 'page_title' => 'Cadastro']);
+        /** @var Panel $panel */
+        $panel = $request->get('laraguard_panel');
+
+        return view('laraguard::auth.register-finished', ['panel' => $panel, 'panel_title' => $panel->getTitle(), 'page_title' => 'Cadastro']);
     }
 }

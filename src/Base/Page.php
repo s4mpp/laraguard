@@ -99,7 +99,7 @@ final class Page
     /**
      * @param  array<mixed>  $data
      */
-    public function render(?string $file = null, Menu $menu, array $data = []): View|\Illuminate\Contracts\View\Factory
+    public function render(?string $file = null, Menu $menu = null, array $data = []): View|\Illuminate\Contracts\View\Factory
     {
         $file ??= $this->getView();
 
@@ -113,7 +113,7 @@ final class Page
 
         $data['breadcrumbs'][] = new Breadcrumb($title ?? '');
 
-        $data['menu'] = $menu->getLinks();
+        $data['menu'] = $menu?->getLinks();
 
         return view($file, $data);
     }

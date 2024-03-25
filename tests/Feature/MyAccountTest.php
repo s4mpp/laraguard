@@ -7,13 +7,14 @@ use S4mpp\Laraguard\Tests\TestCase;
 final class MyAccountTest extends TestCase
 {
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_index_page($guard_name, $uri, $factory): void
+    public function test_index_page($panel): void
     {
+        $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $response = $this->actingAs($user, $guard_name)->get($uri.'/my-account');
+        $response = $this->actingAs($user, $panel['guard_name'])->get($panel['prefix'].'/minha-conta');
 
         $response->assertStatus(200);
         $response->assertSee($user->name);

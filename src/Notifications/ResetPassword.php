@@ -34,9 +34,9 @@ final class ResetPassword extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('laraguard::password.mail.subject'))  // @phpstan-ignore-line
+            ->subject('Recuperação de senha')  
             ->line(__('laraguard::password.mail.text')) 
-            ->action(__('laraguard::password.mail.action'), $this->url)  // @phpstan-ignore-line
+            ->action('Redefinir senha', $this->url)  
             ->line(__('laraguard::password.mail.expiration', [
                 'count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire'),
             ]))

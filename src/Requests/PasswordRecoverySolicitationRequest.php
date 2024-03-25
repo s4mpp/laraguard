@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * @codeCoverageIgnore
+ * @property string $email
  */
 final class PasswordRecoverySolicitationRequest extends FormRequest
 {

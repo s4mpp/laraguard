@@ -26,32 +26,34 @@ final class ResetPasswordTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_index_page($guard_name, $uri, $factory): void
+    public function test_index_page(array $panel): void
     {
+        $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $token = Password::broker($guard_name)->createToken($user);
+        $token = Password::broker($panel['guard_name'])->createToken($user);
 
-        $response = $this->get('/'.$uri.'/password-recovery/change/'.$token.'?email='.$user->email);
+        $response = $this->get($panel['prefix'].'/alterar-senha/'.$token.'?email='.$user->email);
 
         $response->assertStatus(200);
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_reset_password($guard_name, $uri, $factory): void
+    public function test_reset_password(array $panel): void
     {
         $old_password = 'p4ssword';
         $new_password = '789456123';
 
+        $factory = $panel['factory'];
         $user = $factory::new(['password' => Hash::make($old_password)])->create();
 
-        $token = Password::broker($guard_name)->createToken($user);
+        $token = Password::broker($panel['guard_name'])->createToken($user);
 
-        $response = $this->put('/'.$uri.'/password-recovery/change', [
+        $response = $this->put($panel['prefix'].'/alterar-senha', [
             'email' => $user->email,
             'token' => $token,
             'password' => $new_password,
@@ -60,7 +62,7 @@ final class ResetPasswordTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect('/'.$uri.'/signin');
+        $response->assertRedirect($panel['prefix'].'/entrar');
 
         $user->refresh();
 
@@ -74,24 +76,24 @@ final class ResetPasswordTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_index_page_with_invalid_code($guard_name, $uri, $factory): void
+    public function test_index_page_with_invalid_code(array $panel): void
     {
-        $response = $this->get('/'.$uri.'/password-recovery/change/xxxxxxxxxxx');
+        $response = $this->get($panel['prefix'].'/alterar-senha/xxxxxxxxxxx');
 
         $response->assertSessionHasErrors();
 
         $response->assertStatus(302);
-        $response->assertRedirect('/'.$uri.'/password-recovery');
+        $response->assertRedirect($panel['prefix'].'/recuperacao-de-senha');
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_try_reset_password_with_invalid_code($guard_name, $uri, $factory): void
+    public function test_try_reset_password_with_invalid_code(array $panel): void
     {
-        $response = $this->put('/'.$uri.'/password-recovery/change', [
+        $response = $this->put($panel['prefix'].'/alterar-senha', [
             'email' => 'teste@email.com',
             'token' => 'xxxxxxxxx',
             'password' => '12345678',
@@ -101,9 +103,10 @@ final class ResetPasswordTest extends TestCase
         $response->assertSessionHasErrors();
 
         $response->assertStatus(302);
-        $response->assertRedirect('/'.$uri.'/password-recovery');
+        $response->assertRedirect($panel['prefix'].'/recuperacao-de-senha');
     }
 
+    
     /**
      * @dataProvider invalidDataProvider
      */
@@ -118,19 +121,19 @@ final class ResetPasswordTest extends TestCase
 
         $data[$field] = $value;
 
-        $this->get('/restricted-area/password-recovery/change/xxxxxxxxx');
-        $response = $this->put('/restricted-area/password-recovery/change', $data);
+        $this->get('area-do-cliente/alterar-senha/xxxxxxxxx');
+        $response = $this->put('area-do-cliente/alterar-senha', $data);
 
         $response->assertSessionHasErrors($field);
 
         $response->assertStatus(302);
-        $response->assertRedirect('/restricted-area/password-recovery/change/xxxxxxxxx');
+        $response->assertRedirect('area-do-cliente/alterar-senha/xxxxxxxxx');
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_try_reset_password_with_password_unconfirmed(): void
+    public function test_try_reset_password_with_password_unconfirmed(array $panel): void
     {
         $data = [
             'email' => 'teste@email.com',
@@ -139,12 +142,12 @@ final class ResetPasswordTest extends TestCase
             'password_confirmation' => '12345678',
         ];
 
-        $this->get('/restricted-area/password-recovery/change/xxxxxxxxx');
-        $response = $this->put('/restricted-area/password-recovery/change', $data);
+        $this->get($panel['prefix'].'/alterar-senha/xxxxxxxxx');
+        $response = $this->put($panel['prefix'].'/alterar-senha', $data);
 
         $response->assertSessionHasErrors('password');
 
         $response->assertStatus(302);
-        $response->assertRedirect('/restricted-area/password-recovery/change/xxxxxxxxx');
+        $response->assertRedirect($panel['prefix'].'/alterar-senha/xxxxxxxxx');
     }
 }

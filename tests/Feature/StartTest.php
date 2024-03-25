@@ -9,39 +9,38 @@ use Workbench\Database\Factories\{CustomerFactory, UserFactory};
 final class StartTest extends TestCase
 {
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_route_start_logged($guard_name, $uri, $factory): void
+    public function test_route_start_logged($panel): void
     {
+        $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $response = $this->actingAs($user, $guard_name)->get($uri);
+        $response = $this->actingAs($user, $panel['guard_name'])->get($panel['prefix']);
 
         $response->assertStatus(302);
-        $response->assertRedirect($uri.'/my-account');
+        $response->assertRedirect($panel['prefix'].'/'.$panel['redirect_to_after_login']);
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_route_start_not_logged($guard_name, $uri): void
+    public function test_route_start_not_logged($panel): void
     {
-        $response = $this->get($uri);
+        $response = $this->get($panel['prefix']);
 
         $response->assertStatus(302);
-        $response->assertRedirect($uri.'/signin');
+        $response->assertRedirect($panel['prefix'].'/entrar');
     }
 
-    /**
-     * @dataProvider guardProvider
-     */
-    public function test_route_start_logged_in_another_guard($guard_name, $uri, $factory, $another_guard, $another_uri): void
+    
+    public function test_route_start_logged_in_another_guard(): void
     {
-        $user = $factory::new()->create();
+        $user = UserFactory::new()->create();
 
-        $response = $this->actingAs($user, $guard_name)->get($another_uri);
+        $response = $this->actingAs($user, 'web')->get('area-do-cliente');
 
         $response->assertStatus(302);
-        $response->assertRedirect($another_uri.'/signin');
+        $response->assertRedirect('area-do-cliente/entrar');
     }
 }

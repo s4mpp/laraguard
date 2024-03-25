@@ -9,23 +9,24 @@ use Illuminate\Support\Facades\Hash;
 final class ChangePersonalDataTest extends TestCase
 {
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_change_personal_data($guard_name, $uri, $factory): void
+    public function test_change_personal_data($panel): void
     {
         $current_password = 'passw0rd';
 
         $old_data = ['name' => fake()->name(), 'email' => fake()->safeEmail()];
         $new_data = ['name' => fake()->name(), 'email' => fake()->safeEmail()];
 
+        $factory = $panel['factory'];
         $user = $factory::new([
             'name' => $old_data['name'],
             'email' => $old_data['email'],
             'password' => Hash::make($current_password),
         ])->create();
 
-        $this->get('/'.$uri.'/my-account');
-        $response = $this->actingAs($user, $guard_name)->put('/'.$uri.'/my-account/save-personal-data', [
+        $this->get($panel['prefix'].'/minha-conta');
+        $response = $this->actingAs($user, $panel['guard_name'])->put($panel['prefix'].'/minha-conta/salvar-dados-pessoais', [
             'current_password' => $current_password,
             'name' => $new_data['name'],
             'email' => $new_data['email'],
@@ -33,7 +34,7 @@ final class ChangePersonalDataTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect('/'.$uri.'/my-account');
+        $response->assertRedirect($panel['prefix'].'/minha-conta');
 
         $table = app($factory::new()->modelName())->getTable();
 
@@ -49,20 +50,21 @@ final class ChangePersonalDataTest extends TestCase
     }
 
     /**
-     * @dataProvider guardProvider
+     * @dataProvider panelProvider
      */
-    public function test_change_personal_data_with_invalid_password($guard_name, $uri, $factory): void
+    public function test_change_personal_data_with_invalid_password($panel): void
     {
         $old_data = ['name' => fake()->name(), 'email' => fake()->safeEmail()];
         $new_data = ['name' => fake()->name(), 'email' => fake()->safeEmail()];
 
+        $factory = $panel['factory'];
         $user = $factory::new([
             'name' => $old_data['name'],
             'email' => $old_data['email'],
         ])->create();
 
-        $this->get('/'.$uri.'/my-account');
-        $response = $this->actingAs($user, $guard_name)->put('/'.$uri.'/my-account/save-personal-data', [
+        $this->get($panel['prefix'].'/minha-conta');
+        $response = $this->actingAs($user, $panel['guard_name'])->put($panel['prefix'].'/minha-conta/salvar-dados-pessoais', [
             'current_password' => 'another-pass123',
             'name' => $new_data['name'],
             'email' => $new_data['email'],

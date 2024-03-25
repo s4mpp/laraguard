@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * @codeCoverageIgnore
+ * @property string $token
  */
 final class PasswordResetRequest extends FormRequest
 {

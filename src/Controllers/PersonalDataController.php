@@ -3,6 +3,7 @@
 namespace S4mpp\Laraguard\Controllers;
 
 use S4mpp\Laraguard\Laraguard;
+use S4mpp\Laraguard\Base\Panel;
 use Illuminate\Routing\Controller;
 use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
@@ -19,11 +20,12 @@ final class PersonalDataController extends Controller
 {
     public function __invoke(Request $request): null|View|\Illuminate\Contracts\View\Factory
     {
+        /** @var Panel $panel */
         $panel = $request->get('laraguard_panel');
 
-        $route_save_personal_data = $panel->getRouteName('my-account', 'save-personal-data');
+        $route_save_personal_data = $panel->getRouteName('minha-conta', 'save-personal-data');
 
-        $route_change_password = $panel->getRouteName('my-account', 'change-password');
+        $route_change_password = $panel->getRouteName('minha-conta', 'change-password');
 
         return Laraguard::layout('laraguard::my-account', [
             'guard' => $panel->getGuardName(),
@@ -36,21 +38,24 @@ final class PersonalDataController extends Controller
     {
         Utils::rateLimiter();
 
+        /** @var Panel $panel */
         $panel = $request->get('laraguard_panel');
 
         try {
             /** @var User $user */
             $user = Auth::guard($panel->getGuardName())->user();
 
-            throw_if(! Hash::check($request->get('current_password'), $user?->password), __('laraguard::auth.invalid_password')); // @phpstan-ignore-line
+            /** @var string $current_password */
+            $current_password = $request->get('current_password');
+            
+            /** @var string $user_password */
+            $user_password = $user->password;
 
-            if (isset($user->name)) {
-                $user->name = $request->get('name');
-            }
+            throw_if(! Hash::check($current_password, $user_password), 'Senha inválida. Tente novamente'); 
 
-            if (isset($user->email)) {
-                $user->email = $request->get('email');
-            }
+            $user->name = $request->get('name');
+        
+            $user->email = $request->get('email');
 
             $user->save();
 
@@ -62,6 +67,7 @@ final class PersonalDataController extends Controller
 
     public function changePassword(ChangePasswordRequest $request): RedirectResponse
     {
+        /** @var Panel $panel */
         $panel = $request->get('laraguard_panel');
         
         try {
@@ -70,11 +76,18 @@ final class PersonalDataController extends Controller
             /** @var User $user */
             $user = Auth::guard($panel->getGuardName())->user();
 
-            throw_if(! Hash::check($request->get('current_password'), $user?->password), __('laraguard::auth.invalid_password')); // @phpstan-ignore-line
+            /** @var string $new_password */
+            $new_password = $request->get('password');
 
-            if (isset($user->password)) {
-                $user->password = Hash::make($request->get('password'));
-            }
+            /** @var string $password_informed */
+            $password_informed = $request->get('current_password');
+
+            /** @var string $current_user_password */
+            $current_user_password = $user->password;
+            
+            throw_if(! Hash::check($password_informed, $current_user_password), 'Senha inválida. Tente novamente'); 
+
+            $user->password = Hash::make($new_password);
 
             $user->save();
 
