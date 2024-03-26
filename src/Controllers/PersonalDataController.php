@@ -23,18 +23,15 @@ final class PersonalDataController extends Controller
         /** @var Panel $panel */
         $panel = $request->get('laraguard_panel');
 
-        $route_save_personal_data = $panel->getRouteName('minha-conta', 'save-personal-data');
+        $route_save_personal_data = $panel->getRouteName('meus-dados', 'save-personal-data');
 
-        $route_change_password = $panel->getRouteName('minha-conta', 'change-password');
-
-        return Laraguard::layout('laraguard::my-account', [
+        return Laraguard::layout('laraguard::personal-data', [
             'guard' => $panel->getGuardName(),
             'url_save_personal_data' => route($route_save_personal_data),
-            'url_save_password' => route($route_change_password),
         ]);
     }
 
-    public function savePersonalData(PersonalDataRequest $request): RedirectResponse
+    public function save(PersonalDataRequest $request): RedirectResponse
     {
         Utils::rateLimiter();
 
@@ -62,38 +59,6 @@ final class PersonalDataController extends Controller
             return back()->with('message-personal-data-saved', 'Personal data saved');
         } catch (\Exception $e) {
             return back()->withErrors($e->getMessage(), 'error-personal-data');
-        }
-    }
-
-    public function changePassword(ChangePasswordRequest $request): RedirectResponse
-    {
-        /** @var Panel $panel */
-        $panel = $request->get('laraguard_panel');
-        
-        try {
-            Utils::rateLimiter();
-            
-            /** @var User $user */
-            $user = Auth::guard($panel->getGuardName())->user();
-
-            /** @var string $new_password */
-            $new_password = $request->get('password');
-
-            /** @var string $password_informed */
-            $password_informed = $request->get('current_password');
-
-            /** @var string $current_user_password */
-            $current_user_password = $user->password;
-            
-            throw_if(! Hash::check($password_informed, $current_user_password), 'Senha inválida. Tente novamente'); 
-
-            $user->password = Hash::make($new_password);
-
-            $user->save();
-
-            return back()->with('message-password-changed', 'Password has been changed');
-        } catch (\Exception $e) {
-            return back()->withErrors($e->getMessage(), 'error-password');
         }
     }
 }

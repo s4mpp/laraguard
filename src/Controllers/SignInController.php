@@ -26,7 +26,7 @@ final class SignInController extends Controller
         return view('laraguard::auth.login', ['panel' => $panel]);
     }
 
-    public function attempt(SignInRequest $request): RedirectResponse
+    public function attempt(SignInRequest $request): ?RedirectResponse
     {
         /** @var Panel $panel */
         $panel = $request->get('laraguard_panel');
@@ -52,7 +52,11 @@ final class SignInController extends Controller
 
             throw_if(! Auth::guard($panel->getGuardName())->check(), 'Falha ao realizar o login'); 
 
-            return to_route($panel->getRouteName($panel->getStartModule()->getSlug(), 'index'));
+            $start_module = $panel->getStartModule();
+
+            throw_if(!$start_module, 'Módulo inicial não definido');
+
+            return ($start_module) ? to_route($panel->getRouteName($start_module->getSlug(), 'index')) : null;
         } catch (\Exception $e) {
             return to_route($panel->getRouteName('login'))
                 ->withErrors($e->getMessage())

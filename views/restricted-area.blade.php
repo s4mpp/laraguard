@@ -14,7 +14,7 @@
 				   </div>
 				  <div class="hidden sm:ml-10 sm:block">
 					<div class="flex items-center">
-						@foreach($menu as $n => $menu_item)
+						@foreach($menu_links as $n => $menu_item)
 							@if(!$menu_item->hasSubmenu())
 								<a @class([
 									'rounded-md px-3 py-2 text-sm font-medium transition-colors ease-in',
@@ -89,12 +89,10 @@
 							<p class="truncate text-sm font-medium text-slate-900" role="none">{{ auth()->guard($guard_name)->user()->email }}</p>
 						</div>
 						<div class="py-1" role="none">
-							<a href="{{ $my_account_url }}" class="text-gray-700 flex justify-between items-center  font-semibold transition-colors px-4 py-2 text-sm bg-gray-50 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-1">
-								{{ __('laraguard::my_account.title') }}
-							</a>
+							 
 
 							<a href="{{ $logout_url }}" class="text-red-700 flex justify-between items-center  font-semibold transition-colors px-4 py-2 text-sm bg-red-50 hover:bg-red-100" role="menuitem" tabindex="-1" id="user-menu-item-1">
-								{{ __('laraguard::my_account.sign_out') }}
+								Sair
 							  
 							  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 								  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
@@ -181,7 +179,13 @@
 										<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
 									</svg>
 									
-									<span class="ml-2  text-sm font-medium text-gray-500">{{ $breadcrumb->getTitle() }}</span>
+									@if($route = $breadcrumb->getRoute())
+										<a href="{{ route($route) }}">
+									@endif
+										<span class="ml-2  text-sm font-medium text-gray-500">{{ $breadcrumb->getTitle() }}</span>
+									@if($route)
+										</a>
+									@endif
 								</div>
 							@endforeach
 						</div>

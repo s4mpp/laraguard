@@ -12,4 +12,19 @@ final class MenuSection
     {
         $this->setSlug($slug);
     }
+
+    public static function myAccount(): MenuSection
+    {
+        return new MenuSection('Minha conta', 'minha-conta');
+    }
+
+    public function getBreadcrumb(): ?Breadcrumb
+    {
+        if(!$section_title = $this->title)
+        {
+            return null;
+        }
+        
+        return new Breadcrumb($section_title);
+    }
 }

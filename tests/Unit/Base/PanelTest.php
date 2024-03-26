@@ -17,7 +17,7 @@ final class PanelTest extends TestCase
 
         $credential = $panel->getCredential();
 
-        $this->assertCount(1, $panel->getModules());
+        $this->assertCount(0, $panel->getModules());
         $this->assertFalse($panel->hasAutoRegister());
         $this->assertSame('lg.administrator.login', $panel->getRouteName('login'));
 
@@ -56,9 +56,7 @@ final class PanelTest extends TestCase
     {
         $panel = Laraguard::getPanel('web');
 
-        $panel->menu()->generate($panel->getModules());
-
-        $menu = $panel->menu()->getLinks();
+        $menu = $panel->generateMenu()->getLinks();
 
         $this->assertIsArray($menu);
 

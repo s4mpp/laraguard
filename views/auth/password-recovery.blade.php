@@ -1,6 +1,6 @@
 @extends($panel->layout()->getAuthFile())
 
-@section('title', __('laraguard::password.recovery'))
+@section('title', 'Recuperar senha')
 
 @section('content')
 
@@ -12,10 +12,10 @@
 
 		<x-element::form.input required type="text" name="email" title="E-mail" />
 
-		<x-element::button full type="submit">{{  __('laraguard::password.send_email')  }}</x-element::button>
+		<x-element::button full type="submit">Enviar e-mail</x-element::button>
 	
 		<p class="mt-10 text-center text-sm text-gray-500">
-			<a tabindex="-1" href="{{route($panel->getRouteName('login')) }}" class="font-semibold leading-6 text-gray-600 hover:text-gray-500">{{ __('laraguard::login.go_back') }}</a>
+			<a tabindex="-1" href="{{route($panel->getRouteName('login')) }}" class="font-semibold leading-6 text-gray-600 hover:text-gray-500">Voltar</a>
 		</p>
 	</form>
 @endsection

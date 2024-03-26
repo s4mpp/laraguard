@@ -4,24 +4,30 @@ namespace S4mpp\Laraguard\Tests\Feature;
 
 use S4mpp\Laraguard\Tests\TestCase;
 use Illuminate\Support\Facades\Hash;
+use Workbench\Database\Factories\UserFactory;
 
 final class ChangePasswordTest extends TestCase
 {
-    /**
-     * @dataProvider panelProvider
-     */
-    public function test_change_password($panel): void
+    public function test_index_page(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $response = $this->actingAs($user, 'web')->get('/area-restrita/minha-conta/alterar-senha');
+
+        $response->assertStatus(200);
+    }
+    
+    public function test_change_password(): void
     {
         $current_password = 'pa55word';
         $new_password = 'p4ssword';
 
-        $factory = $panel['factory'];
-        $user = $factory::new([
+        $user = UserFactory::new([
             'password' => Hash::make($current_password),
         ])->create();
 
-        $this->get($panel['prefix'].'/minha-conta');
-        $response = $this->actingAs($user, $panel['guard_name'])->put($panel['prefix'].'/minha-conta/alterar-senha', [
+        $this->get('area-restrita/minha-conta/alterar-senha');
+        $response = $this->actingAs($user, 'web')->put('area-restrita/minha-conta/alterar-senha/salvar-senha', [
             'current_password' => $current_password,
             'password' => $new_password,
             'password_confirmation' => $new_password,
@@ -29,7 +35,7 @@ final class ChangePasswordTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect($panel['prefix'].'/minha-conta');
+        $response->assertRedirect('area-restrita/minha-conta/alterar-senha');
 
         $user->refresh();
 
@@ -37,21 +43,18 @@ final class ChangePasswordTest extends TestCase
         $this->assertFalse(Hash::check($current_password, $user->password));
     }
 
-    /**
-     * @dataProvider panelProvider
-     */
-    public function test_change_password_with_invalid_current_password($panel): void
+    
+    public function test_change_password_with_invalid_current_password(): void
     {
         $current_password = '94ssword';
         $new_password = 'p455word';
 
-        $factory = $panel['factory'];
-        $user = $factory::new([
+        $user = UserFactory::new([
             'password' => Hash::make($current_password),
         ])->create();
 
-        $this->get($panel['prefix'].'/minha-conta');
-        $response = $this->actingAs($user, $panel['guard_name'])->put($panel['prefix'].'/minha-conta/alterar-senha', [
+        $this->get('area-restrita/minha-conta/alterar-senha');
+        $response = $this->actingAs($user, 'web')->put('area-restrita/minha-conta/alterar-senha/salvar-senha', [
             'current_password' => 'anotherpass123',
             'password' => $new_password,
             'password_confirmation' => $new_password,
@@ -59,7 +62,7 @@ final class ChangePasswordTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors();
-        $response->assertRedirect($panel['prefix'].'/minha-conta');
+        $response->assertRedirect('area-restrita/minha-conta/alterar-senha');
 
         $user->refresh();
 

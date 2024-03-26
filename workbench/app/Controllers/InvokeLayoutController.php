@@ -9,6 +9,6 @@ final class InvokeLayoutController extends Controller
 {
     public function __invoke()
     {
-        return Laraguard::layout('withdrawal');
+        return Laraguard::layout('invoke-layout');
     }
 }

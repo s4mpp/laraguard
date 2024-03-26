@@ -24,8 +24,6 @@ final class PageTest extends TestCase
         ];
     }
 
-    
-
     /**
      * @dataProvider routeIndexProvider
      */

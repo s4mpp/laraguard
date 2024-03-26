@@ -14,7 +14,6 @@ final class BreadcrumbTest extends TestCase
         $breadcrumb = new Breadcrumb('Title breacrumb', 'url-of-breadcrumb');
 
         $this->assertSame('Title breacrumb', $breadcrumb->getTitle());
-        $this->assertSame('url-of-breadcrumb', $breadcrumb->getUrl());
+        $this->assertSame('url-of-breadcrumb', $breadcrumb->getRoute());
     }
-
 }

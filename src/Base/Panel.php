@@ -43,14 +43,6 @@ final class Panel
 
     public function __construct(private string $title, private string $prefix = '', private string $guard_name = 'web')
     {
-        $my_account = $this->addModule('Minha conta', 'minha-conta')
-            ->controller(PersonalDataController::class)
-            ->addIndex()
-            ->hideInMenu();
-
-        $my_account->addPage('', 'salvar-dados-pessoais', 'save-personal-data')->method('put')->action('savePersonalData');
-        $my_account->addPage('', 'alterar-senha', 'change-password')->method('put')->action('changePassword');
-
         $this->menu = new Menu(fn (...$params) => $this->getRouteName(...$params));
 
         $this->layout = new Layout();
@@ -58,8 +50,10 @@ final class Panel
         $this->credential = new Credential();
     }
 
-    public function menu(): Menu
+    public function generateMenu(): Menu
     {
+        $this->menu->generate($this->modules);
+
         return $this->menu;
     }
 
@@ -115,13 +109,18 @@ final class Panel
         return $model;
     }
 
-    public function addModule(string $title, ?string $slug = null): Module
+    public function addModule(Module $module): Module
     {
-        $module = new Module($title, $slug);
-
         $this->modules[$module->getSlug()] = $module;
 
         return $module;
+    }
+
+    public function createModule(string $title, ?string $slug = null): Module
+    {
+        $module = new Module($title, $slug);
+
+        return $this->addModule($module);
     }
 
     public function subdomain(string $subdomain): self
@@ -162,11 +161,11 @@ final class Panel
         return $this->modules[$module_name] ?? null;
     }
 
-    public function getStartModule(): Module
+    public function getStartModule(): ?Module
     {
         $module_starter = array_filter($this->modules, fn ($item) => $item->isStarter());
 
-        return (!empty($module_starter)) ? array_shift($module_starter) : $this->modules['minha-conta'];
+        return (!empty($module_starter)) ? array_shift($module_starter) : null;
     }
 
     /**
@@ -197,15 +196,14 @@ final class Panel
      * @codeCoverageIgnore
      * @param  array<mixed>  $data
      */
-    public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
-    {
-        $this->menu->generate($this->modules);
+    // public function getLayout(?string $view = null, array $data = []): null|View|\Illuminate\Contracts\View\Factory
+    // {
+    //     $this->menu->generate($this->modules);
         
-        return $this->getModule(Module::current())?->getLayout($view, $this->menu, array_merge($data, [
-            'panel' => $this,
-            'guard_name' => $this->getGuardName(),
-            'my_account_url' => route($this->getRouteName('minha-conta', 'index')),
-            'logout_url' => route($this->getRouteName('signout')),
-        ]));
-    }
+    //     return $this->getModule(Module::current())?->getLayout($view, $this->menu, array_merge($data, [
+    //         'panel' => $this,
+    //         'guard_name' => $this->getGuardName(),
+    //         'logout_url' => route($this->getRouteName('signout')),
+    //     ]));
+    // }
 }

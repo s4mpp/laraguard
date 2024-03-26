@@ -16,7 +16,7 @@ final class RestrictedAreaTest extends TestCase
         $factory = $panel['factory'];
         $user = $factory::new()->create();
 
-        $response = $this->actingAs($user, $panel['guard_name'])->get($panel['prefix'].'/minha-conta');
+        $response = $this->actingAs($user, $panel['guard_name'])->get($panel['prefix'].'/'.$panel['redirect_to_after_login']);
 
         $response->assertStatus(200);
     }
@@ -38,7 +38,7 @@ final class RestrictedAreaTest extends TestCase
     {
         $user = UserFactory::new()->create();
 
-        $response = $this->actingAs($user, 'web')->get('/area-do-cliente/minha-conta');
+        $response = $this->actingAs($user, 'web')->get('/area-do-cliente/dashboard');
 
         $response->assertStatus(302);
 

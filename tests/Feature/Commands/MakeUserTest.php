@@ -3,6 +3,8 @@
 namespace S4mpp\Laraguard\Tests\Feature\Commands;
 
 use S4mpp\Laraguard\Tests\TestCase;
+use Illuminate\Support\Facades\Config;
+use Orchestra\Testbench\Factories\UserFactory;
 
 final class MakeUserTest extends TestCase
 {
@@ -38,16 +40,38 @@ final class MakeUserTest extends TestCase
         $this->artisan('laraguard:make-user')
             ->expectsOutput('User created successfully:')
             ->expectsOutputToContain('Name:')
-            ->expectsOutputToContain('E-mail:')
+            ->expectsOutputToContain('E-mail: user@mail.com')
             ->expectsOutputToContain('Password:')
             ->expectsOutputToContain('URL:')
             ->assertSuccessful();
+            
+        $this->assertDatabaseHas('users', ['email' => 'user@mail.com']);
     }
 
     public function test_make_user_with_invalid_guard(): void
     {
         $this->artisan('laraguard:make-user', ['--guard' => 'xxxx'])
             ->expectsOutput('Invalid guard/panel')
+            ->assertSuccessful();
+    }
+
+    public function test_make_user_suggest_email_existing(): void
+    {
+        UserFactory::new()->create(['email' => 'user@mail.com']);
+
+        $this->artisan('laraguard:make-user')
+            ->expectsOutputToContain('E-mail: user1@mail.com')
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('users', ['email' => 'user1@mail.com']);
+    }
+
+    public function test_make_user_generation_password(): void
+    {
+        Config::set('app.env', 'production');
+
+        $this->artisan('laraguard:make-user')
+            ->expectsOutputToContain('Password:')
             ->assertSuccessful();
     }
 

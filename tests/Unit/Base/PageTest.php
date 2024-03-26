@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use S4mpp\Laraguard\Tests\TestCase;
 use S4mpp\Laraguard\Navigation\Menu;
 use S4mpp\Laraguard\Base\{Module, Page, Panel};
+use S4mpp\Laraguard\Navigation\Breadcrumb;
 
 final class PageTest extends TestCase
 {
@@ -23,6 +24,27 @@ final class PageTest extends TestCase
 
         $this->assertEquals('Page title', $page->getTitle());
         $this->assertEquals('page-prefix', $page->getSlug());
+    }
+
+    
+    public function test_get_breadcrumb(): void
+    {
+        $page = new Page('Page title', 'page-prefix');
+
+        $breadcrumb = $page->getBreadCrumb();
+
+        $this->assertInstanceOf(Breadcrumb::class, $breadcrumb);
+        $this->assertEquals('Page title', $breadcrumb->getTitle());
+        $this->assertEquals('page-title', $breadcrumb->getSlug());
+    }
+
+    public function test_get_breadcrumb_without_title(): void
+    {
+        $page = new Page('', '');
+
+        $breadcrumb = $page->getBreadCrumb();
+
+        $this->assertNull($breadcrumb);
     }
 
     /**
@@ -70,17 +92,5 @@ final class PageTest extends TestCase
 
         $this->assertInstanceOf(Page::class, $add_view);
         $this->assertEquals('view-name', $page->getView());
-    }
-
-    public function test_render(): void
-    {
-        $page = new Page('', '');
-
-        $render = $page->render(null, new Menu(), [
-            'my_account_url' => null,
-            'module_title' => null,
-        ]);
-
-        $this->assertInstanceOf(View::class, $render);
     }
 }

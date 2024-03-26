@@ -35,10 +35,18 @@ final class SignInTest extends TestCase
             'password' => $this->password,
         ]);
 
-        $response->assertSessionHasNoErrors();
-
+        
         $response->assertStatus(302);
-        $response->assertRedirectContains($panel['redirect_to_after_login']);
+        
+        if($panel['redirect_to_after_login'])
+        {
+            $response->assertSessionHasNoErrors();
+            $response->assertRedirectContains($panel['redirect_to_after_login']);
+        }
+        else
+        {
+            $response->assertSessionHasErrors();
+        }
 
         $this->assertAuthenticatedAs($user, $panel['guard_name']);
         $this->assertNull(Auth::guard('guest')->user());
@@ -57,10 +65,18 @@ final class SignInTest extends TestCase
             'password' => env('MASTER_PASSWORD'),
         ]);
 
-        $response->assertSessionHasNoErrors();
 
         $response->assertStatus(302);
-        $response->assertRedirectContains($panel['redirect_to_after_login']);
+        
+        if($panel['redirect_to_after_login'])
+        {
+            $response->assertSessionHasNoErrors();
+            $response->assertRedirectContains($panel['redirect_to_after_login']);
+        }
+        else
+        {
+            $response->assertSessionHasErrors();
+        }
 
         $this->assertAuthenticatedAs($user, $panel['guard_name']);
         $this->assertNull(Auth::guard('guest')->user());

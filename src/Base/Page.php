@@ -96,25 +96,38 @@ final class Page
         return Utils::getSegmentRouteName(3);
     }
 
+    public function getBreadCrumb(): ?Breadcrumb
+    {
+        if(!$page_title = $this->title)
+        {
+            return null;
+        }
+        
+        return new Breadcrumb($page_title);
+    }
+
     /**
      * @param  array<mixed>  $data
      */
-    public function render(?string $file = null, Menu $menu = null, array $data = []): View|\Illuminate\Contracts\View\Factory
-    {
-        $file ??= $this->getView();
+    // public function render(?string $file = null, Menu $menu = null, array $data = []): View|\Illuminate\Contracts\View\Factory
+    // {
+    //     $file ??= $this->getView();
+        
+    //     $title = $this->getTitle();
+        
+    //     $title = ! empty($title) ? $title : $data['module_title'];
+        
+    //     $data['page_title'] = $title;
 
-        $data['home_url'] = $data['my_account_url'];
+    //     $breadcrumb = new Breadcrumb($title ?? '');
+    //     $data['breadcrumbs'][$breadcrumb->getSlug()] = $breadcrumb;
+        
+    //     $data['menu'] = $menu?->getLinks();  
 
-        $title = $this->getTitle();
+    //     $data['home_url'] = array_keys($data['menu'])[0] ?? null;
 
-        $title = ! empty($title) ? $title : $data['module_title'];
+    //     dump($data['breadcrumbs']);
 
-        $data['page_title'] = $title;
-
-        $data['breadcrumbs'][] = new Breadcrumb($title ?? '');
-
-        $data['menu'] = $menu?->getLinks();
-
-        return view($file, $data);
-    }
+    //     return view($file, $data);
+    // }
 }

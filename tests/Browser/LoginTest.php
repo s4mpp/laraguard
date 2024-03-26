@@ -15,14 +15,14 @@ final class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) use ($panel): void {
             $browser->visit($panel['prefix'])
-                ->assertTitleContains($panel['title'].' | Sign In')
+                ->assertTitleContains($panel['title'].' | Entrar')
                 ->assertPathIs('/'.$panel['prefix'].'/entrar')
 
                 ->assertInputValue('username', '')
                 ->assertInputValue('password', '')
-                ->assertButtonEnabled('Login')
+                ->assertButtonEnabled('Entrar')
 
-                ->assertSeeLink('Lost your password?');
+                ->assertSeeLink('Esqueceu sua senha?');
 
             if ($panel['can_register']) {
                 $browser->assertVisible('@register-call');

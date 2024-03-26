@@ -1,6 +1,6 @@
 @extends($panel->layout()->getAuthFile())
 
-@section('title', __('laraguard::login.title'))
+@section('title', 'Entrar')
 
 @section('content')
 
@@ -12,9 +12,9 @@
 
 		<x-element::form.input required type="{{ $panel->getCredential()->getType() }}" name="username" title="{{ $panel->getCredential()->getTitle() }}" />
 		
-		<x-element::form.input required type="password" name="password" title="{{ __('laraguard::login.password') }}" />
+		<x-element::form.input required type="password" name="password" title="Senha" />
 
-		<x-element::button dusk="login" full type="submit">{{ __('laraguard::login.to_enter') }}</x-element::button>
+		<x-element::button dusk="login" full type="submit">Entrar</x-element::button>
 
 		<div class="flex items-center justify-center">
 			{{-- <div class="flex items-center">
@@ -23,7 +23,7 @@
 			</div> --}}
 
 			<div class="text-sm leading-6">
-				<a tabindex="-1"  href="{{ route($panel->getRouteName('recovery_password')) }}" class="font-semibold text-gray-600 hover:text-gray-500">{{ __('laraguard::login.lost_your_password') }}?</a>
+				<a tabindex="-1"  href="{{ route($panel->getRouteName('recovery_password')) }}" class="font-semibold text-gray-600 hover:text-gray-500">Esqueceu sua senha?</a>
 			</div>
 		</div>
 

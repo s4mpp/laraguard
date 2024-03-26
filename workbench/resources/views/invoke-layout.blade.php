@@ -1,5 +1,5 @@
 @extends('laraguard::layout')
 
 @section('content')
-	my orders list
+	invoke-layout
 @endsection

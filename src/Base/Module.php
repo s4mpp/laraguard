@@ -4,11 +4,14 @@ namespace S4mpp\Laraguard\Base;
 
 use Closure;
 use Illuminate\Support\Str;
+use S4mpp\Laraguard\Base\Page;
 use S4mpp\Laraguard\Helpers\Utils;
 use Illuminate\Contracts\View\View;
 use S4mpp\Laraguard\Navigation\Menu;
 use S4mpp\Laraguard\Traits\HasMiddleware;
 use S4mpp\Laraguard\Traits\TitleSluggable;
+use S4mpp\Laraguard\Controllers\PersonalDataController;
+use S4mpp\Laraguard\Controllers\PasswordChangeController;
 use S4mpp\Laraguard\Navigation\{Breadcrumb, MenuSection};
 
 final class Module
@@ -18,8 +21,6 @@ final class Module
     private ?string $controller = null;
 
     private bool|Closure $hide_in_menu = false;
-
-    private bool $translate_title = false;
 
     private ?MenuSection $section = null;
 
@@ -33,6 +34,28 @@ final class Module
     public function __construct(private string $title, ?string $slug = null)
     {
         $this->setSlug($slug);
+    }
+
+    public static function changePersonalData(): self
+    {
+        $my_account = (new self('Meus dados', 'meus-dados'))
+            ->controller(PersonalDataController::class)
+            ->addIndex();
+
+        $my_account->createPage('', 'salvar-dados', 'save-personal-data')->method('PUT')->action('save');
+
+        return $my_account;
+    }
+
+    public static function changePassword(): self
+    {
+        $change_password = (new self('Alterar senha', 'alterar-senha'))
+            ->controller(PasswordChangeController::class)
+            ->addIndex();
+
+        $change_password->createPage('', 'salvar-senha', 'save-password')->method('PUT')->action('save');
+
+        return $change_password;
     }
 
     public function starter(): self
@@ -49,7 +72,7 @@ final class Module
 
     public function addIndex(?string $view = null): self
     {
-        $page = $this->addPage('', '/', 'index');
+        $page = $this->createPage('', '/', 'index');
 
         if ($view) {
             $page->view($view);
@@ -79,7 +102,7 @@ final class Module
         return $this->controller;
     }
 
-    public function getOnSection(): ?MenuSection
+    public function getSection(): ?MenuSection
     {
         return $this->section;
     }
@@ -89,14 +112,19 @@ final class Module
         return implode('/', [$this->section?->getSlug(), $this->getSlug()]);
     }
 
-    public function translateTitle(): self
+    public function getBreadcrumb(Panel $panel, Page $page): ?Breadcrumb
     {
-        $this->translate_title = true;
-
-        return $this;
+        $module_page_index_slug = $this->getPageIndex()?->getSlug();
+        
+        if($module_page_index_slug && $module_page_index_slug != $page->getSlug())
+        {
+            $route_module = $panel->getRouteName($this->getSlug(), $module_page_index_slug);
+        }
+                
+        return new Breadcrumb($this->getTitle(), $route_module ?? null);
     }
 
-    public function addPage(string $title, ?string $uri = null, ?string $slug = null): Page
+    public function createPage(string $title, ?string $uri = null, ?string $slug = null): Page
     {
         $slug_title = Str::slug($title);
 
@@ -106,6 +134,13 @@ final class Module
 
         $page = (new Page($title, $slug))->uri($uri);
 
+        $this->addPage($page);
+
+        return $page;
+    }
+
+    public function addPage(Page $page): Page
+    {
         $this->pages[$page->getSlug()] = $page;
 
         return $page;
@@ -139,8 +174,6 @@ final class Module
 
     public function hideInMenu(bool|Closure $value = true): self
     {
-        
-
         $this->hide_in_menu = $value;
 
         return $this;
@@ -148,16 +181,9 @@ final class Module
 
     public function canShowInMenu(): bool
     {
-        if(is_callable($this->hide_in_menu))
-        {
-            $hide_in_menu = call_user_func($this->hide_in_menu);
-        }
-        else
-        {
-            $hide_in_menu = $this->hide_in_menu;
-        }
-
-        return !$hide_in_menu;
+        return(is_callable($this->hide_in_menu))
+            ? !call_user_func($this->hide_in_menu)
+            : !$this->hide_in_menu;
     }
 
     /**
@@ -172,26 +198,27 @@ final class Module
      * @codeCoverageIgnore
      * @param  array<mixed>  $data
      */
-    public function getLayout(?string $view = null, Menu $menu, array $data = []): null|View|\Illuminate\Contracts\View\Factory
-    {
-        $data['breadcrumbs'] = [];
+    // public function getLayout(?string $view = null, Menu $menu, array $data = []): null|View|\Illuminate\Contracts\View\Factory
+    // {
+    //     if ($this->section) {
+    //         $breadcrumb = new Breadcrumb($this->section->getTitle());
+    //         $breadcrumbs[$breadcrumb->getSlug()] = $breadcrumb;
+    //     }
         
-        if ($this->section) {
-            $breadcrumbs[] = new Breadcrumb($this->section->getTitle());
-        }
-        
-        /** @var string $module_title */
-        $module_title = ($this->translate_title) ? __($this->title) : $this->getTitle();
+    //     $module_title = $this->getTitle();
 
-        if($module_title)
-        {
-            $breadcrumbs[] = new Breadcrumb($module_title);
-        }
+    //     if($module_title)
+    //     {
+    //         $breadcrumb = new Breadcrumb($module_title, $data['panel']->getRouteName($this->getSlug, 'index'));
+    //         $breadcrumbs[$breadcrumb->getSlug()] = $breadcrumb;
+    //     }
 
-        $menu->activate($this->getSlug(), $this->section?->getSlug());
+    //     $menu->activate($this->getSlug(), $this->section?->getSlug());
 
-        return $this->getPage(Page::current())?->render($view, $menu, array_merge($data, [
-            'module_title' => $module_title,
-        ]));
-    }
+    //     return $this->getPage(Page::current())?->render($view, $menu, array_merge($data, [
+    //         'section_title' => $this->section->getTitle(),
+    //         'module_title' => $module_title,
+    //         'breadcrumbs' => $breadcrumbs ?? []
+    //     ]));
+    // }
 }

@@ -26,12 +26,12 @@ final class RegisterTest extends DuskTestCase
                 ->assertSee('E-mail')
                 ->assertInputValue('email', '')
 
-                ->assertSee('Password')
+                ->assertSee('Senha')
                 ->assertInputValue('password', '')
 
                 ->assertButtonEnabled('Cadastrar')
 
-                ->assertSeeLink('Go back');
+                ->assertSeeLink('Voltar');
         });
     }
 

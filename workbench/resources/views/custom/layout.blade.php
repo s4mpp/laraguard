@@ -14,7 +14,7 @@
 				   </div>
 				  <div class="hidden sm:ml-10 sm:block">
 					<div class="flex space-x-4">
-						@foreach($menu as $n => $menu_item)
+						@foreach($menu_links as $n => $menu_item)
 							<a @class([
 								'rounded-md px-3 py-2 text-sm font-medium transition-colors ease-in',
 								'text-white hover:bg-gray-700' => !$menu_item->isActive(),
@@ -57,9 +57,7 @@
 							<p class="truncate text-sm font-medium text-slate-900" role="none">{{ auth()->guard($guard_name)->user()->email }}</p>
 						</div>
 						<div class="py-1" role="none">
-							<a href="{{ $my_account_url }}" class="text-gray-700 flex justify-between items-center  font-semibold transition-colors px-4 py-2 text-sm bg-gray-50 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-1">
-								{{ __('laraguard::my_account.title') }}
-							</a>
+							 
 
 							<a href="{{ $logout_url }}" class="text-red-700 flex justify-between items-center  font-semibold transition-colors px-4 py-2 text-sm bg-red-50 hover:bg-red-100" role="menuitem" tabindex="-1" id="user-menu-item-1">
 								{{ __('laraguard::my_account.sign_out') }}

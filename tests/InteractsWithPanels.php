@@ -23,7 +23,7 @@ trait InteractsWithPanels
                 'guard_name' => 'customer',
                 'factory' => CustomerFactory::class,
                 'prefix' => 'area-do-cliente',
-                'redirect_to_after_login' => 'minha-conta',
+                'redirect_to_after_login' => 'dashboard',
 				'can_register' => true
             ]],
         ];

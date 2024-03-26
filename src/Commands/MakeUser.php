@@ -32,11 +32,8 @@ final class MakeUser extends Command
     public function handle(): int
     {
         try {
+            /** @var string */
             $guard = $this->option('guard');
-
-            if (! is_string($guard)) {
-                throw new \Exception('Invalid guard name');
-            }
 
             $panel = Laraguard::getPanel($guard);
 

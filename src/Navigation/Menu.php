@@ -24,7 +24,7 @@ final class Menu
         return $this->items;
     }
 
-    public function activate(string $module, string $section = null): void
+    public function activate(string $module, string $section = null): self
     {
         $items = $this->items;
 
@@ -40,6 +40,8 @@ final class Menu
         $module = $items[$module] ?? null;
         
         $module?->activate();
+
+        return $this;
     }
 
     /**
@@ -54,7 +56,7 @@ final class Menu
 
             $page_index = $module->getPageIndex();
 
-            if ($section = $module->getOnSection()) {
+            if ($section = $module->getSection()) {
                 $item_section = $this->items[$section->getSlug()] ?? null;
 
                 if (! $item_section) {

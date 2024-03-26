@@ -1,6 +1,6 @@
 @extends($panel->layout()->getAuthFile())
 
-@section('title', __('laraguard::password.reset'))
+@section('title', 'Alterar senha')
 
 @section('content')
 
@@ -19,15 +19,15 @@
 
 		<div class="space-y-6">
 
-			<x-element::form.input required type="password" name="password" title="{{ __('laraguard::password.type_new_password') }}" />
+			<x-element::form.input required type="password" name="password" title="Digite a nova senha" />
 
-			<x-element::form.input required type="password" name="password_confirmation" title="{{ __('laraguard::password.repeat_new_password') }}" />
+			<x-element::form.input required type="password" name="password_confirmation" title="Digite a senha novamente" />
 
-			<x-element::button full type="submit">{{  __('laraguard::password.change')  }}</x-element::button>
+			<x-element::button full type="submit">Alterar</x-element::button>
 		</div>
 
 		<p class="mt-10 text-center text-sm text-gray-500">
-			<a tabindex="-1" href="{{route($panel->getRouteName('login')) }}" class="font-semibold leading-6 text-gray-600 hover:text-gray-500">{{ __('laraguard::login.go_back') }}</a>
+			<a tabindex="-1" href="{{route($panel->getRouteName('login')) }}" class="font-semibold leading-6 text-gray-600 hover:text-gray-500">Voltar</a>
 		</p>
 
 	</form>

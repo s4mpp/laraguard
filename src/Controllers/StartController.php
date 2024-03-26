@@ -21,6 +21,11 @@ final class StartController extends Controller
             return to_route($panel->getRouteName('login'));
         }
 
-        return to_route($panel->getRouteName($panel->getStartModule()->getSlug(), 'index'));
+        $start_module = $panel->getStartModule();
+
+        return ($start_module)
+            ? to_route($panel->getRouteName($start_module->getSlug(), 'index'))
+            : to_route($panel->getRouteName('login'))->with('message', 'Nenhum módulo definido neste painel');
+
     }
 }
